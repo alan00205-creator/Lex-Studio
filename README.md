@@ -1,2 +1,2 @@
-# -Lex-Studio
+# Lex-Studio
 供承銷輔導人員持續精進法令能力的學習工具。
