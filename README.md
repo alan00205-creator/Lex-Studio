@@ -37,8 +37,8 @@ lex-studio/
 |---|---|---|
 | Phase 1 | 基礎建置（檔案結構、抽出 CSS/JS、免責聲明） | ✅ 完成 |
 | Phase 2 T2.1–T2.3 | 法規導航中心（卡片 UI、分類、智慧搜尋） | ✅ 完成 |
-| Phase 2 T2.4 | 補完 43 部法規條目 | ⏳ 進行中（人工） |
-| Phase 2 T2.5 | URL 驗證腳本 | ⏳ 待開發 |
+| Phase 2 T2.4 | 補完 43 部法規條目 | ✅ 完成（待你本機跑驗證） |
+| Phase 2 T2.5 | URL 驗證腳本 | ✅ 完成（`scripts/validate_law_index.py`） |
 | Phase 3 | 證期局問答集解析 | ⏸ 未開始 |
 | Phase 4 | 題庫與情境模擬 | ⏸ 未開始 |
 | Phase 5 | 每日挑戰、PWA、實機測試、發佈 | ⏸ 未開始 |
@@ -77,7 +77,29 @@ npx serve .
 
 ## 法規導航資料維護
 
-`data/law_index.json` 為人工維護。新增 / 修正法規條目流程請見該檔的 `_instructions_for_maintainer` 區塊，或參考 `PRD MEMO/02_PRD_Lex_Studio_v2.md` §4.4.1。
+`data/law_index.json` 收錄 43 部法規，含全國法規資料庫 PCode、selaw 連結（部分待補）、常用條文 chips 與深層連結 template。
+
+### 驗證 URL 是否正確
+
+```bash
+pip install -r scripts/requirements.txt
+python3 scripts/validate_law_index.py            # 驗證全部 43 部
+python3 scripts/validate_law_index.py --only A01,A04  # 只驗證指定 id
+python3 scripts/validate_law_index.py --delay 1.5     # 較慢的速率（避免被擋）
+```
+
+腳本會檢查：
+- HTTP 200 OK
+- 從頁面 `<title>` 抽出的法規名稱與 JSON 的 `name` 是否相符
+- `article_url_template` 套入第一個 `common_articles` 是否能 deep-link
+
+> ⚠️ **沙箱限制**：本工具的法規 URL 是 Claude Code 透過 Google site:law.moj.gov.tw 搜尋取得，但由於 law.moj.gov.tw / selaw / twse-regulation 對 cloud IP 段有 bot 防護，**驗證腳本必須在你的本機（非 cloud sandbox）環境執行**才能通過。沙箱內跑會看到 HTTP 403。
+
+### 仍待人工處理
+
+- 35 部新增條目的 `selaw_url` 暫設為 `null`，需要從 selaw.com.tw 逐筆查 LawID 補上
+- 多數新增條目的 `common_articles` 為空陣列；可依承銷實務挑出 3–5 條代表性條文補上
+- A04、A13、A29、E02 的 `common_articles` 是沿用原資料的條號，但 PCode 已更正，需確認每條對應內容無誤
 
 ---
 
