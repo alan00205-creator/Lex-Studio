@@ -2,22 +2,44 @@
   "$schema_note": "本檔案是 PRD §4.4.1 規定的法規導航索引，由執行者人工維護。",
   "version": "1.0",
   "last_updated": "2026-04-30",
-
   "_maintenance_log": [
     {
       "date": "2026-04-30",
       "by": "Claude Code (auto-fill)",
       "summary": "補完 35 部法規的 primary_url，並更正原 8 筆中 4 筆錯誤的 PCode（A04 G0400014→G0400023、A13 G0400065→G0400069、A29 G0400095→G0400129、E02 G0400012→G0400013）。所有 primary_url 透過 Google site:law.moj.gov.tw 搜尋取得，仍須以 scripts/validate_law_index.py 驗證。selaw_url 因原值多為推估，新增條目暫設為 null，由維護人員逐筆補上。"
+    },
+    {
+      "date": "2026-04-30",
+      "by": "Claude Code",
+      "summary": "X 類更新：(1) X01 改為 selaw 新版 URL（sysNumber=LW10809086）並補完 selaw_url；(2) X02 因舊 LawID=G0100651 失效改為 sysNumber=LW10812073 整合檢索 URL；(3) X03 因舊 LawID=G0100831 失效改為 sysNumber=LW10817193；(4) 新增 X04 上市審查準則補充規定（LW10815481）、X05 證券承銷商辦理股票初次申請上市案之評估查核程序（LW10813079）、X06 股票初次上市之證券承銷商評估報告應行記載事項要點（LW10808426）；(5) categories.X.expected_count 由 3 更新為 6；(6) _schema_documentation.id 範圍由 X01–X03 擴充為 X01–X06。"
     }
   ],
-
   "categories": [
-    { "code": "A", "name": "承銷輔導必修核心", "color": "#1e3a5f", "expected_count": 32 },
-    { "code": "E", "name": "會計師相關", "color": "#a07d3a", "expected_count": 4 },
-    { "code": "H", "name": "跨境／特殊產品", "color": "#2d7a4f", "expected_count": 4 },
-    { "code": "X", "name": "證交所／櫃買中心／公會", "color": "#a73a3a", "expected_count": 3 }
+    {
+      "code": "A",
+      "name": "承銷輔導必修核心",
+      "color": "#1e3a5f",
+      "expected_count": 32
+    },
+    {
+      "code": "E",
+      "name": "會計師相關",
+      "color": "#a07d3a",
+      "expected_count": 4
+    },
+    {
+      "code": "H",
+      "name": "跨境／特殊產品",
+      "color": "#2d7a4f",
+      "expected_count": 4
+    },
+    {
+      "code": "X",
+      "name": "證交所／櫃買中心／公會",
+      "color": "#a73a3a",
+      "expected_count": 6
+    }
   ],
-
   "laws": [
     {
       "id": "A01",
@@ -29,13 +51,34 @@
       "selaw_url": null,
       "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0400001&FLNO={article_no}",
       "common_articles": [
-        { "no": "22", "topic": "募集發行申報生效制" },
-        { "no": "28-2", "topic": "庫藏股" },
-        { "no": "36", "topic": "財務報告公告申報" },
-        { "no": "43-6", "topic": "私募" },
-        { "no": "157-1", "topic": "內線交易" }
+        {
+          "no": "22",
+          "topic": "募集發行申報生效制"
+        },
+        {
+          "no": "28-2",
+          "topic": "庫藏股"
+        },
+        {
+          "no": "36",
+          "topic": "財務報告公告申報"
+        },
+        {
+          "no": "43-6",
+          "topic": "私募"
+        },
+        {
+          "no": "157-1",
+          "topic": "內線交易"
+        }
       ],
-      "search_keywords": ["證交法", "證券交易法", "申報生效", "私募", "內線交易"]
+      "search_keywords": [
+        "證交法",
+        "證券交易法",
+        "申報生效",
+        "私募",
+        "內線交易"
+      ]
     },
     {
       "id": "A02",
@@ -47,7 +90,10 @@
       "selaw_url": null,
       "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0400002&FLNO={article_no}",
       "common_articles": [],
-      "search_keywords": ["證交法施行細則", "證券交易法施行細則"]
+      "search_keywords": [
+        "證交法施行細則",
+        "證券交易法施行細則"
+      ]
     },
     {
       "id": "A03",
@@ -59,13 +105,34 @@
       "selaw_url": null,
       "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=J0080001&FLNO={article_no}",
       "common_articles": [
-        { "no": "167-2", "topic": "員工認股權" },
-        { "no": "235-1", "topic": "員工酬勞" },
-        { "no": "267", "topic": "新股發行員工承購" },
-        { "no": "268", "topic": "新股公開發行" },
-        { "no": "278", "topic": "減資" }
+        {
+          "no": "167-2",
+          "topic": "員工認股權"
+        },
+        {
+          "no": "235-1",
+          "topic": "員工酬勞"
+        },
+        {
+          "no": "267",
+          "topic": "新股發行員工承購"
+        },
+        {
+          "no": "268",
+          "topic": "新股公開發行"
+        },
+        {
+          "no": "278",
+          "topic": "減資"
+        }
       ],
-      "search_keywords": ["公司法", "員工認股", "現金增資", "減資", "股東會"]
+      "search_keywords": [
+        "公司法",
+        "員工認股",
+        "現金增資",
+        "減資",
+        "股東會"
+      ]
     },
     {
       "id": "A04",
@@ -77,13 +144,34 @@
       "selaw_url": null,
       "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0400023&FLNO={article_no}",
       "common_articles": [
-        { "no": "7", "topic": "不得募集發行情形" },
-        { "no": "8", "topic": "申報書件應記載事項" },
-        { "no": "12", "topic": "申報生效期間（12 營業日）" },
-        { "no": "13", "topic": "退回案件情形" },
-        { "no": "23", "topic": "現金增資" }
+        {
+          "no": "7",
+          "topic": "不得募集發行情形"
+        },
+        {
+          "no": "8",
+          "topic": "申報書件應記載事項"
+        },
+        {
+          "no": "12",
+          "topic": "申報生效期間（12 營業日）"
+        },
+        {
+          "no": "13",
+          "topic": "退回案件情形"
+        },
+        {
+          "no": "23",
+          "topic": "現金增資"
+        }
       ],
-      "search_keywords": ["處理準則", "募集發行", "申報生效", "現金增資", "可轉換公司債"],
+      "search_keywords": [
+        "處理準則",
+        "募集發行",
+        "申報生效",
+        "現金增資",
+        "可轉換公司債"
+      ],
       "_maintainer_note": "原 PCode G0400014 為錯誤值，已更正為 G0400023。"
     },
     {
@@ -96,7 +184,11 @@
       "selaw_url": null,
       "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0400029&FLNO={article_no}",
       "common_articles": [],
-      "search_keywords": ["外國發行人", "第一上市", "F股"]
+      "search_keywords": [
+        "外國發行人",
+        "第一上市",
+        "F股"
+      ]
     },
     {
       "id": "A06",
@@ -108,7 +200,12 @@
       "selaw_url": null,
       "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0400062&FLNO={article_no}",
       "common_articles": [],
-      "search_keywords": ["海外有價證券", "GDR", "海外公司債", "ECB"]
+      "search_keywords": [
+        "海外有價證券",
+        "GDR",
+        "海外公司債",
+        "ECB"
+      ]
     },
     {
       "id": "A07",
@@ -120,7 +217,11 @@
       "selaw_url": null,
       "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0400019&FLNO={article_no}",
       "common_articles": [],
-      "search_keywords": ["公開說明書", "簡式公開說明書", "募集設立"]
+      "search_keywords": [
+        "公開說明書",
+        "簡式公開說明書",
+        "募集設立"
+      ]
     },
     {
       "id": "A08",
@@ -132,7 +233,11 @@
       "selaw_url": null,
       "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0400022&FLNO={article_no}",
       "common_articles": [],
-      "search_keywords": ["年報", "年報應記載", "公司治理"]
+      "search_keywords": [
+        "年報",
+        "年報應記載",
+        "公司治理"
+      ]
     },
     {
       "id": "A09",
@@ -144,7 +249,11 @@
       "selaw_url": null,
       "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0400127&FLNO={article_no}",
       "common_articles": [],
-      "search_keywords": ["董事會", "議事辦法", "利害關係"]
+      "search_keywords": [
+        "董事會",
+        "議事辦法",
+        "利害關係"
+      ]
     },
     {
       "id": "A10",
@@ -156,7 +265,10 @@
       "selaw_url": null,
       "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0400126&FLNO={article_no}",
       "common_articles": [],
-      "search_keywords": ["審計委員會", "獨立董事"]
+      "search_keywords": [
+        "審計委員會",
+        "獨立董事"
+      ]
     },
     {
       "id": "A11",
@@ -168,7 +280,11 @@
       "selaw_url": null,
       "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0400125&FLNO={article_no}",
       "common_articles": [],
-      "search_keywords": ["獨立董事", "設置", "獨立性"]
+      "search_keywords": [
+        "獨立董事",
+        "設置",
+        "獨立性"
+      ]
     },
     {
       "id": "A12",
@@ -180,7 +296,10 @@
       "selaw_url": null,
       "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0400058&FLNO={article_no}",
       "common_articles": [],
-      "search_keywords": ["資金貸與", "背書保證"]
+      "search_keywords": [
+        "資金貸與",
+        "背書保證"
+      ]
     },
     {
       "id": "A13",
@@ -192,13 +311,34 @@
       "selaw_url": null,
       "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0400069&FLNO={article_no}",
       "common_articles": [
-        { "no": "9", "topic": "取得或處分不動產" },
-        { "no": "10", "topic": "取得或處分有價證券" },
-        { "no": "16", "topic": "與關係人交易" },
-        { "no": "22", "topic": "企業合併取得資產" },
-        { "no": "30", "topic": "公告申報事項" }
+        {
+          "no": "9",
+          "topic": "取得或處分不動產"
+        },
+        {
+          "no": "10",
+          "topic": "取得或處分有價證券"
+        },
+        {
+          "no": "16",
+          "topic": "與關係人交易"
+        },
+        {
+          "no": "22",
+          "topic": "企業合併取得資產"
+        },
+        {
+          "no": "30",
+          "topic": "公告申報事項"
+        }
       ],
-      "search_keywords": ["取處準則", "取得處分", "資產", "關係人交易", "併購"],
+      "search_keywords": [
+        "取處準則",
+        "取得處分",
+        "資產",
+        "關係人交易",
+        "併購"
+      ],
       "_maintainer_note": "原 PCode G0400065 為錯誤值，已更正為 G0400069；常用條文編號沿用原資料，請於上線前驗證每條對應內容。"
     },
     {
@@ -211,7 +351,11 @@
       "selaw_url": null,
       "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0400045&FLNO={article_no}",
       "common_articles": [],
-      "search_keywords": ["內部控制", "內控", "稽核"]
+      "search_keywords": [
+        "內部控制",
+        "內控",
+        "稽核"
+      ]
     },
     {
       "id": "A15",
@@ -223,7 +367,12 @@
       "selaw_url": null,
       "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0400057&FLNO={article_no}",
       "common_articles": [],
-      "search_keywords": ["財務預測", "財測", "更新", "更正"]
+      "search_keywords": [
+        "財務預測",
+        "財測",
+        "更新",
+        "更正"
+      ]
     },
     {
       "id": "A16",
@@ -235,7 +384,11 @@
       "selaw_url": null,
       "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0400006&FLNO={article_no}",
       "common_articles": [],
-      "search_keywords": ["股務", "股務代理", "過戶"]
+      "search_keywords": [
+        "股務",
+        "股務代理",
+        "過戶"
+      ]
     },
     {
       "id": "A17",
@@ -247,7 +400,11 @@
       "selaw_url": null,
       "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0400123&FLNO={article_no}",
       "common_articles": [],
-      "search_keywords": ["股東會", "議事手冊", "董事選舉"]
+      "search_keywords": [
+        "股東會",
+        "議事手冊",
+        "董事選舉"
+      ]
     },
     {
       "id": "A18",
@@ -259,7 +416,11 @@
       "selaw_url": null,
       "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0400056&FLNO={article_no}",
       "common_articles": [],
-      "search_keywords": ["委託書", "委託書徵求", "股東會"]
+      "search_keywords": [
+        "委託書",
+        "委託書徵求",
+        "股東會"
+      ]
     },
     {
       "id": "A19",
@@ -271,7 +432,11 @@
       "selaw_url": null,
       "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0400051&FLNO={article_no}",
       "common_articles": [],
-      "search_keywords": ["董監股權", "持股成數", "查核"]
+      "search_keywords": [
+        "董監股權",
+        "持股成數",
+        "查核"
+      ]
     },
     {
       "id": "A20",
@@ -283,7 +448,10 @@
       "selaw_url": null,
       "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0400150&FLNO={article_no}",
       "common_articles": [],
-      "search_keywords": ["分別行使表決權", "表決權"]
+      "search_keywords": [
+        "分別行使表決權",
+        "表決權"
+      ]
     },
     {
       "id": "A21",
@@ -295,7 +463,11 @@
       "selaw_url": null,
       "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0400155&FLNO={article_no}",
       "common_articles": [],
-      "search_keywords": ["併購", "特別委員會", "M&A"]
+      "search_keywords": [
+        "併購",
+        "特別委員會",
+        "M&A"
+      ]
     },
     {
       "id": "A22",
@@ -307,7 +479,11 @@
       "selaw_url": null,
       "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0400050&FLNO={article_no}",
       "common_articles": [],
-      "search_keywords": ["財報編製準則", "IFRS", "財務報告"],
+      "search_keywords": [
+        "財報編製準則",
+        "IFRS",
+        "財務報告"
+      ],
       "_maintainer_note": "全國法規資料庫上的正式名稱為「證券發行人財務報告編製準則（採國際財務報導準則版本）」"
     },
     {
@@ -320,7 +496,11 @@
       "selaw_url": null,
       "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0400003&FLNO={article_no}",
       "common_articles": [],
-      "search_keywords": ["股票簽證", "公司債券簽證", "簽證銀行"]
+      "search_keywords": [
+        "股票簽證",
+        "公司債券簽證",
+        "簽證銀行"
+      ]
     },
     {
       "id": "A24",
@@ -332,7 +512,10 @@
       "selaw_url": null,
       "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0400063&FLNO={article_no}",
       "common_articles": [],
-      "search_keywords": ["公開收購", "tender offer"]
+      "search_keywords": [
+        "公開收購",
+        "tender offer"
+      ]
     },
     {
       "id": "A25",
@@ -344,7 +527,9 @@
       "selaw_url": null,
       "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0400066&FLNO={article_no}",
       "common_articles": [],
-      "search_keywords": ["公開收購說明書"]
+      "search_keywords": [
+        "公開收購說明書"
+      ]
     },
     {
       "id": "A26",
@@ -356,7 +541,11 @@
       "selaw_url": null,
       "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0400061&FLNO={article_no}",
       "common_articles": [],
-      "search_keywords": ["買回股份", "庫藏股", "buyback"]
+      "search_keywords": [
+        "買回股份",
+        "庫藏股",
+        "buyback"
+      ]
     },
     {
       "id": "A27",
@@ -368,7 +557,11 @@
       "selaw_url": null,
       "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0400036&FLNO={article_no}",
       "common_articles": [],
-      "search_keywords": ["承銷商", "包銷", "取得包銷出售"]
+      "search_keywords": [
+        "承銷商",
+        "包銷",
+        "取得包銷出售"
+      ]
     },
     {
       "id": "A28",
@@ -380,7 +573,12 @@
       "selaw_url": null,
       "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0400161&FLNO={article_no}",
       "common_articles": [],
-      "search_keywords": ["43條之1", "取得股份", "申報", "持股10%"]
+      "search_keywords": [
+        "43條之1",
+        "取得股份",
+        "申報",
+        "持股10%"
+      ]
     },
     {
       "id": "A29",
@@ -392,11 +590,25 @@
       "selaw_url": null,
       "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0400129&FLNO={article_no}",
       "common_articles": [
-        { "no": "2", "topic": "重大消息範圍（涉及財務業務）" },
-        { "no": "3", "topic": "重大消息範圍（涉及市場供求）" },
-        { "no": "5", "topic": "公開方式" }
+        {
+          "no": "2",
+          "topic": "重大消息範圍（涉及財務業務）"
+        },
+        {
+          "no": "3",
+          "topic": "重大消息範圍（涉及市場供求）"
+        },
+        {
+          "no": "5",
+          "topic": "公開方式"
+        }
       ],
-      "search_keywords": ["重大消息", "內線交易", "157條之1", "重大訊息"],
+      "search_keywords": [
+        "重大消息",
+        "內線交易",
+        "157條之1",
+        "重大訊息"
+      ],
       "_maintainer_note": "原 PCode G0400095 為錯誤值，已更正為 G0400129。配合證交法 §157-1 使用，內線交易案件常需查閱。"
     },
     {
@@ -409,7 +621,11 @@
       "selaw_url": null,
       "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0400149&FLNO={article_no}",
       "common_articles": [],
-      "search_keywords": ["薪資報酬委員會", "薪酬委員會", "上市上櫃公司薪資報酬委員會設置及行使職權辦法"],
+      "search_keywords": [
+        "薪資報酬委員會",
+        "薪酬委員會",
+        "上市上櫃公司薪資報酬委員會設置及行使職權辦法"
+      ],
       "_maintainer_note": "PRD §4.1.3 簡稱為「上市上櫃公司薪資報酬委員會設置及行使職權辦法」，全國法規資料庫上之正式名稱為「股票上市或於證券商營業處所買賣公司薪資報酬委員會設置及行使職權辦法」。"
     },
     {
@@ -422,7 +638,11 @@
       "selaw_url": null,
       "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0400052&FLNO={article_no}",
       "common_articles": [],
-      "search_keywords": ["關係企業", "合併財報", "關係報告書"]
+      "search_keywords": [
+        "關係企業",
+        "合併財報",
+        "關係報告書"
+      ]
     },
     {
       "id": "A32",
@@ -434,9 +654,12 @@
       "selaw_url": null,
       "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0400044&FLNO={article_no}",
       "common_articles": [],
-      "search_keywords": ["認購權證", "認售權證", "warrant"]
+      "search_keywords": [
+        "認購權證",
+        "認售權證",
+        "warrant"
+      ]
     },
-
     {
       "id": "E02",
       "name": "會計師辦理公開發行公司財務報告查核簽證核准準則",
@@ -447,10 +670,21 @@
       "selaw_url": null,
       "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0400013&FLNO={article_no}",
       "common_articles": [
-        { "no": "2", "topic": "得辦理簽證會計師資格" },
-        { "no": "5", "topic": "獨立性要求" }
+        {
+          "no": "2",
+          "topic": "得辦理簽證會計師資格"
+        },
+        {
+          "no": "5",
+          "topic": "獨立性要求"
+        }
       ],
-      "search_keywords": ["簽證會計師", "查核", "獨立性", "輪調"],
+      "search_keywords": [
+        "簽證會計師",
+        "查核",
+        "獨立性",
+        "輪調"
+      ],
       "_maintainer_note": "原 PCode G0400012 為錯誤值，已更正為 G0400013。"
     },
     {
@@ -463,7 +697,10 @@
       "selaw_url": null,
       "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0400068&FLNO={article_no}",
       "common_articles": [],
-      "search_keywords": ["會計師查核", "查核簽證財務報表"]
+      "search_keywords": [
+        "會計師查核",
+        "查核簽證財務報表"
+      ]
     },
     {
       "id": "E10",
@@ -475,7 +712,11 @@
       "selaw_url": null,
       "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0400131&FLNO={article_no}",
       "common_articles": [],
-      "search_keywords": ["會計主管", "資格條件", "專業進修"]
+      "search_keywords": [
+        "會計主管",
+        "資格條件",
+        "專業進修"
+      ]
     },
     {
       "id": "E11",
@@ -487,9 +728,11 @@
       "selaw_url": null,
       "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0400130&FLNO={article_no}",
       "common_articles": [],
-      "search_keywords": ["進修機構", "會計主管進修"]
+      "search_keywords": [
+        "進修機構",
+        "會計主管進修"
+      ]
     },
-
     {
       "id": "H01",
       "name": "華僑及外國人投資證券管理辦法",
@@ -500,11 +743,26 @@
       "selaw_url": null,
       "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0400011&FLNO={article_no}",
       "common_articles": [
-        { "no": "3", "topic": "外資定義（QFII / FINI）" },
-        { "no": "4", "topic": "投資範圍" },
-        { "no": "8", "topic": "申請程序" }
+        {
+          "no": "3",
+          "topic": "外資定義（QFII / FINI）"
+        },
+        {
+          "no": "4",
+          "topic": "投資範圍"
+        },
+        {
+          "no": "8",
+          "topic": "申請程序"
+        }
       ],
-      "search_keywords": ["外資", "QFII", "FINI", "華僑", "外國人投資"]
+      "search_keywords": [
+        "外資",
+        "QFII",
+        "FINI",
+        "華僑",
+        "外國人投資"
+      ]
     },
     {
       "id": "H08",
@@ -516,7 +774,10 @@
       "selaw_url": null,
       "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0400158&FLNO={article_no}",
       "common_articles": [],
-      "search_keywords": ["指數投資證券", "ETN"]
+      "search_keywords": [
+        "指數投資證券",
+        "ETN"
+      ]
     },
     {
       "id": "H10",
@@ -528,7 +789,12 @@
       "selaw_url": null,
       "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0400075&FLNO={article_no}",
       "common_articles": [],
-      "search_keywords": ["REIT", "REAT", "不動產投資信託", "資產信託"]
+      "search_keywords": [
+        "REIT",
+        "REAT",
+        "不動產投資信託",
+        "資產信託"
+      ]
     },
     {
       "id": "H11",
@@ -540,25 +806,44 @@
       "selaw_url": null,
       "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0400154&FLNO={article_no}",
       "common_articles": [],
-      "search_keywords": ["公開收購REIT", "不動產投資信託受益證券"]
+      "search_keywords": [
+        "公開收購REIT",
+        "不動產投資信託受益證券"
+      ]
     },
-
     {
       "id": "X01",
       "name": "臺灣證券交易所股份有限公司有價證券上市審查準則",
       "abbreviation": "上市審查準則",
       "category": "X",
       "issuing_authority": "臺灣證券交易所",
-      "primary_url": "https://twse-regulation.twse.com.tw/m/LawContent.aspx?FID=FL007326",
-      "selaw_url": null,
+      "primary_url": "https://www.selaw.com.tw/Chinese/RegulatoryInformationResult?sysNumber=LW10809086&releaseDate=2026-01-09",
+      "selaw_url": "https://www.selaw.com.tw/Chinese/RegulatoryInformationResult?sysNumber=LW10809086&releaseDate=2026-01-09",
       "article_url_template": null,
       "common_articles": [
-        { "no": "4", "topic": "申請上市條件" },
-        { "no": "6-1", "topic": "創新板上市條件" },
-        { "no": "9", "topic": "不宜上市情形" },
-        { "no": "10", "topic": "獲利能力" }
+        {
+          "no": "4",
+          "topic": "申請上市條件"
+        },
+        {
+          "no": "6-1",
+          "topic": "創新板上市條件"
+        },
+        {
+          "no": "9",
+          "topic": "不宜上市情形"
+        },
+        {
+          "no": "10",
+          "topic": "獲利能力"
+        }
       ],
-      "search_keywords": ["上市審查", "上市條件", "創新板", "不宜上市"],
+      "search_keywords": [
+        "上市審查",
+        "上市條件",
+        "創新板",
+        "不宜上市"
+      ],
       "_maintainer_note": "證交所訂定，不在全國法規資料庫。article_url_template 為 null：證交所未提供條文深層連結，使用者點擊後跳到法規全文頁面。"
     },
     {
@@ -567,12 +852,17 @@
       "abbreviation": "上櫃審查準則",
       "category": "X",
       "issuing_authority": "證券櫃檯買賣中心",
-      "primary_url": "https://www.selaw.com.tw/LawArticle.aspx?LawID=G0100651",
-      "selaw_url": "https://www.selaw.com.tw/LawArticle.aspx?LawID=G0100651",
+      "primary_url": "https://www.selaw.com.tw/Chinese/RegulatoryInformationResult/Article?isIntegratedSearch=True&sysNumber=LW10812073&searchString1=%E8%B2%A1%E5%9C%98%E6%B3%95%E4%BA%BA%E4%B8%AD%E8%8F%AF%E6%B0%91%E5%9C%8B%E8%AD%89%E5%88%B8%E6%AB%83%E6%AA%AF%E8%B2%B7%E8%B3%A3%E4%B8%AD%E5%BF%83%E8%AD%89%E5%88%B8%E5%95%86%E7%87%9F%E6%A5%AD%E8%99%95%E6%89%80%E8%B2%B7%E8%B3%A3%E6%9C%89%E5%83%B9%E8%AD%89%E5%88%B8%E5%AF%A9%E6%9F%A5%E6%BA%96%E5%89%87&searchLogic1=AND&searchLogic2=AND",
+      "selaw_url": "https://www.selaw.com.tw/Chinese/RegulatoryInformationResult/Article?isIntegratedSearch=True&sysNumber=LW10812073&searchString1=%E8%B2%A1%E5%9C%98%E6%B3%95%E4%BA%BA%E4%B8%AD%E8%8F%AF%E6%B0%91%E5%9C%8B%E8%AD%89%E5%88%B8%E6%AB%83%E6%AA%AF%E8%B2%B7%E8%B3%A3%E4%B8%AD%E5%BF%83%E8%AD%89%E5%88%B8%E5%95%86%E7%87%9F%E6%A5%AD%E8%99%95%E6%89%80%E8%B2%B7%E8%B3%A3%E6%9C%89%E5%83%B9%E8%AD%89%E5%88%B8%E5%AF%A9%E6%9F%A5%E6%BA%96%E5%89%87&searchLogic1=AND&searchLogic2=AND",
       "article_url_template": null,
       "common_articles": [],
-      "search_keywords": ["上櫃審查", "上櫃條件", "OTC", "櫃買中心"],
-      "_maintainer_note": "櫃買中心訂定，不在全國法規資料庫；selaw 提供查閱。LawID G0100651 為 selaw 上之識別碼，請於上線前驗證。"
+      "search_keywords": [
+        "上櫃審查",
+        "上櫃條件",
+        "OTC",
+        "櫃買中心"
+      ],
+      "_maintainer_note": "櫃買中心訂定，不在全國法規資料庫；selaw 提供查閱。原 LawID=G0100651 連結已失效（selaw 已改版至新檢索系統），於 2026-04-30 改用 sysNumber=LW10812073 之整合檢索 URL。"
     },
     {
       "id": "X03",
@@ -580,17 +870,75 @@
       "abbreviation": "公會承銷辦法",
       "category": "X",
       "issuing_authority": "證券商公會",
-      "primary_url": "https://www.selaw.com.tw/LawArticle.aspx?LawID=G0100831",
-      "selaw_url": "https://www.selaw.com.tw/LawArticle.aspx?LawID=G0100831",
+      "primary_url": "https://www.selaw.com.tw/Chinese/RegulatoryInformationResult?sysNumber=LW10817193&releaseDate=2026-01-12",
+      "selaw_url": "https://www.selaw.com.tw/Chinese/RegulatoryInformationResult?sysNumber=LW10817193&releaseDate=2026-01-12",
       "article_url_template": null,
       "common_articles": [],
-      "search_keywords": ["公會承銷辦法", "再行銷售", "詢價圈購", "競價拍賣", "公開申購"],
-      "_maintainer_note": "公會自律規章，selaw 提供查閱。另可參考公會法規列表 https://www.twsa.org.tw/D01/D016.html。LawID G0100831 為 selaw 識別碼，請於上線前驗證。"
+      "search_keywords": [
+        "公會承銷辦法",
+        "再行銷售",
+        "詢價圈購",
+        "競價拍賣",
+        "公開申購"
+      ],
+      "_maintainer_note": "公會自律規章，selaw 提供查閱。另可參考公會法規列表 https://www.twsa.org.tw/D01/D016.html。原 LawID=G0100831 連結已失效（selaw 已改版至新檢索系統），於 2026-04-30 改用 sysNumber=LW10817193 之新版 URL。"
+    },
+    {
+      "id": "X04",
+      "name": "臺灣證券交易所股份有限公司有價證券上市審查準則補充規定",
+      "abbreviation": "上市審查補充規定",
+      "category": "X",
+      "issuing_authority": "臺灣證券交易所",
+      "primary_url": "https://www.selaw.com.tw/Chinese/RegulatoryInformationResult/Article?isIntegratedSearch=True&sysNumber=LW10815481&searchString1=%E6%9C%89%E5%83%B9%E8%AD%89%E5%88%B8%E4%B8%8A%E5%B8%82%E5%AF%A9%E6%9F%A5%E6%BA%96%E5%89%87&searchLogic1=AND&searchLogic2=AND",
+      "selaw_url": "https://www.selaw.com.tw/Chinese/RegulatoryInformationResult/Article?isIntegratedSearch=True&sysNumber=LW10815481&searchString1=%E6%9C%89%E5%83%B9%E8%AD%89%E5%88%B8%E4%B8%8A%E5%B8%82%E5%AF%A9%E6%9F%A5%E6%BA%96%E5%89%87&searchLogic1=AND&searchLogic2=AND",
+      "article_url_template": null,
+      "common_articles": [],
+      "search_keywords": [
+        "上市審查補充規定",
+        "上市審查",
+        "補充規定"
+      ],
+      "_maintainer_note": "證交所訂定，不在全國法規資料庫；selaw 提供查閱。article_url_template 為 null：selaw 整合檢索頁無條文深層連結。"
+    },
+    {
+      "id": "X05",
+      "name": "臺灣證券交易所股份有限公司證券承銷商辦理股票初次申請上市案之評估查核程序",
+      "abbreviation": "承銷商評估查核程序",
+      "category": "X",
+      "issuing_authority": "臺灣證券交易所",
+      "primary_url": "https://www.selaw.com.tw/Chinese/RegulatoryInformationResult/Article?isIntegratedSearch=True&sysNumber=LW10813079&searchString1=%E6%9C%89%E5%83%B9%E8%AD%89%E5%88%B8%E4%B8%8A%E5%B8%82%E5%AF%A9%E6%9F%A5%E6%BA%96%E5%89%87&searchLogic1=AND&searchLogic2=AND",
+      "selaw_url": "https://www.selaw.com.tw/Chinese/RegulatoryInformationResult/Article?isIntegratedSearch=True&sysNumber=LW10813079&searchString1=%E6%9C%89%E5%83%B9%E8%AD%89%E5%88%B8%E4%B8%8A%E5%B8%82%E5%AF%A9%E6%9F%A5%E6%BA%96%E5%89%87&searchLogic1=AND&searchLogic2=AND",
+      "article_url_template": null,
+      "common_articles": [],
+      "search_keywords": [
+        "承銷商評估",
+        "查核程序",
+        "初次上市",
+        "IPO 評估"
+      ],
+      "_maintainer_note": "證交所訂定，不在全國法規資料庫；selaw 提供查閱。article_url_template 為 null。"
+    },
+    {
+      "id": "X06",
+      "name": "臺灣證券交易所股份有限公司股票初次上市之證券承銷商評估報告應行記載事項要點",
+      "abbreviation": "承銷商評估報告要點",
+      "category": "X",
+      "issuing_authority": "臺灣證券交易所",
+      "primary_url": "https://www.selaw.com.tw/Chinese/RegulatoryInformationResult/Article?isIntegratedSearch=True&sysNumber=LW10808426&searchString1=%E6%9C%89%E5%83%B9%E8%AD%89%E5%88%B8%E4%B8%8A%E5%B8%82%E5%AF%A9%E6%9F%A5%E6%BA%96%E5%89%87&searchLogic1=AND&searchLogic2=AND",
+      "selaw_url": "https://www.selaw.com.tw/Chinese/RegulatoryInformationResult/Article?isIntegratedSearch=True&sysNumber=LW10808426&searchString1=%E6%9C%89%E5%83%B9%E8%AD%89%E5%88%B8%E4%B8%8A%E5%B8%82%E5%AF%A9%E6%9F%A5%E6%BA%96%E5%89%87&searchLogic1=AND&searchLogic2=AND",
+      "article_url_template": null,
+      "common_articles": [],
+      "search_keywords": [
+        "承銷商評估報告",
+        "評估報告",
+        "應行記載事項",
+        "初次上市"
+      ],
+      "_maintainer_note": "證交所訂定，不在全國法規資料庫；selaw 提供查閱。article_url_template 為 null。"
     }
   ],
-
   "_schema_documentation": {
-    "id": "編號（A01–A32, E02–E11, H01–H11, X01–X03），用於跨檔案引用（題庫法源欄位）",
+    "id": "編號（A01–A32, E02–E11, H01–H11, X01–X06），用於跨檔案引用（題庫法源欄位）",
     "name": "法規完整正式名稱，作為搜尋與顯示主名稱",
     "abbreviation": "業界常用簡稱，用於空間有限的 UI（如題目卡片）",
     "category": "對應 categories 陣列的 code",
