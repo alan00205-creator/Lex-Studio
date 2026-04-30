@@ -26,8 +26,10 @@ node_modules/
 .tmp/
 
 # Output（後續腳本自動產生的問答集 PDF 與 JSON）
-# 注意：output/ 目錄會由 GitHub Actions 提交，本機執行腳本的中間產物不上版本
+# 注意：output/qa.json 與 output/qa_pdfs/ 會由 GitHub Actions 提交；
+# 本機執行腳本的中間產物與探勘紀錄不上版本
 output/qa_pdfs/_cache/
+output/_explore/
 
 # 個人筆記（避免不小心 commit）
 NOTES.md

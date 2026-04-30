@@ -39,7 +39,7 @@ lex-studio/
 | Phase 2 T2.1–T2.3 | 法規導航中心（卡片 UI、分類、智慧搜尋） | ✅ 完成 |
 | Phase 2 T2.4 | 補完 43 部法規條目 | ✅ 完成（待你本機跑驗證） |
 | Phase 2 T2.5 | URL 驗證腳本 | ✅ 完成（`scripts/validate_law_index.py`） |
-| Phase 3 | 證期局問答集解析 | ⏸ 未開始 |
+| Phase 3 | 證期局問答集解析 | 🔬 探勘中（`scripts/explore_sfb.py`） |
 | Phase 4 | 題庫與情境模擬 | ⏸ 未開始 |
 | Phase 5 | 每日挑戰、PWA、實機測試、發佈 | ⏸ 未開始 |
 
@@ -100,6 +100,28 @@ python3 scripts/validate_law_index.py --delay 1.5     # 較慢的速率（避免
 - 35 部新增條目的 `selaw_url` 暫設為 `null`，需要從 selaw.com.tw 逐筆查 LawID 補上
 - 多數新增條目的 `common_articles` 為空陣列；可依承銷實務挑出 3–5 條代表性條文補上
 - A04、A13、A29、E02 的 `common_articles` 是沿用原資料的條號，但 PCode 已更正，需確認每條對應內容無誤
+
+---
+
+## Phase 3：證期局問答集探勘
+
+進入 `fetch_qa.py` 之前要先理解 sfb.gov.tw 的頁面結構。`scripts/explore_sfb.py` 會抓取入口頁（id=858）+ PRD 建議的樣本子分類（id=863 公開發行公司募集發行），列出：
+
+- 入口頁所有 23 大類的 id 與名稱
+- 子分類頁所有 PDF 文件的標題、連結、推斷發布日期、檔案路徑
+
+```bash
+python3 scripts/explore_sfb.py                   # 抓 858 + 863
+python3 scripts/explore_sfb.py --all-categories  # 抓所有 23 大類
+python3 scripts/explore_sfb.py --raw             # 只 dump 原始 HTML，不做解析
+```
+
+執行後：
+- 原始 HTML 存於 `output/_explore/sfb_<id>.html`（已加入 `.gitignore`）
+- 結構化解析結果存於 `output/_explore/explore_report.json`
+- markdown 報告印到 stdout
+
+> ⚠️ 同樣需在你本機跑（cloud sandbox 對 sfb.gov.tw 的 GET 會 HTTP 403）。跑完把報告貼給 Claude Code 看，再決定 `fetch_qa.py` 的具體寫法。
 
 ---
 
