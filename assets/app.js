@@ -567,6 +567,601 @@ function bindQaEventDelegates(area) {
 }
 
 // ============================================
+// 學習進度（localStorage）
+// PRD §7.4 key: 'underwriter_lex_progress'
+// ============================================
+
+const PROGRESS_KEY = 'underwriter_lex_progress';
+
+function defaultProgress() {
+  return {
+    version: 1,
+    stats: {
+      total_answered: 0,
+      total_correct: 0,
+      streak_days: 0,
+      last_practice_date: null,
+    },
+    wrong_questions: [],
+    category_progress: {},
+    daily_completed: {},   // { "YYYY-MM-DD": "Q003" }
+  };
+}
+
+function loadProgress() {
+  try {
+    const raw = localStorage.getItem(PROGRESS_KEY);
+    if (!raw) return defaultProgress();
+    const p = JSON.parse(raw);
+    if (!p || p.version !== 1) return defaultProgress();
+    // 補齊新欄位（schema 演進時相容）
+    const def = defaultProgress();
+    p.stats = { ...def.stats, ...(p.stats || {}) };
+    p.wrong_questions = p.wrong_questions || [];
+    p.category_progress = p.category_progress || {};
+    p.daily_completed = p.daily_completed || {};
+    return p;
+  } catch (e) {
+    return defaultProgress();
+  }
+}
+
+function saveProgress(p) {
+  try {
+    localStorage.setItem(PROGRESS_KEY, JSON.stringify(p));
+  } catch (e) {
+    console.error('localStorage write failed:', e);
+  }
+}
+
+function todayStr() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+function yesterdayStr() {
+  const d = new Date(Date.now() - 86400000);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+function recordAnswer(question, correct) {
+  const p = loadProgress();
+  p.stats.total_answered += 1;
+  if (correct) p.stats.total_correct += 1;
+
+  const today = todayStr();
+  if (p.stats.last_practice_date !== today) {
+    p.stats.streak_days = (p.stats.last_practice_date === yesterdayStr())
+      ? (p.stats.streak_days || 0) + 1
+      : 1;
+    p.stats.last_practice_date = today;
+  }
+
+  const wrongIdx = p.wrong_questions.indexOf(question.id);
+  if (correct) {
+    if (wrongIdx >= 0) p.wrong_questions.splice(wrongIdx, 1);
+  } else if (wrongIdx < 0) {
+    p.wrong_questions.push(question.id);
+  }
+
+  const cat = question.category || '其他';
+  if (!p.category_progress[cat]) p.category_progress[cat] = { answered: 0, correct: 0 };
+  p.category_progress[cat].answered += 1;
+  if (correct) p.category_progress[cat].correct += 1;
+
+  saveProgress(p);
+}
+
+function clearWrongQuestions() {
+  const p = loadProgress();
+  p.wrong_questions = [];
+  saveProgress(p);
+}
+
+// ============================================
+// 題庫資料載入
+// ============================================
+
+const QUIZ_DATA_URL = './data/quiz.json';
+let quizData = null;
+let quizLoaded = false;
+let quizLoadStarted = false;
+
+async function ensureQuizLoaded() {
+  if (quizLoaded || quizLoadStarted) return;
+  quizLoadStarted = true;
+  try {
+    const resp = await fetch(QUIZ_DATA_URL);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    quizData = await resp.json();
+  } catch (e) {
+    quizData = null;
+    console.error('[quiz] 載入失敗：', e);
+  }
+  quizLoaded = true;
+}
+
+function questionById(id) {
+  return (quizData && quizData.questions || []).find(q => q.id === id) || null;
+}
+
+// ============================================
+// 題庫 / 情境 模組（state machine）
+// ============================================
+
+const quizSessions = {
+  quiz: createSession('quiz'),
+  scenario: createSession('scenario'),
+};
+
+function createSession(mode) {
+  return {
+    mode,                          // 'quiz' | 'scenario'
+    state: 'start',                // 'start' | 'playing' | 'feedback' | 'result'
+    filter: { category: 'all', difficulty: 'all', count: 5 },
+    questions: [],
+    currentIdx: 0,
+    answers: [],
+    selectedIdx: null,
+    reviewMode: false,             // 錯題本模式
+  };
+}
+
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function poolForMode(mode) {
+  if (!quizData) return [];
+  const all = quizData.questions || [];
+  return mode === 'scenario' ? all.filter(q => q.type === 'scenario') : all;
+}
+
+function startSession(mode, opts = {}) {
+  const sess = quizSessions[mode];
+  let pool = poolForMode(mode);
+
+  if (opts.reviewMode) {
+    const wrongIds = loadProgress().wrong_questions;
+    pool = pool.filter(q => wrongIds.includes(q.id));
+    sess.reviewMode = true;
+  } else {
+    sess.reviewMode = false;
+    if (sess.filter.category !== 'all') pool = pool.filter(q => q.category === sess.filter.category);
+    if (sess.filter.difficulty !== 'all') pool = pool.filter(q => q.difficulty === sess.filter.difficulty);
+  }
+
+  if (pool.length === 0) {
+    alert(opts.reviewMode ? '錯題本是空的，先答幾題再來複習。' : '此分類 / 難度暫無題目，請放寬條件。');
+    return;
+  }
+
+  const wantedCount = opts.reviewMode ? pool.length : Math.min(sess.filter.count, pool.length);
+  sess.questions = shuffle(pool).slice(0, wantedCount);
+  sess.currentIdx = 0;
+  sess.answers = [];
+  sess.selectedIdx = null;
+  sess.state = 'playing';
+  renderQuizPage(mode);
+}
+
+function selectAnswer(mode, idx) {
+  const sess = quizSessions[mode];
+  if (sess.state !== 'playing') return;
+  const q = sess.questions[sess.currentIdx];
+  const correct = idx === q.correct_index;
+  sess.answers.push({ questionId: q.id, selectedIdx: idx, correct });
+  sess.selectedIdx = idx;
+  sess.state = 'feedback';
+  recordAnswer(q, correct);
+  renderQuizPage(mode);
+}
+
+function nextQuestion(mode) {
+  const sess = quizSessions[mode];
+  if (sess.currentIdx + 1 >= sess.questions.length) {
+    sess.state = 'result';
+  } else {
+    sess.currentIdx += 1;
+    sess.selectedIdx = null;
+    sess.state = 'playing';
+  }
+  renderQuizPage(mode);
+}
+
+function restartSession(mode) {
+  quizSessions[mode] = createSession(mode);
+  renderQuizPage(mode);
+}
+
+// ----- Render -----
+
+function quizAreaEl(mode) {
+  return document.getElementById(mode === 'scenario' ? 'scenarioArea' : 'quizArea');
+}
+
+function renderQuizPage(mode) {
+  const area = quizAreaEl(mode);
+  if (!quizLoaded) {
+    area.innerHTML = `<div class="loading"><div class="spinner"></div><div>載入題庫中⋯</div></div>`;
+    return;
+  }
+  if (!quizData) {
+    area.innerHTML = renderQaEmpty('!', `題庫載入失敗<br><small style="color: var(--ink-dim);">請確認 ${QUIZ_DATA_URL} 存在</small>`);
+    return;
+  }
+  const sess = quizSessions[mode];
+  if (sess.state === 'start') area.innerHTML = renderQuizStart(mode);
+  else if (sess.state === 'result') area.innerHTML = renderQuizResult(mode);
+  else area.innerHTML = renderQuizPlay(mode);
+
+  bindQuizDelegates(area, mode);
+}
+
+function renderQuizStart(mode) {
+  const sess = quizSessions[mode];
+  const pool = poolForMode(mode);
+  const cats = ['all', ...Array.from(new Set(pool.map(q => q.category)))];
+  const diffs = [
+    { v: 'all', label: '全部' },
+    { v: 'basic', label: '基礎' },
+    { v: 'medium', label: '中等' },
+    { v: 'advanced', label: '進階' },
+  ];
+  const counts = [5, 10, 20];
+  const wrongCount = loadProgress().wrong_questions.filter(id => {
+    const q = questionById(id);
+    return q && (mode === 'quiz' || q.type === 'scenario');
+  }).length;
+
+  return `
+    <div class="quiz-start">
+      <div class="quiz-section-label">分類</div>
+      <div class="chips" data-filter-group="category">
+        ${cats.map(c => `
+          <button class="chip ${sess.filter.category === c ? 'active' : ''}" data-filter-value="${escapeHTML(c)}">
+            ${c === 'all' ? '全部' : escapeHTML(c)}
+          </button>`).join('')}
+      </div>
+
+      <div class="quiz-section-label">難度</div>
+      <div class="chips" data-filter-group="difficulty">
+        ${diffs.map(d => `
+          <button class="chip ${sess.filter.difficulty === d.v ? 'active' : ''}" data-filter-value="${d.v}">
+            ${d.label}
+          </button>`).join('')}
+      </div>
+
+      <div class="quiz-section-label">題數</div>
+      <div class="chips" data-filter-group="count">
+        ${counts.map(n => `
+          <button class="chip ${sess.filter.count === n ? 'active' : ''}" data-filter-value="${n}">
+            ${n} 題
+          </button>`).join('')}
+      </div>
+
+      <button class="btn-primary" data-action="start">
+        開始${mode === 'scenario' ? '情境模擬' : '練習'}
+      </button>
+
+      <button class="btn-secondary ${wrongCount === 0 ? 'disabled' : ''}"
+              data-action="review"
+              ${wrongCount === 0 ? 'aria-disabled="true"' : ''}>
+        錯題本（${wrongCount} 題）
+      </button>
+
+      <div class="quiz-pool-info">// 題庫共 ${pool.length} 題（type=${mode}）</div>
+    </div>
+  `;
+}
+
+function renderQuizPlay(mode) {
+  const sess = quizSessions[mode];
+  const q = sess.questions[sess.currentIdx];
+  const total = sess.questions.length;
+  const isFeedback = sess.state === 'feedback';
+
+  const dots = sess.questions.map((_, i) => {
+    let cls = 'dot';
+    if (i < sess.currentIdx) cls += sess.answers[i] && sess.answers[i].correct ? ' correct' : ' wrong';
+    if (i === sess.currentIdx) cls += ' current';
+    return `<span class="${cls}"></span>`;
+  }).join('');
+
+  const opts = q.options.map((opt, i) => {
+    let cls = 'quiz-option';
+    let mark = '';
+    if (isFeedback) {
+      if (i === q.correct_index) { cls += ' correct'; mark = '✓'; }
+      else if (i === sess.selectedIdx) { cls += ' wrong'; mark = '✗'; }
+    } else if (i === sess.selectedIdx) {
+      cls += ' selected';
+    }
+    return `<button class="${cls}" data-action="select" data-opt="${i}" ${isFeedback ? 'disabled' : ''}>
+      <span class="opt-letter">${'ABCD'[i]}</span>
+      <span class="opt-text">${escapeHTML(opt)}</span>
+      ${mark ? `<span class="opt-mark">${mark}</span>` : ''}
+    </button>`;
+  }).join('');
+
+  const feedback = !isFeedback ? '' : `
+    <div class="quiz-feedback">
+      <div class="feedback-label ${sess.answers[sess.currentIdx].correct ? 'correct' : 'wrong'}">
+        ${sess.answers[sess.currentIdx].correct ? '✓ 答對' : '✗ 答錯'}
+      </div>
+      <div class="feedback-explanation">${escapeHTML(q.explanation)}</div>
+      ${q.source ? `
+      <div class="feedback-source">
+        法源依據：
+        <a href="${escapeHTML(q.source.url)}" target="_blank" rel="noopener">
+          ${escapeHTML(q.source.law_name || '')}${q.source.article ? ` 第 ${escapeHTML(q.source.article)} 條` : ''} ↗
+        </a>
+      </div>` : ''}
+      <button class="btn-primary" data-action="next">
+        ${sess.currentIdx + 1 >= total ? '查看結果' : '下一題'}
+      </button>
+    </div>
+  `;
+
+  return `
+    <div class="quiz-play">
+      <button class="back-link" data-action="quit">← 結束練習</button>
+      <div class="quiz-progress-dots">${dots}</div>
+      <div class="quiz-meta">
+        <span class="quiz-meta-cat">${escapeHTML(q.category)}</span>
+        <span class="quiz-meta-diff">${escapeHTML(q.difficulty)}</span>
+        <span class="quiz-meta-pos">${sess.currentIdx + 1} / ${total}</span>
+      </div>
+      <div class="quiz-question">${escapeHTML(q.question)}</div>
+      <div class="quiz-options">${opts}</div>
+      ${feedback}
+    </div>
+  `;
+}
+
+function renderQuizResult(mode) {
+  const sess = quizSessions[mode];
+  const total = sess.questions.length;
+  const correct = sess.answers.filter(a => a.correct).length;
+  const pct = total > 0 ? Math.round(correct * 100 / total) : 0;
+  const wrongAnswers = sess.answers.filter(a => !a.correct);
+
+  const wrongList = wrongAnswers.map(a => {
+    const q = questionById(a.questionId);
+    if (!q) return '';
+    return `<li>
+      <div class="result-wrong-cat">${escapeHTML(q.category)} · ${escapeHTML(q.difficulty)}</div>
+      <div class="result-wrong-q">${escapeHTML(q.question)}</div>
+      <div class="result-wrong-correct">正解：${'ABCD'[q.correct_index]}. ${escapeHTML(q.options[q.correct_index])}</div>
+    </li>`;
+  }).join('');
+
+  return `
+    <div class="quiz-result">
+      <div class="result-headline">
+        <div class="result-pct">${pct}%</div>
+        <div class="result-fraction">${correct} / ${total}</div>
+      </div>
+
+      ${wrongAnswers.length > 0 ? `
+        <div class="quiz-section-label">答錯題目（${wrongAnswers.length}）</div>
+        <ul class="result-wrong-list">${wrongList}</ul>
+      ` : `<div class="quiz-section-label" style="color: var(--jade);">完美！全部答對</div>`}
+
+      <div class="result-actions">
+        <button class="btn-primary" data-action="restart">重新開始</button>
+        ${wrongAnswers.length > 0 ? `<button class="btn-secondary" data-action="review">複習錯題本</button>` : ''}
+      </div>
+    </div>
+  `;
+}
+
+function bindQuizDelegates(area, mode) {
+  if (area.dataset.qzBound === '1') return;
+  area.dataset.qzBound = '1';
+
+  area.addEventListener('click', e => {
+    const sess = quizSessions[mode];
+    const t = e.target.closest('[data-action], [data-filter-value]');
+    if (!t) return;
+
+    if (t.dataset.filterValue !== undefined) {
+      const group = t.parentElement.dataset.filterGroup;
+      const val = t.dataset.filterValue;
+      sess.filter[group] = (group === 'count') ? parseInt(val, 10) : val;
+      renderQuizPage(mode);
+      return;
+    }
+    const action = t.dataset.action;
+    if (action === 'start') startSession(mode);
+    else if (action === 'review') startSession(mode, { reviewMode: true });
+    else if (action === 'select') selectAnswer(mode, parseInt(t.dataset.opt, 10));
+    else if (action === 'next') nextQuestion(mode);
+    else if (action === 'quit') {
+      sess.state = 'start';
+      renderQuizPage(mode);
+    } else if (action === 'restart') restartSession(mode);
+  });
+}
+
+// ============================================
+// 首頁：今日挑戰 + 進度
+// ============================================
+
+function hashString(s) {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = ((h << 5) - h + s.charCodeAt(i)) | 0;
+  return Math.abs(h);
+}
+
+function getDailyQuestion() {
+  if (!quizData) return null;
+  const scenarios = quizData.questions.filter(q => q.type === 'scenario');
+  const pool = scenarios.length > 0 ? scenarios : quizData.questions;
+  if (pool.length === 0) return null;
+  return pool[hashString(todayStr()) % pool.length];
+}
+
+let dailyAnswerSelected = null;
+
+function renderDailyChallenge() {
+  const el = document.getElementById('dailyChallenge');
+  if (!quizLoaded) {
+    el.innerHTML = `<div class="loading"><div class="spinner"></div><div>準備今日挑戰⋯</div></div>`;
+    return;
+  }
+  if (!quizData) {
+    el.innerHTML = renderQaEmpty('!', '題庫尚未載入');
+    return;
+  }
+  const q = getDailyQuestion();
+  if (!q) { el.innerHTML = renderQaEmpty('⌖', '今日無情境題可挑戰'); return; }
+
+  const progress = loadProgress();
+  const today = todayStr();
+  const completedQid = progress.daily_completed[today];
+  const completed = completedQid === q.id;
+
+  if (!completed && dailyAnswerSelected === null) {
+    el.innerHTML = `
+      <div class="daily-card">
+        <div class="daily-label">⌖ 今日挑戰 · ${escapeHTML(today)}</div>
+        <div class="daily-meta">
+          <span class="quiz-meta-cat">${escapeHTML(q.category)}</span>
+          <span class="quiz-meta-diff">${escapeHTML(q.difficulty)}</span>
+        </div>
+        <div class="daily-question">${escapeHTML(q.question)}</div>
+        <div class="quiz-options">
+          ${q.options.map((opt, i) => `
+            <button class="quiz-option" data-daily-opt="${i}">
+              <span class="opt-letter">${'ABCD'[i]}</span>
+              <span class="opt-text">${escapeHTML(opt)}</span>
+            </button>
+          `).join('')}
+        </div>
+      </div>
+    `;
+  } else {
+    const selected = completed ? null : dailyAnswerSelected;
+    const isCorrect = completed
+      ? null   // 已答過，不再強調對錯（保留學習感）
+      : (selected === q.correct_index);
+    const opts = q.options.map((opt, i) => {
+      let cls = 'quiz-option';
+      let mark = '';
+      if (i === q.correct_index) { cls += ' correct'; mark = '✓'; }
+      else if (selected !== null && i === selected) { cls += ' wrong'; mark = '✗'; }
+      return `<button class="${cls}" disabled>
+        <span class="opt-letter">${'ABCD'[i]}</span>
+        <span class="opt-text">${escapeHTML(opt)}</span>
+        ${mark ? `<span class="opt-mark">${mark}</span>` : ''}
+      </button>`;
+    }).join('');
+
+    el.innerHTML = `
+      <div class="daily-card">
+        <div class="daily-label">⌖ 今日挑戰 · ${escapeHTML(today)} ${completed ? '· <span style="color:var(--jade)">已完成</span>' : ''}</div>
+        <div class="daily-meta">
+          <span class="quiz-meta-cat">${escapeHTML(q.category)}</span>
+          <span class="quiz-meta-diff">${escapeHTML(q.difficulty)}</span>
+        </div>
+        <div class="daily-question">${escapeHTML(q.question)}</div>
+        <div class="quiz-options">${opts}</div>
+        <div class="quiz-feedback">
+          ${isCorrect === true ? '<div class="feedback-label correct">✓ 答對</div>' : ''}
+          ${isCorrect === false ? '<div class="feedback-label wrong">✗ 答錯</div>' : ''}
+          <div class="feedback-explanation">${escapeHTML(q.explanation)}</div>
+          ${q.source ? `
+          <div class="feedback-source">
+            法源依據：
+            <a href="${escapeHTML(q.source.url)}" target="_blank" rel="noopener">
+              ${escapeHTML(q.source.law_name || '')}${q.source.article ? ` 第 ${escapeHTML(q.source.article)} 條` : ''} ↗
+            </a>
+          </div>` : ''}
+        </div>
+      </div>
+    `;
+  }
+
+  bindDailyDelegates(el, q);
+}
+
+function bindDailyDelegates(el, q) {
+  if (el.dataset.dailyBound === '1') return;
+  el.dataset.dailyBound = '1';
+  el.addEventListener('click', e => {
+    const t = e.target.closest('[data-daily-opt]');
+    if (!t) return;
+    const idx = parseInt(t.dataset.dailyOpt, 10);
+    dailyAnswerSelected = idx;
+    const correct = idx === q.correct_index;
+    recordAnswer(q, correct);
+    const p = loadProgress();
+    p.daily_completed[todayStr()] = q.id;
+    saveProgress(p);
+    renderDailyChallenge();
+    renderProgress();
+  });
+}
+
+function renderProgress() {
+  const el = document.getElementById('progressArea');
+  const p = loadProgress();
+  const correctRate = p.stats.total_answered > 0
+    ? Math.round(p.stats.total_correct * 100 / p.stats.total_answered)
+    : 0;
+
+  const catRows = Object.entries(p.category_progress)
+    .sort((a, b) => b[1].answered - a[1].answered)
+    .slice(0, 6)
+    .map(([cat, s]) => `
+      <li>
+        <span class="cat-name">${escapeHTML(cat)}</span>
+        <span class="cat-stat">${s.correct}/${s.answered} · ${s.answered > 0 ? Math.round(s.correct*100/s.answered) : 0}%</span>
+      </li>
+    `).join('');
+
+  el.innerHTML = `
+    <div class="progress-grid">
+      <div class="progress-card">
+        <div class="progress-num">${p.stats.streak_days || 0}</div>
+        <div class="progress-label">連續學習天數</div>
+      </div>
+      <div class="progress-card">
+        <div class="progress-num">${p.stats.total_answered}</div>
+        <div class="progress-label">累計答題</div>
+      </div>
+      <div class="progress-card">
+        <div class="progress-num">${correctRate}<span class="progress-unit">%</span></div>
+        <div class="progress-label">答對率</div>
+      </div>
+      <div class="progress-card">
+        <div class="progress-num">${p.wrong_questions.length}</div>
+        <div class="progress-label">錯題本</div>
+      </div>
+    </div>
+
+    ${catRows ? `
+      <div class="progress-cat-block">
+        <div class="quiz-section-label">分類進度（前 6 名）</div>
+        <ul class="progress-cat-list">${catRows}</ul>
+      </div>
+    ` : ''}
+  `;
+}
+
+async function initHome() {
+  await ensureQuizLoaded();
+  renderDailyChallenge();
+  renderProgress();
+}
+
+// ============================================
 // 分頁切換
 // ============================================
 
@@ -578,6 +1173,9 @@ function goPage(name) {
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.page === name));
   window.scrollTo(0, 0);
   if (name === 'qa') ensureQaLoaded();
+  if (name === 'quiz') ensureQuizLoaded().then(() => renderQuizPage('quiz'));
+  if (name === 'scenario') ensureQuizLoaded().then(() => renderQuizPage('scenario'));
+  if (name === 'home') initHome();
 }
 
 // ============================================
@@ -602,7 +1200,7 @@ function closeDisclaimer() {
 // Init
 // ============================================
 
-document.querySelectorAll('.tab, .nav-btn').forEach(btn => {
+document.querySelectorAll('.tab, .nav-btn, .quick-entry').forEach(btn => {
   btn.addEventListener('click', () => goPage(btn.dataset.page));
 });
 
@@ -628,3 +1226,4 @@ document.addEventListener('keydown', e => {
 document.getElementById('footerVersion').textContent = APP_VERSION;
 
 loadData();
+initHome();   // 預先載入題庫，讓首頁的今日挑戰可立即顯示
