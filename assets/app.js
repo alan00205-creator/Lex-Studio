@@ -293,6 +293,280 @@ function renderResults() {
 }
 
 // ============================================
+// 問答集（PDF 索引 + 跨類搜尋）
+// PRD §6 嚴格保留主管機關原文，PDF 連結指回 sfb.gov.tw
+// ============================================
+
+const QA_DATA_URL = './output/qa.json';
+const QA_SNIPPET_RADIUS = 50;  // 命中片段前後字元數
+const QA_MAX_HITS = 80;        // 跨類搜尋最大顯示筆數
+
+let qaData = null;
+let qaLoaded = false;
+let qaLoadStarted = false;
+let qaState = 'categories';        // 'categories' | 'documents' | 'detail'
+let qaSelectedCategoryId = null;
+let qaSelectedDocIndex = null;     // 對應 selected category 的 documents 索引
+let qaQuery = '';
+
+async function ensureQaLoaded() {
+  if (qaLoaded || qaLoadStarted) return;
+  qaLoadStarted = true;
+  try {
+    const resp = await fetch(QA_DATA_URL);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    qaData = await resp.json();
+    qaLoaded = true;
+  } catch (e) {
+    qaData = null;
+    qaLoaded = true;
+    console.log('[qa] qa.json 尚未產生：', e.message);
+  }
+  renderQa();
+}
+
+function qaCategoryById(id) {
+  if (!qaData) return null;
+  return (qaData.categories || []).find(c => c.id === id) || null;
+}
+
+function qaDocCount(category) {
+  return (category && Array.isArray(category.documents)) ? category.documents.length : 0;
+}
+
+// ----- 跨類全文搜尋 -----
+
+function qaSearchAll(query) {
+  if (!qaData || !query) return [];
+  const lower = query.toLowerCase();
+  const hits = [];
+  for (const cat of (qaData.categories || [])) {
+    const docs = cat.documents || [];
+    for (let i = 0; i < docs.length; i++) {
+      const doc = docs[i];
+      const haystack = (doc.raw_text || '');
+      const idx = haystack.toLowerCase().indexOf(lower);
+      const titleHit = (doc.title || '').toLowerCase().includes(lower);
+      if (idx < 0 && !titleHit) continue;
+
+      let snippet = '';
+      if (idx >= 0) {
+        const start = Math.max(0, idx - QA_SNIPPET_RADIUS);
+        const end = Math.min(haystack.length, idx + query.length + QA_SNIPPET_RADIUS);
+        snippet = (start > 0 ? '⋯' : '') + haystack.slice(start, end) + (end < haystack.length ? '⋯' : '');
+      }
+      hits.push({ cat, doc, docIndex: i, snippet, titleHit });
+      if (hits.length >= QA_MAX_HITS) return hits;
+    }
+  }
+  return hits;
+}
+
+// ----- 渲染 -----
+
+function renderQaSyncBanner() {
+  const dateEl = document.getElementById('qaSyncInfo');
+  if (!qaLoaded) {
+    dateEl.textContent = '載入中⋯';
+    return;
+  }
+  if (!qaData) {
+    dateEl.innerHTML = '尚未產生 <code>output/qa.json</code> · 請完成 Phase 3 fetch_qa.py';
+    return;
+  }
+  const totalDocs = (qaData.categories || []).reduce((s, c) => s + qaDocCount(c), 0);
+  const fetched = qaData.fetched_at ? qaData.fetched_at.slice(0, 10) : '—';
+  dateEl.innerHTML = `
+    最近同步：<strong>${escapeHTML(fetched)}</strong>
+    收錄 <strong>${(qaData.categories || []).length}</strong> 大類 · <strong>${totalDocs}</strong> 份原文文件<br>
+    <span style="color: var(--ink-dim); font-size: 11px;">來源：${escapeHTML(qaData.source || 'sfb.gov.tw')} · PDF 下載連結指回證期局原網站</span>
+  `;
+}
+
+function renderQaStats(text) {
+  document.getElementById('qaStatsLine').textContent = text;
+}
+
+function renderQaEmpty(mark, text) {
+  return `<div class="empty"><div class="empty-mark">${mark}</div><div class="empty-text">${text}</div></div>`;
+}
+
+function renderQaCategoriesView() {
+  const cats = qaData.categories || [];
+  renderQaStats(`// ${cats.length} 大類 · 點選進入瀏覽`);
+  if (cats.length === 0) {
+    return renderQaEmpty('∅', '尚無分類資料');
+  }
+  return `<div class="qa-cat-list">${cats.map(c => `
+    <button class="qa-cat-card" data-cat-id="${c.id}">
+      <div class="qa-cat-head">
+        <span class="qa-cat-id">id ${c.id}</span>
+        <span class="qa-cat-count">${qaDocCount(c)} 份</span>
+      </div>
+      <div class="qa-cat-name">${escapeHTML(c.name || '')}</div>
+    </button>
+  `).join('')}</div>`;
+}
+
+function renderQaDocumentsView() {
+  const cat = qaCategoryById(qaSelectedCategoryId);
+  if (!cat) {
+    qaState = 'categories';
+    return renderQaCategoriesView();
+  }
+  const docs = cat.documents || [];
+  renderQaStats(`// ${cat.name} · ${docs.length} 份`);
+
+  const list = docs.length === 0
+    ? renderQaEmpty('∅', '此分類尚無文件')
+    : `<div class="qa-doc-list">${docs.map((d, i) => `
+        <button class="qa-doc-item" data-doc-index="${i}">
+          <div class="qa-doc-title">${escapeHTML(d.title || '(無標題)')}</div>
+          <div class="qa-doc-meta">
+            <span class="qa-doc-date">${escapeHTML(d.publish_date || '—')}</span>
+            ${d.page_count ? `<span class="qa-doc-pages">${d.page_count} 頁</span>` : ''}
+          </div>
+        </button>
+      `).join('')}</div>`;
+
+  return `
+    <button class="back-link" data-action="qa-back-to-categories">← 回大類清單</button>
+    <h3 class="qa-cat-title">${escapeHTML(cat.name || '')}</h3>
+    ${list}
+  `;
+}
+
+function renderQaDetailView() {
+  const cat = qaCategoryById(qaSelectedCategoryId);
+  if (!cat) { qaState = 'categories'; return renderQaCategoriesView(); }
+  const doc = (cat.documents || [])[qaSelectedDocIndex];
+  if (!doc) { qaState = 'documents'; return renderQaDocumentsView(); }
+  renderQaStats(`// ${cat.name} · ${doc.title || ''}`);
+
+  return `
+    <button class="back-link" data-action="qa-back-to-documents">← 回 ${escapeHTML(cat.name || '')} 文件清單</button>
+    <article class="qa-detail">
+      <div class="qa-detail-source">${escapeHTML(cat.name || '')}</div>
+      <h3 class="qa-detail-title">${escapeHTML(doc.title || '')}</h3>
+      <div class="qa-detail-meta">
+        ${doc.publish_date ? `<span>發布日期：<strong>${escapeHTML(doc.publish_date)}</strong></span>` : ''}
+        ${doc.page_count ? `<span>${doc.page_count} 頁</span>` : ''}
+      </div>
+      <pre class="qa-raw-text">${escapeHTML(doc.raw_text || '(無原文)')}</pre>
+      ${doc.source_url ? `<a class="btn-pdf-download" href="${escapeHTML(doc.source_url)}" target="_blank" rel="noopener noreferrer">
+        下載原始 PDF（連至證期局網站）↗
+      </a>` : ''}
+      <div class="qa-detail-footer">
+        ※ 本文件為主管機關原文，工具不對其內容做任何改寫。法令引用以證期局正式公告為準。
+      </div>
+    </article>
+  `;
+}
+
+function renderQaSearchView() {
+  const hits = qaSearchAll(qaQuery);
+  renderQaStats(`// 搜尋「${qaQuery}」· ${hits.length} 筆${hits.length >= QA_MAX_HITS ? '（上限）' : ''}`);
+
+  if (hits.length === 0) {
+    return renderQaEmpty('∅', '查無相符問答<br>請嘗試其他關鍵字');
+  }
+
+  return `<div class="qa-hit-list">${hits.map((h, i) => `
+    <button class="qa-hit-item" data-hit-cat="${h.cat.id}" data-hit-doc="${h.docIndex}">
+      <div class="qa-hit-head">
+        <span class="qa-hit-cat">${escapeHTML(h.cat.name || '')}</span>
+        ${h.titleHit ? '<span class="qa-hit-flag">標題命中</span>' : ''}
+      </div>
+      <div class="qa-hit-title">${highlight(h.doc.title || '', qaQuery)}</div>
+      ${h.snippet ? `<div class="qa-hit-snippet">${highlight(h.snippet, qaQuery)}</div>` : ''}
+      ${h.doc.publish_date ? `<div class="qa-hit-date">${escapeHTML(h.doc.publish_date)}</div>` : ''}
+    </button>
+  `).join('')}</div>`;
+}
+
+function renderQa() {
+  renderQaSyncBanner();
+  const area = document.getElementById('qaArea');
+
+  if (!qaLoaded) {
+    area.innerHTML = `<div class="loading"><div class="spinner"></div><div>載入問答集中⋯</div></div>`;
+    renderQaStats('');
+    return;
+  }
+
+  if (!qaData) {
+    area.innerHTML = renderQaEmpty(
+      '?',
+      '證期局問答集尚未解析完成<br>' +
+      '<small style="color: var(--ink-dim);">完成 Phase 3 後此處將顯示 23 大類問答集，可瀏覽與全文搜尋</small>'
+    );
+    renderQaStats('');
+    return;
+  }
+
+  if (qaQuery) {
+    area.innerHTML = renderQaSearchView();
+  } else if (qaState === 'detail') {
+    area.innerHTML = renderQaDetailView();
+  } else if (qaState === 'documents') {
+    area.innerHTML = renderQaDocumentsView();
+  } else {
+    area.innerHTML = renderQaCategoriesView();
+  }
+
+  bindQaEventDelegates(area);
+}
+
+function bindQaEventDelegates(area) {
+  // 使用事件委派一次綁定，避免每次重渲染都重綁
+  if (area.dataset.qaBound === '1') return;
+  area.dataset.qaBound = '1';
+
+  area.addEventListener('click', e => {
+    const catCard = e.target.closest('.qa-cat-card');
+    if (catCard) {
+      qaSelectedCategoryId = parseInt(catCard.dataset.catId, 10);
+      qaState = 'documents';
+      renderQa();
+      window.scrollTo(0, 0);
+      return;
+    }
+    const docItem = e.target.closest('.qa-doc-item');
+    if (docItem) {
+      qaSelectedDocIndex = parseInt(docItem.dataset.docIndex, 10);
+      qaState = 'detail';
+      renderQa();
+      window.scrollTo(0, 0);
+      return;
+    }
+    const hitItem = e.target.closest('.qa-hit-item');
+    if (hitItem) {
+      qaSelectedCategoryId = parseInt(hitItem.dataset.hitCat, 10);
+      qaSelectedDocIndex = parseInt(hitItem.dataset.hitDoc, 10);
+      // 清空搜尋框，跳到 detail（不繼續顯示搜尋列表）
+      qaQuery = '';
+      document.getElementById('qaSearchInput').value = '';
+      qaState = 'detail';
+      renderQa();
+      window.scrollTo(0, 0);
+      return;
+    }
+    const back = e.target.closest('[data-action]');
+    if (back) {
+      if (back.dataset.action === 'qa-back-to-categories') {
+        qaState = 'categories';
+        qaSelectedCategoryId = null;
+      } else if (back.dataset.action === 'qa-back-to-documents') {
+        qaState = 'documents';
+        qaSelectedDocIndex = null;
+      }
+      renderQa();
+      window.scrollTo(0, 0);
+    }
+  });
+}
+
+// ============================================
 // 分頁切換
 // ============================================
 
@@ -303,6 +577,7 @@ function goPage(name) {
   document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.page === name));
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.page === name));
   window.scrollTo(0, 0);
+  if (name === 'qa') ensureQaLoaded();
 }
 
 // ============================================
@@ -334,6 +609,11 @@ document.querySelectorAll('.tab, .nav-btn').forEach(btn => {
 document.getElementById('searchInput').addEventListener('input', e => {
   currentQuery = e.target.value.trim();
   renderResults();
+});
+
+document.getElementById('qaSearchInput').addEventListener('input', e => {
+  qaQuery = e.target.value.trim();
+  renderQa();
 });
 
 document.getElementById('openDisclaimer').addEventListener('click', openDisclaimer);

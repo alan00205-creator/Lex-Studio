@@ -39,7 +39,7 @@ lex-studio/
 | Phase 2 T2.1–T2.3 | 法規導航中心（卡片 UI、分類、智慧搜尋） | ✅ 完成 |
 | Phase 2 T2.4 | 補完 43 部法規條目 | ✅ 完成（待你本機跑驗證） |
 | Phase 2 T2.5 | URL 驗證腳本 | ✅ 完成（`scripts/validate_law_index.py`） |
-| Phase 3 | 證期局問答集解析 | 🔬 探勘中（`scripts/explore_sfb.py`） |
+| Phase 3 | 證期局問答集解析 | 🔬 前端 UI 殼完成 + 探勘腳本（`scripts/explore_sfb.py`）；待你跑探勘並回貼結果，我寫 `fetch_qa.py` |
 | Phase 4 | 題庫與情境模擬 | ⏸ 未開始 |
 | Phase 5 | 每日挑戰、PWA、實機測試、發佈 | ⏸ 未開始 |
 

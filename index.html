@@ -61,9 +61,28 @@
   </main>
 
   <main class="page" id="page-qa">
-    <div class="empty">
-      <div class="empty-mark">?</div>
-      <div class="empty-text">證期局問答集（23 大類）待解析<br>將於 Phase 3 上線，嚴格保留主管機關原文</div>
+    <div class="section-head">
+      <span class="section-num">Q&amp;A</span>
+      <span class="section-title">問答集</span>
+      <span class="section-line"></span>
+    </div>
+
+    <div class="sync-banner" id="qaSyncBanner">
+      <div class="label">⌖ 證期局問答集索引</div>
+      <div class="info" id="qaSyncInfo">載入中⋯</div>
+    </div>
+
+    <input type="text" class="search-box" id="qaSearchInput"
+           placeholder="跨類關鍵字搜尋（如「庫藏股」、「私募」）⋯"
+           autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+
+    <div class="stats-line" id="qaStatsLine"></div>
+
+    <div id="qaArea">
+      <div class="loading">
+        <div class="spinner"></div>
+        <div>載入問答集中⋯</div>
+      </div>
     </div>
   </main>
 
