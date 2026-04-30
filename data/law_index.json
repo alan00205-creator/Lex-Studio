@@ -1,0 +1,196 @@
+{
+  "$schema_note": "本檔案是 PRD §4.4.1 規定的法規導航索引，由執行者人工維護。Claude Code 不應自行抓取或修改此檔案的法規條目，但可以調整 schema 結構（需更新 PRD）。",
+  "version": "0.1-template",
+  "last_updated": "2026-04-29",
+  "_instructions_for_maintainer": {
+    "description": "此檔案為範本，目前僅含 8 部代表性法規以示範完整 schema。執行者需自行補完剩餘 35 部法規。",
+    "url_lookup_workflow": [
+      "1. 全國法規資料庫 PCode：到 https://law.moj.gov.tw/Law/LawSearchLaw.aspx 用法規名稱搜尋，取得 URL 的 PCode 參數",
+      "2. selaw LawID：到 https://www.selaw.com.tw/Chinese/RegulationNameQuery 用法規名稱搜尋，從結果頁 URL 取得 LawID",
+      "3. 證交所法規 FID：到 https://twse-regulation.twse.com.tw/TW/LawLst.aspx 找對應法規",
+      "4. 公會法規：到 https://www.twsa.org.tw/D01/D016.html 找對應 PDF 連結"
+    ],
+    "primary_url_priority": "全國法規資料庫 > selaw > 主管機關官網。理由：全國法規資料庫最穩定、官方權威、支援深層連結到單一條文（&FLNO=）",
+    "url_validation": "新增條目後，每個 URL 都應點擊驗證能正常開啟"
+  },
+
+  "categories": [
+    { "code": "A", "name": "承銷輔導必修核心", "color": "#1e3a5f", "expected_count": 32 },
+    { "code": "E", "name": "會計師相關", "color": "#a07d3a", "expected_count": 4 },
+    { "code": "H", "name": "跨境／特殊產品", "color": "#2d7a4f", "expected_count": 4 },
+    { "code": "X", "name": "證交所／櫃買中心／公會", "color": "#a73a3a", "expected_count": 3 }
+  ],
+
+  "laws": [
+    {
+      "id": "A01",
+      "name": "證券交易法",
+      "abbreviation": "證交法",
+      "category": "A",
+      "issuing_authority": "金管會",
+      "primary_url": "https://law.moj.gov.tw/LawClass/LawAll.aspx?PCode=G0400001",
+      "selaw_url": "https://www.selaw.com.tw/LawArticle.aspx?LawID=G0100001",
+      "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0400001&FLNO={article_no}",
+      "common_articles": [
+        { "no": "22", "topic": "募集發行申報生效制" },
+        { "no": "28-2", "topic": "庫藏股" },
+        { "no": "36", "topic": "財務報告公告申報" },
+        { "no": "43-6", "topic": "私募" },
+        { "no": "157-1", "topic": "內線交易" }
+      ],
+      "search_keywords": ["證交法", "證券交易法", "申報生效", "私募", "內線交易"],
+      "_maintainer_note": "此條目 selaw_url 之 LawID 為示範值，請自行驗證；其餘 URL 已驗證可開啟"
+    },
+
+    {
+      "id": "A03",
+      "name": "公司法",
+      "abbreviation": "公司法",
+      "category": "A",
+      "issuing_authority": "經濟部",
+      "primary_url": "https://law.moj.gov.tw/LawClass/LawAll.aspx?PCode=J0080001",
+      "selaw_url": "https://www.selaw.com.tw/LawArticle.aspx?LawID=G0100002",
+      "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=J0080001&FLNO={article_no}",
+      "common_articles": [
+        { "no": "167-2", "topic": "員工認股權" },
+        { "no": "235-1", "topic": "員工酬勞" },
+        { "no": "267", "topic": "新股發行員工承購" },
+        { "no": "268", "topic": "新股公開發行" },
+        { "no": "278", "topic": "減資" }
+      ],
+      "search_keywords": ["公司法", "員工認股", "現金增資", "減資", "股東會"]
+    },
+
+    {
+      "id": "A04",
+      "name": "發行人募集與發行有價證券處理準則",
+      "abbreviation": "處理準則",
+      "category": "A",
+      "issuing_authority": "金管會",
+      "primary_url": "https://law.moj.gov.tw/LawClass/LawAll.aspx?PCode=G0400014",
+      "selaw_url": "https://www.selaw.com.tw/LawArticle.aspx?LawID=G0100014",
+      "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0400014&FLNO={article_no}",
+      "common_articles": [
+        { "no": "7", "topic": "不得募集發行情形" },
+        { "no": "8", "topic": "申報書件應記載事項" },
+        { "no": "12", "topic": "申報生效期間（12 營業日）" },
+        { "no": "13", "topic": "退回案件情形" },
+        { "no": "23", "topic": "現金增資" }
+      ],
+      "search_keywords": ["處理準則", "募集發行", "申報生效", "現金增資", "可轉換公司債"]
+    },
+
+    {
+      "id": "A13",
+      "name": "公開發行公司取得或處分資產處理準則",
+      "abbreviation": "取處準則",
+      "category": "A",
+      "issuing_authority": "金管會",
+      "primary_url": "https://law.moj.gov.tw/LawClass/LawAll.aspx?PCode=G0400065",
+      "selaw_url": "https://www.selaw.com.tw/LawArticle.aspx?LawID=G0100065",
+      "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0400065&FLNO={article_no}",
+      "common_articles": [
+        { "no": "9", "topic": "取得或處分不動產" },
+        { "no": "10", "topic": "取得或處分有價證券" },
+        { "no": "16", "topic": "與關係人交易" },
+        { "no": "22", "topic": "企業合併取得資產" },
+        { "no": "30", "topic": "公告申報事項" }
+      ],
+      "search_keywords": ["取處準則", "取得處分", "資產", "關係人交易", "併購"]
+    },
+
+    {
+      "id": "A29",
+      "name": "證券交易法第一百五十七條之一第五項及第六項重大消息範圍及其公開方式管理辦法",
+      "abbreviation": "重大消息辦法",
+      "category": "A",
+      "issuing_authority": "金管會",
+      "primary_url": "https://law.moj.gov.tw/LawClass/LawAll.aspx?PCode=G0400095",
+      "selaw_url": "https://www.selaw.com.tw/LawArticle.aspx?LawID=G0100095",
+      "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0400095&FLNO={article_no}",
+      "common_articles": [
+        { "no": "2", "topic": "重大消息範圍（涉及財務業務）" },
+        { "no": "3", "topic": "重大消息範圍（涉及市場供求）" },
+        { "no": "5", "topic": "公開方式" }
+      ],
+      "search_keywords": ["重大消息", "內線交易", "157條之1", "重大訊息"],
+      "_maintainer_note": "此辦法配合證交法 §157-1 使用，內線交易案件常需查閱"
+    },
+
+    {
+      "id": "E02",
+      "name": "會計師辦理公開發行公司財務報告查核簽證核准準則",
+      "abbreviation": "簽證核准準則",
+      "category": "E",
+      "issuing_authority": "金管會",
+      "primary_url": "https://law.moj.gov.tw/LawClass/LawAll.aspx?PCode=G0400012",
+      "selaw_url": "https://www.selaw.com.tw/LawArticle.aspx?LawID=G0100012",
+      "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0400012&FLNO={article_no}",
+      "common_articles": [
+        { "no": "2", "topic": "得辦理簽證會計師資格" },
+        { "no": "5", "topic": "獨立性要求" }
+      ],
+      "search_keywords": ["簽證會計師", "查核", "獨立性", "輪調"]
+    },
+
+    {
+      "id": "H01",
+      "name": "華僑及外國人投資證券管理辦法",
+      "abbreviation": "外資投資辦法",
+      "category": "H",
+      "issuing_authority": "金管會",
+      "primary_url": "https://law.moj.gov.tw/LawClass/LawAll.aspx?PCode=G0400011",
+      "selaw_url": "https://www.selaw.com.tw/LawArticle.aspx?LawID=G0100011",
+      "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0400011&FLNO={article_no}",
+      "common_articles": [
+        { "no": "3", "topic": "外資定義（QFII / FINI）" },
+        { "no": "4", "topic": "投資範圍" },
+        { "no": "8", "topic": "申請程序" }
+      ],
+      "search_keywords": ["外資", "QFII", "FINI", "華僑", "外國人投資"]
+    },
+
+    {
+      "id": "X01",
+      "name": "臺灣證券交易所股份有限公司有價證券上市審查準則",
+      "abbreviation": "上市審查準則",
+      "category": "X",
+      "issuing_authority": "臺灣證券交易所",
+      "primary_url": "https://twse-regulation.twse.com.tw/m/LawContent.aspx?FID=FL007326",
+      "selaw_url": "https://www.selaw.com.tw/LawArticle.aspx?LawID=G0100502",
+      "article_url_template": null,
+      "common_articles": [
+        { "no": "4", "topic": "申請上市條件" },
+        { "no": "6-1", "topic": "創新板上市條件" },
+        { "no": "9", "topic": "不宜上市情形" },
+        { "no": "10", "topic": "獲利能力" }
+      ],
+      "search_keywords": ["上市審查", "上市條件", "創新板", "不宜上市"],
+      "_maintainer_note": "證交所訂定，不在全國法規資料庫。article_url_template 為 null 表示證交所未提供條文深層連結，使用者點擊後會跳到法規全文頁面",
+      "_url_pattern_note": "證交所法規網址格式：https://twse-regulation.twse.com.tw/m/LawContent.aspx?FID={FID}，需手動到證交所法規分享知識庫搜尋取得 FID"
+    }
+  ],
+
+  "_remaining_to_add": [
+    "A 類待補：A02, A05, A06, A07, A08, A09, A10, A11, A12, A14, A15, A16, A17, A18, A19, A20, A21, A22, A23, A24, A25, A26, A27, A28, A30, A31, A32（共 27 部）",
+    "E 類待補：E03, E10, E11（共 3 部）",
+    "H 類待補：H08, H10, H11（共 3 部）",
+    "X 類待補：X02 櫃買中心審查準則, X03 公會承銷處理辦法（共 2 部）",
+    "總計待補：35 部"
+  ],
+
+  "_schema_documentation": {
+    "id": "編號（A01–A32, E02–E11, H01–H11, X01–X03），用於跨檔案引用（題庫法源欄位）",
+    "name": "法規完整正式名稱，作為搜尋與顯示主名稱",
+    "abbreviation": "業界常用簡稱，用於空間有限的 UI（如題目卡片）",
+    "category": "對應 categories 陣列的 code",
+    "issuing_authority": "主管／訂定機關，作為 metadata 顯示",
+    "primary_url": "主要連結目標。優先級：全國法規資料庫 > selaw > 主管機關官網",
+    "selaw_url": "selaw 對應頁面，作為次要連結（提供使用者選擇）",
+    "article_url_template": "支援深層連結到單一條文的 URL 範本，{article_no} 為佔位符。null 表示不支援",
+    "common_articles": "預設標出的常用條號，作為快速跳轉 chips",
+    "search_keywords": "供前端搜尋過濾用的關鍵字陣列（含縮寫、別名、業界俗稱）",
+    "_maintainer_note": "（選填）給維護人員的註記，前端可忽略或顯示於 admin 介面",
+    "_url_pattern_note": "（選填）特殊 URL 格式說明"
+  }
+}

@@ -1,0 +1,34 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Python（後續 scripts/ 會用到）
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+.pytest_cache/
+
+# Node（不應出現，但保險）
+node_modules/
+
+# Logs / temp
+*.log
+.tmp/
+
+# Output（後續腳本自動產生的問答集 PDF 與 JSON）
+# 注意：output/ 目錄會由 GitHub Actions 提交，本機執行腳本的中間產物不上版本
+output/qa_pdfs/_cache/
+
+# 個人筆記（避免不小心 commit）
+NOTES.md
+TODO.local.md
