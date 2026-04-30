@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>承銷研修所 / Lex Studio</title>
+<meta name="description" content="承銷研修所（Lex Studio）：題庫練習、情境模擬、問答集整合搜尋、法規導航。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;600&family=Cormorant+Garamond:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<div class="app">
+
+  <header>
+    <div class="brand-row">
+      <div class="brand">承銷 · 研修所</div>
+      <div class="data-status" id="dataStatus">
+        <span class="dot"></span><span id="dataDate">載入中</span>
+      </div>
+    </div>
+    <h1 class="title">Lex <span class="accent">Studio</span></h1>
+    <div class="subtitle">每日精進，臻於精通</div>
+  </header>
+
+  <nav class="tabs" id="topTabs">
+    <button class="tab" data-page="home">首頁</button>
+    <button class="tab" data-page="quiz">題庫練習</button>
+    <button class="tab" data-page="scenario">情境模擬</button>
+    <button class="tab active" data-page="laws">法規導航</button>
+    <button class="tab" data-page="qa">問答集</button>
+  </nav>
+
+  <!-- ===== Home (placeholder) ===== -->
+  <main class="page" id="page-home">
+    <div class="section-head">
+      <span class="section-num">01</span>
+      <span class="section-title">今日</span>
+      <span class="section-line"></span>
+    </div>
+    <div class="empty">
+      <div class="empty-mark">⌖</div>
+      <div class="empty-text">首頁、題庫、情境、問答集分頁<br>將在後續階段建置</div>
+    </div>
+  </main>
+
+  <main class="page" id="page-quiz">
+    <div class="empty">
+      <div class="empty-mark">Q.</div>
+      <div class="empty-text">題庫待建置<br>將於 Phase 4 上線</div>
+    </div>
+  </main>
+
+  <main class="page" id="page-scenario">
+    <div class="empty">
+      <div class="empty-mark">S.</div>
+      <div class="empty-text">情境模擬待建置<br>將於 Phase 4 上線</div>
+    </div>
+  </main>
+
+  <main class="page" id="page-qa">
+    <div class="empty">
+      <div class="empty-mark">?</div>
+      <div class="empty-text">證期局問答集（23 大類）待解析<br>將於 Phase 3 上線，嚴格保留主管機關原文</div>
+    </div>
+  </main>
+
+  <!-- ===== Laws navigation ===== -->
+  <main class="page active" id="page-laws">
+    <div class="section-head">
+      <span class="section-num">L.</span>
+      <span class="section-title">法規導航</span>
+      <span class="section-line"></span>
+    </div>
+
+    <div class="sync-banner" id="syncBanner">
+      <div class="label">⌖ 法規導航索引</div>
+      <div class="info" id="syncInfo">載入中⋯</div>
+    </div>
+
+    <input type="text" class="search-box" id="searchInput"
+           placeholder='輸入法規名稱、縮寫，或「證交法 22」格式智慧查詢⋯'
+           autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+
+    <div id="smartHit"></div>
+
+    <div class="chips" id="lawChips"></div>
+
+    <div class="stats-line" id="statsLine"></div>
+
+    <div id="lookupArea">
+      <div class="loading">
+        <div class="spinner"></div>
+        <div>載入法規資料中⋯</div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <button class="footer-link" id="openDisclaimer" type="button">免責聲明</button>
+    <span class="footer-sep">·</span>
+    <span class="footer-version" id="footerVersion">v0.1</span>
+  </footer>
+
+  <nav class="bottom-nav">
+    <button class="nav-btn" data-page="home">
+      <span class="nav-icon">⌂</span><span>首頁</span>
+    </button>
+    <button class="nav-btn" data-page="quiz">
+      <span class="nav-icon">Q</span><span>題庫</span>
+    </button>
+    <button class="nav-btn active" data-page="laws">
+      <span class="nav-icon">§</span><span>法規</span>
+    </button>
+    <button class="nav-btn" data-page="qa">
+      <span class="nav-icon">?</span><span>問答</span>
+    </button>
+  </nav>
+
+  <!-- ===== Disclaimer modal ===== -->
+  <div class="modal" id="disclaimerModal" aria-hidden="true">
+    <div class="modal-inner" role="dialog" aria-labelledby="disclaimerTitle">
+      <div class="modal-head">
+        <h2 id="disclaimerTitle" class="modal-title">免責聲明</h2>
+        <button class="modal-close" id="closeDisclaimer" aria-label="關閉">×</button>
+      </div>
+      <div class="modal-body">
+        <p>本工具為非官方學習輔助工具，內容彙整自下列公開資料源：</p>
+        <ul>
+          <li>法務部全國法規資料庫</li>
+          <li>金融監督管理委員會證券期貨局</li>
+          <li>中華民國證券商業同業公會</li>
+          <li>臺灣證券交易所、證券櫃檯買賣中心</li>
+          <li>證券暨期貨市場發展基金會（selaw）</li>
+        </ul>
+        <p>法令引用以主管機關正式公告為準。本工具不對其資訊之即時性、準確性、完整性負法律責任。實務應用請洽合格法律或會計師。</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="assets/app.js" defer></script>
+</body>
+</html>
