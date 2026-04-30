@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>承銷研修所 / Lex Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700;900&family=JetBrains+Mono:wght@400;600&family=Cormorant+Garamond:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    /* === Light theme: 現代金融專業白 === */
+    --bg: #fafaf7;           /* 米白底色，不刺眼 */
+    --bg-soft: #f4f2ec;      /* 略深米色用於次層 */
+    --bg-card: #ffffff;      /* 純白卡片 */
+    --line: #e5e3dd;         /* 溫和分隔線 */
+    --line-strong: #d4d1c8;  /* 較強分隔線 */
+    --ink: #1a1a1a;          /* 主文字 */
+    --ink-soft: #5a5a5a;     /* 次要文字 */
+    --ink-dim: #8a8a8a;      /* 弱化文字 */
+    --primary: #1e3a5f;      /* 深靛藍主色 */
+    --primary-soft: #3b5a82; /* 較淺主色 */
+    --gold: #a07d3a;         /* 點綴金色 */
+    --gold-soft: #c5a565;    /* 較淺金色 */
+    --crimson: #a73a3a;      /* 答錯紅 */
+    --jade: #2d7a4f;         /* 答對綠 */
+    --shadow-sm: 0 1px 2px rgba(30, 58, 95, 0.04), 0 0 0 1px rgba(30, 58, 95, 0.04);
+    --shadow-md: 0 4px 12px rgba(30, 58, 95, 0.06), 0 0 0 1px rgba(30, 58, 95, 0.04);
+    --serif: "Noto Serif TC", "Cormorant Garamond", serif;
+    --display: "Cormorant Garamond", "Noto Serif TC", serif;
+    --mono: "JetBrains Mono", monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  html, body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--serif);
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+
+  body {
+    background-image:
+      radial-gradient(ellipse at top, rgba(30, 58, 95, 0.025) 0%, transparent 60%),
+      radial-gradient(ellipse at bottom right, rgba(160, 125, 58, 0.02) 0%, transparent 50%);
+    background-attachment: fixed;
+  }
+
+  /* 移除暗色版的雜訊紋理，白色版採乾淨設計 */
+
+  .app {
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100vh;
+    position: relative;
+    z-index: 2;
+    padding-bottom: 90px;
+  }
+
+  /* ===== Header ===== */
+  header {
+    padding: 28px 24px 20px;
+    border-bottom: 1px solid var(--line);
+    background: var(--bg-card);
+  }
+
+  .brand-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+
+  .brand {
+    font-family: var(--display);
+    font-size: 13px;
+    letter-spacing: 0.3em;
+    color: var(--gold);  /* 金色點綴保留 */
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+
+  .data-status {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-dim);
+    letter-spacing: 0.05em;
+  }
+
+  .data-status .dot {
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--jade);
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+
+  h1.title {
+    font-family: var(--serif);
+    font-size: 30px;
+    font-weight: 900;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    margin-top: 6px;
+  }
+
+  h1.title .accent {
+    color: var(--primary);
+    font-style: italic;
+    font-family: var(--display);
+    font-weight: 500;
+  }
+
+  .subtitle {
+    font-family: var(--display);
+    font-style: italic;
+    color: var(--ink-soft);
+    font-size: 16px;
+    margin-top: 6px;
+  }
+
+  /* ===== Tab nav ===== */
+  nav.tabs {
+    display: flex;
+    overflow-x: auto;
+    border-bottom: 1px solid var(--line);
+    scrollbar-width: none;
+    background: var(--bg-card);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+
+  nav.tabs::-webkit-scrollbar { display: none; }
+
+  .tab {
+    flex: 0 0 auto;
+    padding: 14px 18px;
+    font-family: var(--serif);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--ink-dim);
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    position: relative;
+    white-space: nowrap;
+    transition: color 0.2s;
+  }
+
+  .tab.active {
+    color: var(--primary);
+  }
+
+  .tab.active::after {
+    content: "";
+    position: absolute;
+    bottom: -1px;
+    left: 18px;
+    right: 18px;
+    height: 2px;
+    background: var(--primary);
+  }
+
+  .page { display: none; padding: 24px; }
+  .page.active { display: block; animation: fade 0.3s ease; }
+
+  @keyframes fade {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .section-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--gold);
+    letter-spacing: 0.15em;
+  }
+
+  .section-title {
+    font-family: var(--display);
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .section-line {
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+  }
+
+  /* ===== Sync status banner ===== */
+  .sync-banner {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--jade);
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin-bottom: 20px;
+    font-size: 12px;
+    line-height: 1.6;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .sync-banner .label {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--jade);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .sync-banner .info {
+    color: var(--ink-soft);
+    font-size: 13px;
+  }
+
+  .sync-banner .info strong {
+    color: var(--ink);
+    font-family: var(--mono);
+    font-weight: 600;
+  }
+
+  /* ===== Search ===== */
+  .search-box {
+    width: 100%;
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    padding: 14px 16px;
+    font-family: var(--serif);
+    font-size: 15px;
+    border-radius: 6px;
+    margin-bottom: 14px;
+    box-shadow: var(--shadow-sm);
+    transition: all 0.15s;
+  }
+
+  .search-box:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(30, 58, 95, 0.08);
+  }
+
+  /* ===== Filter chips ===== */
+  .chips {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    margin-bottom: 18px;
+    scrollbar-width: none;
+  }
+
+  .chips::-webkit-scrollbar { display: none; }
+
+  .chip {
+    flex: 0 0 auto;
+    padding: 7px 12px;
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--ink-soft);
+    border-radius: 3px;
+    font-family: var(--serif);
+    font-size: 12px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.15s;
+  }
+
+  .chip.active {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+    font-weight: 600;
+  }
+
+  /* ===== Law cards ===== */
+  .law-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .law-item {
+    background: var(--bg-card);
+    border: 1px solid var(--line);
+    padding: 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .law-item:hover { box-shadow: var(--shadow-md); border-color: var(--line-strong); }
+  .law-item:active { transform: scale(0.99); }
+
+  .law-item-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .law-source {
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--primary);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .law-num {
+    font-family: var(--display);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ink);
+    flex: 0 0 auto;
+  }
+
+  .law-snippet {
+    font-size: 13px;
+    line-height: 1.65;
+    color: var(--ink-soft);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .law-meta-bottom {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--line);
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--mono);
+    font-size: 9px;
+    color: var(--ink-dim);
+    letter-spacing: 0.08em;
+  }
+
+  /* ===== Detail view ===== */
+  .detail-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(250, 250, 247, 0.98);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 200;
+    overflow-y: auto;
+    display: none;
+  }
+
+  .detail-overlay.show { display: block; animation: fade 0.3s ease; }
+
+  .detail-inner {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 24px;
+    padding-bottom: 60px;
+    min-height: 100vh;
+  }
+
+  .detail-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    color: var(--primary);
+    font-family: var(--display);
+    font-size: 14px;
+    cursor: pointer;
+    margin-bottom: 18px;
+    padding: 8px 0;
+  }
+
+  .detail-source {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--primary);
+    letter-spacing: 0.15em;
+    margin-bottom: 6px;
+  }
+
+  .detail-num {
+    font-family: var(--display);
+    font-size: 38px;
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 4px;
+  }
+
+  .detail-law-name {
+    font-family: var(--serif);
+    font-size: 14px;
+    color: var(--ink-soft);
+    margin-bottom: 22px;
+  }
+
+  .detail-content {
+    font-family: var(--serif);
+    font-size: 15.5px;
+    line-height: 1.85;
+    color: var(--ink);
+    background: var(--bg-soft);
+    border-left: 3px solid var(--primary);
+    padding: 18px 20px;
+    border-radius: 0 4px 4px 0;
+    white-space: pre-wrap;
+    margin-bottom: 18px;
+  }
+
+  .detail-actions {
+    display: flex;
+    gap: 10px;
+  }
+
+  .btn-line {
+    flex: 1;
+    padding: 12px;
+    background: transparent;
+    color: var(--primary);
+    border: 1px solid var(--primary);
+    font-family: var(--serif);
+    font-size: 13px;
+    cursor: pointer;
+    border-radius: 2px;
+    text-decoration: none;
+    text-align: center;
+  }
+
+  .btn-line:active { background: rgba(30, 58, 95, 0.06); }
+
+  .detail-footer {
+    margin-top: 24px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-dim);
+    line-height: 1.7;
+    letter-spacing: 0.05em;
+  }
+
+  /* ===== Empty / Loading ===== */
+  .empty, .loading {
+    text-align: center;
+    padding: 50px 20px;
+    color: var(--ink-dim);
+  }
+
+  .empty-mark {
+    font-family: var(--display);
+    font-size: 48px;
+    color: var(--line);
+    margin-bottom: 12px;
+    font-style: italic;
+  }
+
+  .empty-text { font-size: 13px; line-height: 1.7; }
+
+  .spinner {
+    width: 28px;
+    height: 28px;
+    border: 2px solid var(--line);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 16px;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ===== Bottom nav ===== */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 480px;
+    background: var(--bg-card);
+    border-top: 1px solid var(--line);
+    box-shadow: 0 -2px 12px rgba(30, 58, 95, 0.05);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    z-index: 100;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .nav-btn {
+    background: none;
+    border: none;
+    color: var(--ink-dim);
+    padding: 12px 4px 14px;
+    cursor: pointer;
+    font-family: var(--serif);
+    font-size: 11px;
+    transition: color 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .nav-btn.active { color: var(--primary); }
+
+  .nav-icon {
+    font-family: var(--display);
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  /* ===== Highlight mark for search ===== */
+  mark {
+    background: rgba(160, 125, 58, 0.18);
+    color: var(--gold);
+    padding: 1px 3px;
+    border-radius: 2px;
+    font-weight: 600;
+  }
+
+  /* ===== Stats line ===== */
+  .stats-line {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-dim);
+    letter-spacing: 0.1em;
+    margin-bottom: 14px;
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <header>
+    <div class="brand-row">
+      <div class="brand">承銷 · 研修所</div>
+      <div class="data-status" id="dataStatus">
+        <span class="dot"></span><span id="dataDate">載入中</span>
+      </div>
+    </div>
+    <h1 class="title">Lex <span class="accent">Studio</span></h1>
+    <div class="subtitle">每日精進，臻於精通</div>
+  </header>
+
+  <nav class="tabs" id="topTabs">
+    <button class="tab" data-page="home">首頁</button>
+    <button class="tab" data-page="quiz">題庫練習</button>
+    <button class="tab" data-page="scenario">情境模擬</button>
+    <button class="tab active" data-page="lookup">法條速查</button>
+    <button class="tab" data-page="qa">問答集</button>
+  </nav>
+
+  <!-- ===== Home (placeholder) ===== -->
+  <main class="page" id="page-home">
+    <div class="section-head">
+      <span class="section-num">01</span>
+      <span class="section-title">今日</span>
+      <span class="section-line"></span>
+    </div>
+    <div class="empty">
+      <div class="empty-mark">⌖</div>
+      <div class="empty-text">首頁、題庫、情境、問答集分頁<br>將在後續階段建置</div>
+    </div>
+  </main>
+
+  <main class="page" id="page-quiz">
+    <div class="empty">
+      <div class="empty-mark">Q.</div>
+      <div class="empty-text">題庫待建置<br>將基於問答集原文半自動產題</div>
+    </div>
+  </main>
+
+  <main class="page" id="page-scenario">
+    <div class="empty">
+      <div class="empty-mark">S.</div>
+      <div class="empty-text">情境模擬待建置</div>
+    </div>
+  </main>
+
+  <main class="page" id="page-qa">
+    <div class="empty">
+      <div class="empty-mark">?</div>
+      <div class="empty-text">證期局問答集（23 大類）待解析<br>嚴格保留主管機關原文</div>
+    </div>
+  </main>
+
+  <!-- ===== Lookup page (real data) ===== -->
+  <main class="page active" id="page-lookup">
+    <div class="section-head">
+      <span class="section-num">L.</span>
+      <span class="section-title">法條速查</span>
+      <span class="section-line"></span>
+    </div>
+
+    <div class="sync-banner" id="syncBanner">
+      <div class="label">⌖ 資料同步狀態</div>
+      <div class="info" id="syncInfo">載入中⋯</div>
+    </div>
+
+    <input type="text" class="search-box" id="searchInput" placeholder="輸入關鍵字、條號（如 22）或法規名稱⋯">
+
+    <div class="chips" id="lawChips"></div>
+
+    <div class="stats-line" id="statsLine"></div>
+
+    <div id="lookupArea">
+      <div class="loading">
+        <div class="spinner"></div>
+        <div>載入法規資料中⋯</div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ===== Detail overlay ===== -->
+  <div class="detail-overlay" id="detailOverlay">
+    <div class="detail-inner" id="detailInner"></div>
+  </div>
+
+  <nav class="bottom-nav">
+    <button class="nav-btn" data-page="home">
+      <span class="nav-icon">⌂</span><span>首頁</span>
+    </button>
+    <button class="nav-btn" data-page="quiz">
+      <span class="nav-icon">Q</span><span>題庫</span>
+    </button>
+    <button class="nav-btn active" data-page="lookup">
+      <span class="nav-icon">§</span><span>法條</span>
+    </button>
+    <button class="nav-btn" data-page="qa">
+      <span class="nav-icon">?</span><span>問答</span>
+    </button>
+  </nav>
+
+</div>
+
+<script>
+// ============================================
+// 資料載入：實際使用時改成 fetch('output/laws.json')
+// 此處內嵌示範資料模擬載入
+// ============================================
+
+const SAMPLE_DATA = {
+  fetched_at: "2026-04-29T09:50:00",
+  source: "https://law.moj.gov.tw/api/",
+  laws: [
+    {
+      pcode: "G0400001",
+      name: "證券交易法",
+      category: "證券交易法",
+      modified_date: "20240807",
+      url: "https://law.moj.gov.tw/LawClass/LawAll.aspx?PCode=G0400001",
+      articles: [
+        {
+          no: "第 22 條",
+          content: "有價證券之募集及發行，除政府債券或經主管機關核定之其他有價證券外，非經向主管機關申報生效後，不得為之；其處理準則，由主管機關定之。\n已依本法發行有價證券之公司，於依公司法之規定發行新股時，除依第四十三條之六第一項及第二項規定辦理者外，仍應依前項規定辦理。\n出售所持有第六條第一項規定之有價證券或其價款繳納憑證、表明其權利之證書或新股認購權利證書、新股權利證書，而對非特定人公開招募者，準用第一項規定。"
+        },
+        {
+          no: "第 28-2 條",
+          content: "股票已在證券交易所上市或於證券商營業處所買賣之公司，有左列情事之一者，得經董事會三分之二以上董事之出席及出席董事超過二分之一同意，於有價證券集中交易市場或證券商營業處所或依第四十三條之一第二項規定買回其股份，不受公司法第一百六十七條第一項規定之限制：\n一、轉讓股份予員工。\n二、配合附認股權公司債、附認股權特別股、可轉換公司債、可轉換特別股或認股權憑證之發行，作為股權轉換之用。\n三、為維護公司信用及股東權益所必要而買回，並辦理銷除股份者。"
+        },
+        {
+          no: "第 36 條",
+          content: "已依本法發行有價證券之公司，除情形特殊，經主管機關另予規定者外，應依下列規定公告並向主管機關申報：\n一、於每會計年度終了後三個月內，公告並申報由董事長、經理人及會計主管簽名或蓋章，並經會計師查核簽證、董事會通過及監察人承認之年度財務報告。\n二、於每會計年度第一季、第二季及第三季終了後四十五日內，公告並申報由董事長、經理人及會計主管簽名或蓋章，並經會計師核閱及提報董事會之財務報告。"
+        },
+        {
+          no: "第 43-6 條",
+          content: "公開發行股票之公司，得以有代表已發行股份總數過半數股東出席之股東會，出席股東表決權三分之二以上之同意，對下列之人進行有價證券之私募，不受第二十八條之一、第一百三十九條第二項及公司法第二百六十七條第一項至第三項規定之限制：\n一、銀行業、票券業、信託業、金融控股業、保險業、證券業或其他經主管機關核准之法人或機構。\n二、符合主管機關所定條件之自然人、法人或基金。\n三、該公司或其關係企業之董事、監察人及經理人。"
+        }
+      ]
+    },
+    {
+      pcode: "G0400014",
+      name: "發行人募集與發行有價證券處理準則",
+      category: "發行人募集與發行有價證券處理準則",
+      modified_date: "20250618",
+      url: "https://law.moj.gov.tw/LawClass/LawAll.aspx?PCode=G0400014",
+      articles: [
+        {
+          no: "第 7 條",
+          content: "發行人有下列情形之一，不得募集與發行有價證券：\n一、最近三年內，違反本法、公司法及其他工商管理法律或法規，受刑之宣告、罰鍰或行政處分，情節重大，足以影響其經營者。\n二、申報書件內容不完備、應記載事項不充分或為虛偽不實之記載者。\n三、依公司法第二百四十一條第一項規定發行新股而以發行新股代替現金分派股息及紅利者。\n四、有公司法第一百五十六條之四規定情事者。"
+        },
+        {
+          no: "第 12 條",
+          content: "發行人申報募集與發行有價證券，於本會及本會指定之機構收到申報書即日起屆滿十二個營業日生效。但有下列情形之一者，期間另有規定：\n一、外國發行人於中華民國境內第一次募集與發行有價證券，自本會及本會指定之機構收到申報書即日起屆滿三十個營業日生效。\n二、本會為保護公益認有必要時，得延長前項生效時間。"
+        }
+      ]
+    },
+    {
+      pcode: "J0080001",
+      name: "公司法",
+      category: "公司法",
+      modified_date: "20211229",
+      url: "https://law.moj.gov.tw/LawClass/LawAll.aspx?PCode=J0080001",
+      articles: [
+        {
+          no: "第 167-2 條",
+          content: "公司除法律或章程另有規定者外，得經董事會以董事三分之二以上之出席及出席董事過半數同意之決議，與員工簽訂認股權契約，約定於一定期間內，員工得依約定價格認購特定數量之公司股份，訂約後由公司發給員工認股權憑證。\n員工取得認股權憑證，不得轉讓。但因繼承者，不在此限。\n章程得訂明依第一項規定發給認股權憑證之對象包括符合一定條件之控制或從屬公司員工。"
+        },
+        {
+          no: "第 267 條",
+          content: "公司發行新股時，除經目的事業中央主管機關專案核定者外，應保留發行新股總數百分之十至十五之股份由公司員工承購。\n公營事業經該公營事業之主管機關專案核定者，得保留發行新股由員工承購；其保留股份，不得超過發行新股總數百分之十。\n公司發行新股時，除依前二項保留者外，應公告及通知原有股東，按照原有股份比例儘先分認，並聲明逾期不認購者，喪失其權利。"
+        }
+      ]
+    }
+  ]
+};
+
+// ============================================
+// State
+// ============================================
+
+let lawData = null;       // 整包資料
+let allArticles = [];     // 攤平後的條文陣列（含法規名稱）
+let activeFilter = "all"; // 目前篩選的法規類別
+let currentQuery = "";
+
+// ============================================
+// 載入資料
+// 真實使用時：fetch('./output/laws.json').then(r => r.json())
+// ============================================
+
+async function loadData() {
+  try {
+    // 嘗試從同目錄 fetch 真實資料
+    const resp = await fetch('./output/laws.json');
+    if (resp.ok) {
+      lawData = await resp.json();
+      console.log('✓ 從 output/laws.json 載入真實資料');
+    } else {
+      throw new Error('No real data found');
+    }
+  } catch (e) {
+    // 失敗時用內嵌示範資料
+    console.log('⚠ 使用內嵌示範資料（請執行 fetch_laws.py 產生真實資料）');
+    lawData = SAMPLE_DATA;
+  }
+
+  // 攤平所有條文
+  allArticles = [];
+  lawData.laws.forEach(law => {
+    law.articles.forEach(art => {
+      allArticles.push({
+        ...art,
+        law_name: law.name,
+        law_pcode: law.pcode,
+        law_category: law.category,
+        law_modified: law.modified_date,
+        law_url: law.url,
+      });
+    });
+  });
+
+  updateSyncBanner();
+  renderChips();
+  renderResults();
+}
+
+function formatDate(yyyymmdd) {
+  if (!yyyymmdd || yyyymmdd.length < 8) return yyyymmdd;
+  return `${yyyymmdd.slice(0, 4)}.${yyyymmdd.slice(4, 6)}.${yyyymmdd.slice(6, 8)}`;
+}
+
+function formatFetchDate(iso) {
+  const d = new Date(iso);
+  return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
+}
+
+function updateSyncBanner() {
+  const date = formatFetchDate(lawData.fetched_at);
+  document.getElementById('dataDate').textContent = date;
+  document.getElementById('syncInfo').innerHTML = `
+    最近同步：<strong>${date}</strong>　資料來源：法務部全國法規資料庫官方 API<br>
+    共 <strong>${lawData.laws.length}</strong> 部法規 · <strong>${allArticles.length}</strong> 條條文
+  `;
+}
+
+function renderChips() {
+  const chipsEl = document.getElementById('lawChips');
+  const cats = ['all', ...new Set(lawData.laws.map(l => l.category))];
+  chipsEl.innerHTML = cats.map(c => `
+    <button class="chip ${c === activeFilter ? 'active' : ''}" data-cat="${c}">
+      ${c === 'all' ? '全部' : c}
+    </button>
+  `).join('');
+
+  chipsEl.querySelectorAll('.chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      activeFilter = btn.dataset.cat;
+      renderChips();
+      renderResults();
+    });
+  });
+}
+
+function highlight(text, query) {
+  if (!query) return escapeHTML(text);
+  const escaped = escapeHTML(text);
+  const reg = new RegExp(query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g');
+  return escaped.replace(reg, m => `<mark>${m}</mark>`);
+}
+
+function escapeHTML(s) {
+  return s.replace(/[&<>"']/g, c => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[c]));
+}
+
+function searchArticles(query) {
+  let results = allArticles;
+
+  if (activeFilter !== 'all') {
+    results = results.filter(a => a.law_category === activeFilter);
+  }
+
+  if (!query) return results;
+
+  // 先過濾條號（純數字輸入時）
+  const isNumQuery = /^\d+(-\d+)?$/.test(query);
+
+  return results.filter(a => {
+    if (isNumQuery) {
+      // 條號精確匹配
+      const noDigits = a.no.replace(/[^\d-]/g, '');
+      if (noDigits === query || a.no.includes(query)) return true;
+    }
+    return a.no.includes(query) ||
+           a.content.includes(query) ||
+           a.law_name.includes(query);
+  });
+}
+
+function renderResults() {
+  const area = document.getElementById('lookupArea');
+  const results = searchArticles(currentQuery);
+
+  document.getElementById('statsLine').textContent =
+    `// 顯示 ${results.length} / ${allArticles.length} 條`;
+
+  if (results.length === 0) {
+    area.innerHTML = `
+      <div class="empty">
+        <div class="empty-mark">∅</div>
+        <div class="empty-text">查無相符之條文<br>請嘗試其他關鍵字或調整篩選</div>
+      </div>`;
+    return;
+  }
+
+  area.innerHTML = `<div class="law-list">${results.slice(0, 50).map((a, i) => `
+    <div class="law-item" data-idx="${allArticles.indexOf(a)}">
+      <div class="law-item-head">
+        <span class="law-source">${escapeHTML(a.law_category)}</span>
+        <span class="law-num">${escapeHTML(a.no)}</span>
+      </div>
+      <div class="law-snippet">${highlight(a.content, currentQuery)}</div>
+      <div class="law-meta-bottom">
+        <span>修正日：${formatDate(a.law_modified)}</span>
+        <span>點擊查看完整條文 →</span>
+      </div>
+    </div>
+  `).join('')}</div>${results.length > 50 ? `<div class="empty"><div class="empty-text">⋯ 另有 ${results.length - 50} 條未顯示，請輸入更精確的關鍵字</div></div>` : ''}`;
+
+  area.querySelectorAll('.law-item').forEach(el => {
+    el.addEventListener('click', () => {
+      const idx = parseInt(el.dataset.idx);
+      showDetail(allArticles[idx]);
+    });
+  });
+}
+
+function showDetail(article) {
+  const overlay = document.getElementById('detailOverlay');
+  const inner = document.getElementById('detailInner');
+
+  inner.innerHTML = `
+    <button class="detail-back" onclick="hideDetail()">← 返回</button>
+    <div class="detail-source">${escapeHTML(article.law_category)}</div>
+    <div class="detail-num">${escapeHTML(article.no)}</div>
+    <div class="detail-law-name">出自：${escapeHTML(article.law_name)}</div>
+    <div class="detail-content">${escapeHTML(article.content)}</div>
+    <div class="detail-actions">
+      <a class="btn-line" href="${escapeHTML(article.law_url)}" target="_blank" rel="noopener">
+        查看全部條文 ↗
+      </a>
+      <button class="btn-line" onclick="hideDetail()">關閉</button>
+    </div>
+    <div class="detail-footer">
+      資料來源：法務部全國法規資料庫<br>
+      法規最後修正日：${formatDate(article.law_modified)}<br>
+      本工具同步於：${formatFetchDate(lawData.fetched_at)}<br>
+      ※ 法令引用以原始公告為準
+    </div>
+  `;
+
+  overlay.classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function hideDetail() {
+  document.getElementById('detailOverlay').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+// ============================================
+// Navigation
+// ============================================
+
+function goPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.page === name));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.page === name));
+  window.scrollTo(0, 0);
+}
+
+document.querySelectorAll('.tab, .nav-btn').forEach(btn => {
+  btn.addEventListener('click', () => goPage(btn.dataset.page));
+});
+
+document.getElementById('searchInput').addEventListener('input', e => {
+  currentQuery = e.target.value.trim();
+  renderResults();
+});
+
+document.getElementById('detailOverlay').addEventListener('click', e => {
+  if (e.target.id === 'detailOverlay') hideDetail();
+});
+
+// Init
+loadData();
+</script>
+</body>
+</html>
