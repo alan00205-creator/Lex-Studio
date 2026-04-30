@@ -36,12 +36,11 @@ lex-studio/
 | 階段 | 內容 | 狀態 |
 |---|---|---|
 | Phase 1 | 基礎建置（檔案結構、抽出 CSS/JS、免責聲明） | ✅ 完成 |
-| Phase 2 T2.1–T2.3 | 法規導航中心（卡片 UI、分類、智慧搜尋） | ✅ 完成 |
-| Phase 2 T2.4 | 補完 43 部法規條目 | ✅ 完成（待你本機跑驗證） |
-| Phase 2 T2.5 | URL 驗證腳本 | ✅ 完成（`scripts/validate_law_index.py`） |
-| Phase 3 | 證期局問答集解析 | 🔬 前端 UI 殼完成 + 探勘腳本（`scripts/explore_sfb.py`）；待你跑探勘並回貼結果，我寫 `fetch_qa.py` |
-| Phase 4 | 題庫與情境模擬 | ⏸ 未開始 |
-| Phase 5 | 每日挑戰、PWA、實機測試、發佈 | ⏸ 未開始 |
+| Phase 2 | 法規導航（43 部法規 + 卡片 UI + 智慧搜尋 + 驗證腳本） | ✅ 完成 |
+| Phase 3 | 證期局問答集解析（前端 UI + `fetch_qa.py` + 月排程工作流） | ✅ 程式碼完成；待 Actions 跑一次產生 `output/qa.json` |
+| Phase 4 | 題庫與情境模擬（5 題種子 + UI + localStorage） | ✅ 完成；題庫待人工補滿 |
+| Phase 5 | 首頁今日挑戰 + 進度頁 + PWA + Cloudflare 監控 | ✅ 完成；Cloudflare token 待填入 |
+| 部署 | GitHub Pages | ⏳ 待你開啟（`Settings → Pages`，詳見 `docs/deployment.md`） |
 
 詳細任務分解見 `PRD MEMO/02_PRD_Lex_Studio_v2.md` §11。
 
