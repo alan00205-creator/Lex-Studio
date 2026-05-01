@@ -1,7 +1,7 @@
 {
   "$schema_note": "本檔案是 PRD §4.4.1 規定的法規導航索引，由執行者人工維護。",
   "version": "1.0",
-  "last_updated": "2026-04-30",
+  "last_updated": "2026-05-01",
   "_maintenance_log": [
     {
       "date": "2026-04-30",
@@ -12,6 +12,12 @@
       "date": "2026-04-30",
       "by": "Claude Code",
       "summary": "X 類更新：(1) X01 改為 selaw 新版 URL（sysNumber=LW10809086）並補完 selaw_url；(2) X02 因舊 LawID=G0100651 失效改為 sysNumber=LW10812073 整合檢索 URL；(3) X03 因舊 LawID=G0100831 失效改為 sysNumber=LW10817193；(4) 新增 X04 上市審查準則補充規定（LW10815481）、X05 證券承銷商辦理股票初次申請上市案之評估查核程序（LW10813079）、X06 股票初次上市之證券承銷商評估報告應行記載事項要點（LW10808426）；(5) categories.X.expected_count 由 3 更新為 6；(6) _schema_documentation.id 範圍由 X01–X03 擴充為 X01–X06。"
+    },
+    {
+      "date": "2026-05-01",
+      "action": "common_articles placeholders added",
+      "details": "Added 3-row TODO placeholders (with _pending_review:true) to laws: A07, A22, A26, X03. A04 and X01 left untouched (already populated).",
+      "by": "alan00205-creator (via Cowork agent)"
     }
   ],
   "categories": [
@@ -216,7 +222,23 @@
       "primary_url": "https://law.moj.gov.tw/LawClass/LawAll.aspx?PCode=G0400019",
       "selaw_url": null,
       "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0400019&FLNO={article_no}",
-      "common_articles": [],
+      "common_articles": [
+        {
+          "no": "TODO",
+          "topic": "TODO_主題",
+          "_pending_review": true
+        },
+        {
+          "no": "TODO",
+          "topic": "TODO_主題",
+          "_pending_review": true
+        },
+        {
+          "no": "TODO",
+          "topic": "TODO_主題",
+          "_pending_review": true
+        }
+      ],
       "search_keywords": [
         "公開說明書",
         "簡式公開說明書",
@@ -478,7 +500,23 @@
       "primary_url": "https://law.moj.gov.tw/LawClass/LawAll.aspx?PCode=G0400050",
       "selaw_url": null,
       "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0400050&FLNO={article_no}",
-      "common_articles": [],
+      "common_articles": [
+        {
+          "no": "TODO",
+          "topic": "TODO_主題",
+          "_pending_review": true
+        },
+        {
+          "no": "TODO",
+          "topic": "TODO_主題",
+          "_pending_review": true
+        },
+        {
+          "no": "TODO",
+          "topic": "TODO_主題",
+          "_pending_review": true
+        }
+      ],
       "search_keywords": [
         "財報編製準則",
         "IFRS",
@@ -540,7 +578,23 @@
       "primary_url": "https://law.moj.gov.tw/LawClass/LawAll.aspx?PCode=G0400061",
       "selaw_url": null,
       "article_url_template": "https://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0400061&FLNO={article_no}",
-      "common_articles": [],
+      "common_articles": [
+        {
+          "no": "TODO",
+          "topic": "TODO_主題",
+          "_pending_review": true
+        },
+        {
+          "no": "TODO",
+          "topic": "TODO_主題",
+          "_pending_review": true
+        },
+        {
+          "no": "TODO",
+          "topic": "TODO_主題",
+          "_pending_review": true
+        }
+      ],
       "search_keywords": [
         "買回股份",
         "庫藏股",
@@ -873,7 +927,23 @@
       "primary_url": "https://www.selaw.com.tw/Chinese/RegulatoryInformationResult?sysNumber=LW10817193&releaseDate=2026-01-12",
       "selaw_url": "https://www.selaw.com.tw/Chinese/RegulatoryInformationResult?sysNumber=LW10817193&releaseDate=2026-01-12",
       "article_url_template": null,
-      "common_articles": [],
+      "common_articles": [
+        {
+          "no": "TODO",
+          "topic": "TODO_主題",
+          "_pending_review": true
+        },
+        {
+          "no": "TODO",
+          "topic": "TODO_主題",
+          "_pending_review": true
+        },
+        {
+          "no": "TODO",
+          "topic": "TODO_主題",
+          "_pending_review": true
+        }
+      ],
       "search_keywords": [
         "公會承銷辦法",
         "再行銷售",
