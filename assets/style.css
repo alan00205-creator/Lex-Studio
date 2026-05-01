@@ -56,11 +56,18 @@ header {
   background: var(--bg-card);
 }
 
-.brand-row {
+/* H1 與右上日期 badge 同 row：H1 left、日期 right、baseline 對齊 */
+.title-row {
   display: flex;
   align-items: baseline;
-  justify-content: flex-end;
-  margin-bottom: 4px;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.title-row h1.title {
+  margin-top: 0;          /* 由 .title-row 控間距，移除 H1 自身上邊距 */
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .data-status {
@@ -68,6 +75,8 @@ header {
   font-size: 10px;
   color: var(--ink-dim);
   letter-spacing: 0.05em;
+  white-space: nowrap;    /* 不換行；窄螢幕由下方 media query 縮字 */
+  flex-shrink: 0;
 }
 
 .data-status .dot {
@@ -1829,4 +1838,17 @@ mark {
   font-size: 14px;
   color: var(--ink-soft);
   letter-spacing: 0.1em;
+}
+
+/* 窄螢幕（< 360px）時 date badge 再縮一級避免擠掉 H1 */
+@media (max-width: 359px) {
+  .data-status {
+    font-size: 9px;
+    letter-spacing: 0.02em;
+  }
+  .data-status .dot {
+    width: 5px;
+    height: 5px;
+    margin-right: 4px;
+  }
 }
