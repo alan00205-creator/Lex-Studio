@@ -2,9 +2,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <rect width="512" height="512" rx="96" fill="#fafaf7"/>
   <rect x="16" y="16" width="480" height="480" rx="80" fill="none" stroke="#1e3a5f" stroke-width="8"/>
-  <g font-family="'Noto Serif TC', serif" font-weight="700" text-anchor="middle">
-    <text x="256" y="280" font-size="220" fill="#1e3a5f">承銷</text>
-    <text x="256" y="400" font-size="80" fill="#a07d3a" letter-spacing="12">研究所</text>
+  <g font-family="'Cormorant Garamond', 'Noto Serif TC', serif" font-weight="700" text-anchor="middle">
+    <text x="256" y="240" font-size="240" fill="#1e3a5f" font-style="italic">IPO</text>
+    <text x="256" y="380" font-size="120" fill="#a07d3a" letter-spacing="6">COACH</text>
   </g>
   <line x1="120" y1="420" x2="392" y2="420" stroke="#a07d3a" stroke-width="3"/>
 </svg>

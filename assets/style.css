@@ -105,6 +105,16 @@ h1.title .accent {
   font-weight: 500;
 }
 
+.brand-wordmark {
+  font-family: var(--display);
+  font-style: italic;
+  color: var(--gold);
+  font-size: 18px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  margin-top: 4px;
+}
+
 .subtitle {
   font-family: var(--display);
   font-style: italic;

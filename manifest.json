@@ -1,7 +1,7 @@
 {
-  "name": "承銷研究所",
-  "short_name": "承銷研究所",
-  "description": "承銷研究所：證券承銷法規題庫、問答集整合搜尋、法規導航。",
+  "name": "承銷研究所 IPO Coach",
+  "short_name": "IPO Coach",
+  "description": "承銷研究所（IPO Coach）：證券承銷法規題庫、問答集整合搜尋、法規導航。",
   "lang": "zh-TW",
   "start_url": "./",
   "scope": "./",
