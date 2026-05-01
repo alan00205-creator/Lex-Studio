@@ -285,19 +285,34 @@ def find_subcategories(html: str) -> list[Category]:
     return [seen[i] for i in sorted(seen)]
 
 
-def _ensure_ch_prefix(href: str) -> str:
-    """確保 sfb.gov.tw 的 root-relative href 帶 /ch/ 前綴。
+# 下載 endpoint 在 sfb.gov.tw root（不掛在 /ch/ 之下）。
+# 真實 URL 範例：
+#   https://www.sfb.gov.tw/uploaddowndoc?file=chdownload/202004141034100.pdf&...
+# HTML 內若寫 /uploaddowndoc?... 是正確的 root-relative 連結，不應再
+# 強塞 /ch/ 前綴（會變成 /ch/uploaddowndoc 不存在 → 200 OK + HTML 錯誤頁）。
+DOWNLOAD_ENDPOINTS = ("/uploaddowndoc", "/fckdowndoc", "/websitedowndoc")
 
-    sfb.gov.tw 站台所有實際內容頁與下載連結都掛在 /ch/ 之下，但 HTML
-    內 <a href> 偶爾會寫成 /home.jsp?... 或 /uploaddowndoc?...（從
-    domain root 起算，省略 /ch/）。urlib.parse.urljoin 會用 href 完全
-    覆蓋 base 的 path，導致 /ch/ 被吃掉，組出 404 連結
-    （例如 https://www.sfb.gov.tw/home.jsp?id=863&parentpath=0,6,858）。
-    對 root-relative 但又不是 /ch/ 開頭的 href，補上 /ch 前綴。
+
+def _ensure_ch_prefix(href: str) -> str:
+    """補 /ch/ 前綴；下載 endpoint 例外（在 root，不掛 /ch/）。
+
+    sfb.gov.tw 的內容頁（home.jsp / list.jsp 等）都掛在 /ch/ 之下，
+    但下載 endpoint（uploaddowndoc / fckdowndoc / websitedowndoc）
+    在 domain root。HTML href 若省略 /ch/：
+      * 內容頁要補：/home.jsp?... → /ch/home.jsp?...
+      * 下載 endpoint 不可補：/uploaddowndoc?... 維持原樣
+    否則 urljoin 後會生 https://www.sfb.gov.tw/ch/uploaddowndoc?...
+    這條路徑不存在，server 回 200 OK + HTML 錯誤頁，後續 magic-byte
+    檢查會 reject 為 non-PDF response（這就是 668321e qa.json 出現
+    69/70 'non-PDF response' 的根因）。
     """
-    if href.startswith("/") and not href.startswith("//") and not href.startswith("/ch/"):
-        return "/ch" + href
-    return href
+    if not href.startswith("/") or href.startswith("//") or href.startswith("/ch/"):
+        return href
+    # 下載 endpoint 在 root，不加 /ch/
+    for ep in DOWNLOAD_ENDPOINTS:
+        if href.startswith(ep):
+            return href
+    return "/ch" + href
 
 
 def parse_uploaddowndoc(href: str) -> tuple[Optional[str], Optional[str]]:

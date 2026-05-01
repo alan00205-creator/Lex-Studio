@@ -157,19 +157,21 @@ class TestFindSubcategoriesWhitelist(unittest.TestCase):
 
 
 class TestEnsureChPrefix(unittest.TestCase):
-    """_ensure_ch_prefix 用在 parse_subcategory_documents 的 PDF 連結補 /ch/ 上。"""
+    """_ensure_ch_prefix 用在 parse_subcategory_documents 的 href 補 /ch/。"""
 
-    def test_root_relative_without_ch_gets_prefix(self):
-        self.assertEqual(
-            fetch_qa._ensure_ch_prefix("/uploaddowndoc?file=x"),
-            "/ch/uploaddowndoc?file=x",
-        )
+    # ---- 內容頁 (home.jsp / list.jsp 等) 要補 ----
+
+    def test_home_jsp_root_relative_gets_prefix(self):
         self.assertEqual(
             fetch_qa._ensure_ch_prefix("/home.jsp?id=862"),
             "/ch/home.jsp?id=862",
         )
 
     def test_already_has_ch_prefix_unchanged(self):
+        self.assertEqual(
+            fetch_qa._ensure_ch_prefix("/ch/home.jsp?id=862"),
+            "/ch/home.jsp?id=862",
+        )
         self.assertEqual(
             fetch_qa._ensure_ch_prefix("/ch/uploaddowndoc?file=x"),
             "/ch/uploaddowndoc?file=x",
@@ -179,6 +181,12 @@ class TestEnsureChPrefix(unittest.TestCase):
         self.assertEqual(
             fetch_qa._ensure_ch_prefix("https://www.sfb.gov.tw/ch/home.jsp?id=1"),
             "https://www.sfb.gov.tw/ch/home.jsp?id=1",
+        )
+        self.assertEqual(
+            fetch_qa._ensure_ch_prefix(
+                "https://www.sfb.gov.tw/uploaddowndoc?file=chdownload/x.pdf"
+            ),
+            "https://www.sfb.gov.tw/uploaddowndoc?file=chdownload/x.pdf",
         )
         self.assertEqual(
             fetch_qa._ensure_ch_prefix("https://example.com/foo"),
@@ -196,6 +204,35 @@ class TestEnsureChPrefix(unittest.TestCase):
             fetch_qa._ensure_ch_prefix("uploaddowndoc?file=x"),
             "uploaddowndoc?file=x",
         )
+
+    # ---- 下載 endpoint 在 root，不可加 /ch/（這次的根因 bug） ----
+
+    def test_uploaddowndoc_root_relative_NOT_prefixed(self):
+        """/uploaddowndoc?... 在 sfb.gov.tw root，加了 /ch/ 會 404 → HTML 錯誤頁。"""
+        self.assertEqual(
+            fetch_qa._ensure_ch_prefix(
+                "/uploaddowndoc?file=chdownload/202004141034100.pdf&filedisplay=x.pdf&flag=doc"
+            ),
+            "/uploaddowndoc?file=chdownload/202004141034100.pdf&filedisplay=x.pdf&flag=doc",
+        )
+
+    def test_fckdowndoc_root_relative_NOT_prefixed(self):
+        self.assertEqual(
+            fetch_qa._ensure_ch_prefix("/fckdowndoc?file=chdownload/x.pdf"),
+            "/fckdowndoc?file=chdownload/x.pdf",
+        )
+
+    def test_websitedowndoc_root_relative_NOT_prefixed(self):
+        # FSC 站使用，但同型別 endpoint，邏輯一致
+        self.assertEqual(
+            fetch_qa._ensure_ch_prefix("/websitedowndoc?file=chfsc/x.pdf"),
+            "/websitedowndoc?file=chfsc/x.pdf",
+        )
+
+    def test_download_endpoints_constant_complete(self):
+        """確保 DOWNLOAD_ENDPOINTS 常數涵蓋三類已知 endpoint。"""
+        for ep in ("/uploaddowndoc", "/fckdowndoc", "/websitedowndoc"):
+            self.assertIn(ep, fetch_qa.DOWNLOAD_ENDPOINTS, f"缺 {ep}")
 
 
 class TestParseHomeJspId(unittest.TestCase):
