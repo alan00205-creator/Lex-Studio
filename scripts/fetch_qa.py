@@ -60,6 +60,17 @@ BASE = "https://www.sfb.gov.tw"
 INDEX_URL = f"{BASE}/ch/home.jsp?id=858&parentpath=0,6"
 TIB_FAQ_URL = "https://www.twse.com.tw/downloads/zh/products/tib_qa.pdf"
 
+# 證期局問答集（id=858）底下的 23 個真正問答集子分類 ID 白名單。
+# 入口頁的 <a href> 會把整個 sfb.gov.tw 與 fsc.gov.tw 全站 sitemap 一起吸進來
+# （聯絡我們、新聞稿、政府資訊公開、性別主流化專區、政策宣導廣告……），
+# 必須以白名單收斂回實際問答集（公司治理、公開收購、內線交易……等）。
+# 編號對應入口頁的 1.~23.（4. 與 14. 為 865 / 875）。
+QA_CATEGORY_IDS = {
+    862, 863, 864, 865, 866, 867, 868, 869, 870, 871,
+    872, 873, 874, 875, 876, 877, 878, 879, 880,
+    1033, 1061, 1062, 1073,
+}
+
 HEADERS = {
     "User-Agent": (
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
@@ -152,24 +163,39 @@ def parse_home_jsp_id(href: str) -> Optional[int]:
 
 
 def find_subcategories(html: str) -> list[Category]:
-    """從入口頁抽出所有子分類（id != 858 的 home.jsp 連結）。"""
+    """從入口頁抽出 23 大問答集子分類（以 QA_CATEGORY_IDS 白名單收斂）。
+
+    入口頁包含整個 sfb.gov.tw / fsc.gov.tw 全站導覽列，連結內含上百個
+    home.jsp?id=X — 包括聯絡我們、組織、新聞稿、政府資訊公開等與問答集
+    完全無關的 sitemap 項目。直接全收會把不相關 PDF（例如施政計畫、
+    預決算書、契約等）抽進 qa.json 並淹沒真正的問答集。
+
+    只保留 id ∈ QA_CATEGORY_IDS 的連結，且優先採用較長的 name（同一個 id
+    可能在頁內出現多次，標題可能是「公司治理」或「1.公司治理」，
+    取較長者比較有資訊量）。順序維持 QA_CATEGORY_IDS 的數值順序，
+    讓輸出穩定。
+    """
     soup = BeautifulSoup(html, "lxml")
-    seen = {}
+    seen: dict[int, Category] = {}
     for a in soup.find_all("a", href=True):
         sid = parse_home_jsp_id(a["href"])
-        if sid is None or sid == 858:
-            continue
-        if sid in seen:
+        if sid is None or sid not in QA_CATEGORY_IDS:
             continue
         name = a.get_text(strip=True)
-        if not name or len(name) > 50:  # 太長可能不是分類名稱
+        if not name or len(name) > 80:  # 太長可能是把整段文字抓進來
             continue
-        seen[sid] = Category(
-            id=sid,
-            name=name,
-            url=urljoin(BASE + "/", a["href"]),
-        )
-    return list(seen.values())
+        existing = seen.get(sid)
+        if existing is None:
+            seen[sid] = Category(
+                id=sid,
+                name=name,
+                url=urljoin(BASE + "/", a["href"]),
+            )
+        else:
+            # 已存在：若新名稱較長（含編號前綴等），用新名稱覆蓋
+            if len(name) > len(existing.name):
+                existing.name = name
+    return [seen[i] for i in sorted(seen)]
 
 
 def parse_uploaddowndoc(href: str) -> tuple[Optional[str], Optional[str]]:
