@@ -558,7 +558,7 @@ nav.tabs::-webkit-scrollbar { display: none; }
   border-top: 1px solid var(--line);
   box-shadow: 0 -2px 12px rgba(30, 58, 95, 0.05);
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   z-index: 100;
   padding-bottom: env(safe-area-inset-bottom);
 }
