@@ -1050,43 +1050,6 @@ mark {
   color: var(--ink-soft);
 }
 
-.quick-entries {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-}
-
-.quick-entry {
-  background: var(--bg-card);
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  padding: 18px 14px;
-  cursor: pointer;
-  font-family: var(--serif);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  box-shadow: var(--shadow-sm);
-  transition: all 0.15s;
-}
-
-.quick-entry:hover { box-shadow: var(--shadow-md); border-color: var(--line-strong); }
-
-.quick-entry-mark {
-  font-family: var(--display);
-  font-size: 28px;
-  font-weight: 700;
-  color: var(--primary);
-  line-height: 1;
-}
-
-.quick-entry-name {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--ink);
-}
-
 /* ===== Quiz / Scenario shared UI ===== */
 .quiz-section-label {
   font-family: var(--mono);
@@ -1461,12 +1424,6 @@ mark {
   }
   nav.tabs {
     padding: 0 24px;
-  }
-
-  /* Home: quick entries 2 → 4 cols */
-  .quick-entries {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 14px;
   }
 
   /* Q&A category cards: widen so we get 4–5 cols instead of ~7 */

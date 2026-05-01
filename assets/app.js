@@ -1487,7 +1487,7 @@ function closeDisclaimer() {
 // Init
 // ============================================
 
-document.querySelectorAll('.tab, .nav-btn, .quick-entry').forEach(btn => {
+document.querySelectorAll('.tab, .nav-btn').forEach(btn => {
   btn.addEventListener('click', () => goPage(btn.dataset.page));
 });
 
