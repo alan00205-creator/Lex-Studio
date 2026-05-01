@@ -79,7 +79,6 @@ function showLoadError(err) {
 function updateBanner() {
   const total = (lawIndex.laws || []).length;
   const date = lawIndex.last_updated || '—';
-  document.getElementById('dataDate').textContent = date;
   document.getElementById('syncInfo').innerHTML = `
     最近更新：<strong>${escapeHTML(date)}</strong> · 索引版本：<strong>${escapeHTML(lawIndex.version || '—')}</strong><br>
     收錄 <strong>${total}</strong> 部法規（連結至全國法規資料庫、selaw、證交所等官方來源）
