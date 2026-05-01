@@ -34,6 +34,7 @@
     <button class="tab" data-page="quiz">題庫練習</button>
     <button class="tab" data-page="scenario">情境模擬</button>
     <button class="tab" data-page="laws">法規導航</button>
+    <button class="tab" data-page="exam">考古題</button>
     <button class="tab" data-page="qa">問答集</button>
   </nav>
 
@@ -101,6 +102,24 @@
     </div>
     <div id="scenarioArea">
       <div class="loading"><div class="spinner"></div><div>載入情境題中⋯</div></div>
+    </div>
+  </main>
+
+  <!-- ===== 考古題（證券商高級業務員歷屆試題）===== -->
+  <main class="page" id="page-exam">
+    <div class="section-head">
+      <span class="section-num">E.</span>
+      <span class="section-title">考古題</span>
+      <span class="section-line"></span>
+    </div>
+
+    <div class="sync-banner" id="examSyncBanner">
+      <div class="label">⌖ 證券商高級業務員 歷屆試題</div>
+      <div class="info" id="examSyncInfo">載入中⋯</div>
+    </div>
+
+    <div id="examArea">
+      <div class="loading"><div class="spinner"></div><div>載入考古題中⋯</div></div>
     </div>
   </main>
 
@@ -176,6 +195,9 @@
     </button>
     <button class="nav-btn" data-page="laws">
       <span class="nav-icon">§</span><span>法規</span>
+    </button>
+    <button class="nav-btn" data-page="exam">
+      <span class="nav-icon">E</span><span>考古題</span>
     </button>
     <button class="nav-btn" data-page="qa">
       <span class="nav-icon">?</span><span>問答</span>
