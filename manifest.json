@@ -1,7 +1,7 @@
 {
   "name": "承銷研修所 / Lex Studio",
   "short_name": "Lex Studio",
-  "description": "承銷輔導法令學習工具：題庫練習、情境模擬、問答集整合搜尋、法規導航。",
+  "description": "承銷輔導法令學習工具：題庫練習、問答集整合搜尋、法規導航。",
   "lang": "zh-TW",
   "start_url": "./",
   "scope": "./",

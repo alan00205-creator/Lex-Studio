@@ -1689,3 +1689,74 @@ mark {
     grid-template-columns: repeat(4, 1fr);
   }
 }
+
+/* ===== Quiz dataset segmented control（精選 5 題 / 進階 200 題）===== */
+.quiz-dataset-toggle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  margin-bottom: 18px;
+  border: 1px solid var(--line-strong);
+  border-radius: 3px;
+  overflow: hidden;
+  background: var(--bg-card);
+}
+
+.dataset-pill {
+  background: transparent;
+  border: none;
+  border-right: 1px solid var(--line);
+  padding: 11px 8px;
+  font-family: var(--serif);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  letter-spacing: 0.04em;
+}
+
+.dataset-pill:last-child { border-right: none; }
+
+.dataset-pill:hover:not(.active):not([disabled]):not([aria-disabled="true"]) {
+  background: var(--bg-soft);
+  color: var(--ink);
+}
+
+.dataset-pill.active {
+  background: var(--primary);
+  color: #fff;
+  font-weight: 700;
+}
+
+.dataset-pill[disabled],
+.dataset-pill[aria-disabled="true"] {
+  color: var(--ink-dim);
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+/* ===== _pending_review indicator（題庫待審標籤） ===== */
+.quiz-pending-badge {
+  display: inline-block;
+  background: rgba(160, 125, 58, 0.12);
+  color: var(--ink-soft);
+  border: 1px dashed var(--gold);
+  padding: 2px 7px;
+  border-radius: 2px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  font-family: var(--mono);
+}
+
+.feedback-pending-note {
+  margin: 8px 0 12px;
+  padding: 8px 10px;
+  background: rgba(160, 125, 58, 0.08);
+  border-left: 2px solid var(--gold);
+  font-size: 12px;
+  color: var(--ink-soft);
+  line-height: 1.6;
+  border-radius: 2px;
+}
