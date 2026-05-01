@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>承銷研修所 / Lex Studio</title>
-<meta name="description" content="承銷研修所（Lex Studio）：題庫練習、問答集整合搜尋、法規導航。">
+<title>承銷研究所</title>
+<meta name="description" content="承銷研究所：證券承銷法規題庫、問答集整合搜尋、法規導航。">
 <meta name="theme-color" content="#1e3a5f">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/svg+xml" href="assets/icon.svg">
@@ -20,13 +20,13 @@
 
   <header>
     <div class="brand-row">
-      <div class="brand">承銷 · 研修所</div>
+      <div class="brand">承銷 · 研究所</div>
       <div class="data-status" id="dataStatus">
         <span class="dot"></span><span id="dataDate">載入中</span>
       </div>
     </div>
-    <h1 class="title">Lex <span class="accent">Studio</span></h1>
-    <div class="subtitle">每日精進，臻於精通</div>
+    <h1 class="title">承銷 <span class="accent">研究所</span></h1>
+    <div class="subtitle">證券承銷法規與實務題庫</div>
   </header>
 
   <nav class="tabs" id="topTabs">
@@ -63,7 +63,7 @@
     </div>
     <div class="quick-entries">
       <button class="quick-entry" data-page="quiz">
-        <span class="quick-entry-mark">Q.</span>
+        <span class="quick-entry-mark">題</span>
         <span class="quick-entry-name">題庫練習</span>
       </button>
       <button class="quick-entry" data-page="laws">
@@ -71,16 +71,16 @@
         <span class="quick-entry-name">法規導航</span>
       </button>
       <button class="quick-entry" data-page="qa">
-        <span class="quick-entry-mark">?</span>
+        <span class="quick-entry-mark">問</span>
         <span class="quick-entry-name">問答集</span>
       </button>
     </div>
   </main>
 
-  <!-- ===== Quiz（題庫練習：精選 5 題 + 進階 200 題）===== -->
+  <!-- ===== Quiz（題庫練習：200 題單一池）===== -->
   <main class="page" id="page-quiz">
     <div class="section-head">
-      <span class="section-num">Q.</span>
+      <span class="section-num">題</span>
       <span class="section-title">題庫練習</span>
       <span class="section-line"></span>
     </div>
@@ -92,7 +92,7 @@
   <!-- ===== 考古題（證券商高級業務員歷屆試題）===== -->
   <main class="page" id="page-exam">
     <div class="section-head">
-      <span class="section-num">E.</span>
+      <span class="section-num">考</span>
       <span class="section-title">考古題</span>
       <span class="section-line"></span>
     </div>
@@ -109,7 +109,7 @@
 
   <main class="page" id="page-qa">
     <div class="section-head">
-      <span class="section-num">Q&amp;A</span>
+      <span class="section-num">問</span>
       <span class="section-title">問答集</span>
       <span class="section-line"></span>
     </div>
@@ -133,10 +133,10 @@
     </div>
   </main>
 
-  <!-- ===== Laws navigation ===== -->
+  <!-- ===== 法規導航 ===== -->
   <main class="page" id="page-laws">
     <div class="section-head">
-      <span class="section-num">L.</span>
+      <span class="section-num">規</span>
       <span class="section-title">法規導航</span>
       <span class="section-line"></span>
     </div>
@@ -175,20 +175,20 @@
       <span class="nav-icon">⌂</span><span>首頁</span>
     </button>
     <button class="nav-btn" data-page="quiz">
-      <span class="nav-icon">Q</span><span>題庫</span>
+      <span class="nav-icon">題</span><span>題庫</span>
     </button>
     <button class="nav-btn" data-page="laws">
       <span class="nav-icon">§</span><span>法規</span>
     </button>
     <button class="nav-btn" data-page="exam">
-      <span class="nav-icon">E</span><span>考古題</span>
+      <span class="nav-icon">考</span><span>考古題</span>
     </button>
     <button class="nav-btn" data-page="qa">
-      <span class="nav-icon">?</span><span>問答</span>
+      <span class="nav-icon">問</span><span>問答</span>
     </button>
   </nav>
 
-  <!-- ===== Disclaimer modal ===== -->
+  <!-- ===== 免責聲明 modal ===== -->
   <div class="modal" id="disclaimerModal" aria-hidden="true">
     <div class="modal-inner" role="dialog" aria-labelledby="disclaimerTitle">
       <div class="modal-head">

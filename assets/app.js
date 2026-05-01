@@ -1,9 +1,9 @@
 // ============================================
-// 承銷研修所 / Lex Studio
-// 法規導航中心（Phase 1 + Phase 2 T2.1–T2.3）
+// 承銷研究所
+// 證券承銷法規題庫、問答集、法規導航
 // ============================================
 
-const APP_VERSION = 'v0.1';
+const APP_VERSION = '0.1 版';
 const DATA_URL = './data/law_index.json';
 
 // ============================================
@@ -371,7 +371,7 @@ function renderQaSyncBanner() {
     return;
   }
   if (!qaData) {
-    dateEl.innerHTML = '尚未產生 <code>output/qa.json</code> · 請完成 Phase 3 fetch_qa.py';
+    dateEl.innerHTML = '問答集索引尚未產生 · 資料準備中';
     return;
   }
   const totalDocs = (qaData.categories || []).reduce((s, c) => s + qaDocCount(c), 0);
@@ -389,6 +389,12 @@ function renderQaStats(text) {
 
 function renderQaEmpty(mark, text) {
   return `<div class="empty"><div class="empty-mark">${mark}</div><div class="empty-text">${text}</div></div>`;
+}
+
+// 中文日期格式（使用者顯示用）：YYYY年M月D日
+function todayStrZh() {
+  const d = new Date();
+  return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
 }
 
 function renderQaCategoriesView() {
@@ -457,9 +463,9 @@ function renderQaDetailView() {
         ? `<div class="qa-doc-error">
             <div class="qa-doc-error-title">⚠ 來源暫無法存取</div>
             <div class="qa-doc-error-msg">本工具上次抓取此份文件時發生：<code>${escapeHTML(doc.error)}</code>。<br>
-              這通常是 SFB 站台對直連下載暫時擋下，或文件已下架。請點下方連結直接到證期局原站閱覽。</div>
+              這通常是證期局站台對直連下載暫時擋下，或文件已下架。請點下方連結直接到證期局原站閱覽。</div>
             ${doc.source_url ? `<a class="btn-pdf-download" href="${escapeHTML(doc.source_url)}" target="_blank" rel="noopener noreferrer">
-              前往 SFB 原站 ↗
+              前往證期局原站 ↗
             </a>` : ''}
           </div>`
         : `<pre class="qa-raw-text">${escapeHTML(doc.raw_text || '(無原文)')}</pre>
@@ -509,7 +515,7 @@ function renderQa() {
     area.innerHTML = renderQaEmpty(
       '?',
       '證期局問答集尚未解析完成<br>' +
-      '<small style="color: var(--ink-dim);">完成 Phase 3 後此處將顯示 23 大類問答集，可瀏覽與全文搜尋</small>'
+      '<small style="color: var(--ink-dim);">資料就緒後此處將顯示 23 大類問答集，可瀏覽與全文搜尋</small>'
     );
     renderQaStats('');
     return;
@@ -1184,7 +1190,7 @@ function renderQuizPlay(mode) {
 
   const isDaily = mode === 'daily';
   const quitLabel = isDaily ? '← 暫存進度，回首頁' : '← 結束練習';
-  const headLabel = isDaily ? `<div class="daily-play-head">⌖ 今日挑戰 · ${escapeHTML(todayStr())}</div>` : '';
+  const headLabel = isDaily ? `<div class="daily-play-head">⌖ 今日挑戰 · ${escapeHTML(todayStrZh())}</div>` : '';
 
   return `
     <div class="quiz-play">
@@ -1222,7 +1228,7 @@ function renderQuizResult(mode) {
 
   const isDaily = mode === 'daily';
   const headBadge = isDaily
-    ? `<div class="result-daily-badge">⌖ 今日挑戰 · ${escapeHTML(todayStr())} 完成</div>`
+    ? `<div class="result-daily-badge">⌖ 今日挑戰 · ${escapeHTML(todayStrZh())} 完成</div>`
     : '';
   const actions = isDaily
     ? `
@@ -1343,7 +1349,7 @@ function renderDailyChallenge() {
     const pct = Math.round(score * 100 / total);
     el.innerHTML = `
       <div class="daily-card daily-card-done">
-        <div class="daily-label">⌖ 今日挑戰 · ${escapeHTML(today)} · <span class="daily-done-mark">已完成 ✓</span></div>
+        <div class="daily-label">⌖ 今日挑戰 · ${escapeHTML(todayStrZh())} · <span class="daily-done-mark">已完成 ✓</span></div>
         <div class="daily-done-score">
           <span class="daily-done-pct">${pct}%</span>
           <span class="daily-done-frac">${score} / ${total}</span>
@@ -1362,7 +1368,7 @@ function renderDailyChallenge() {
 
   el.innerHTML = `
     <div class="daily-card">
-      <div class="daily-label">⌖ 今日挑戰 · ${escapeHTML(today)}</div>
+      <div class="daily-label">⌖ 今日挑戰 · ${escapeHTML(todayStrZh())}</div>
       <div class="daily-headline">每日 ${total} 題 · 跨裝置同步</div>
       <div class="daily-progress-line">
         <span class="daily-progress-text">${answered} / ${total}</span>
