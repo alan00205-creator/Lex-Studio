@@ -579,15 +579,14 @@ function bindQaEventDelegates(area) {
 
 // ============================================
 // 學習進度（localStorage）
-// PRD §7.4 key: 'underwriter_lex_progress'
+// 統一 key：題庫已合併為單一 200 題池，不再分精選 / 進階
 // ============================================
 
-const PROGRESS_KEY = 'underwriter_lex_progress';
-const PROGRESS_KEY_EXTENDED = 'underwriter_lex_quiz_extended_progress';
+const PROGRESS_KEY = 'underwriter_lex_quiz_progress';
 const SCENARIO_PURGE_FLAG = 'underwriter_lex_scenario_purged_v1';
+const UNIFIED_MIGRATION_FLAG = 'underwriter_lex_quiz_unified_v1';
 
 // 啟動時一次性清理：移除任何遺留的 scenario / simulation 相關 localStorage key
-// （此版本已移除「情境模擬」功能；歷史版本若曾寫入 scenario 專屬 key，於此清掉避免殘留）
 function purgeScenarioStorage() {
   try {
     if (localStorage.getItem(SCENARIO_PURGE_FLAG) === '1') return;
@@ -608,6 +607,37 @@ function purgeScenarioStorage() {
 }
 purgeScenarioStorage();
 
+// 啟動時一次性遷移：題庫從「精選 5 + 進階 200 雙池 / 雙 key」合併為「200 題單一池 / 單一 key」
+//   - 舊 key 'underwriter_lex_progress'                    （精選 5 題進度，題 id 對不上新池 → 整個丟棄）
+//   - 舊 key 'underwriter_lex_quiz_extended_progress'      （進階 200 題進度，題 id 與新池相同 → 搬到新 key）
+//   - 新 key 'underwriter_lex_quiz_progress'               （統一進度）
+function migrateToUnifiedQuizKey() {
+  try {
+    if (localStorage.getItem(UNIFIED_MIGRATION_FLAG) === '1') return;
+    const OLD_CURATED = 'underwriter_lex_progress';
+    const OLD_EXTENDED = 'underwriter_lex_quiz_extended_progress';
+    const newRaw = localStorage.getItem(PROGRESS_KEY);
+    const extRaw = localStorage.getItem(OLD_EXTENDED);
+    // 若新 key 尚無資料但舊 extended 有，搬過去保留使用者進度
+    if (!newRaw && extRaw) {
+      localStorage.setItem(PROGRESS_KEY, extRaw);
+      console.info('[migration] 已將 underwriter_lex_quiz_extended_progress 搬至 underwriter_lex_quiz_progress');
+    }
+    // 兩個舊 key 一律清掉（curated 進度 schema 同但 id 不相容；extended 已搬走）
+    if (localStorage.getItem(OLD_CURATED) !== null) {
+      localStorage.removeItem(OLD_CURATED);
+      console.info('[migration] 已清除舊 curated 進度 underwriter_lex_progress（題 id 與新池不相容）');
+    }
+    if (localStorage.getItem(OLD_EXTENDED) !== null) {
+      localStorage.removeItem(OLD_EXTENDED);
+    }
+    localStorage.setItem(UNIFIED_MIGRATION_FLAG, '1');
+  } catch (e) {
+    console.error('[migration] migrateToUnifiedQuizKey 失敗：', e);
+  }
+}
+migrateToUnifiedQuizKey();
+
 function defaultProgress() {
   return {
     version: 1,
@@ -623,9 +653,9 @@ function defaultProgress() {
   };
 }
 
-function loadProgress(key = PROGRESS_KEY) {
+function loadProgress() {
   try {
-    const raw = localStorage.getItem(key);
+    const raw = localStorage.getItem(PROGRESS_KEY);
     if (!raw) return defaultProgress();
     const p = JSON.parse(raw);
     if (!p || p.version !== 1) return defaultProgress();
@@ -641,9 +671,9 @@ function loadProgress(key = PROGRESS_KEY) {
   }
 }
 
-function saveProgress(p, key = PROGRESS_KEY) {
+function saveProgress(p) {
   try {
-    localStorage.setItem(key, JSON.stringify(p));
+    localStorage.setItem(PROGRESS_KEY, JSON.stringify(p));
   } catch (e) {
     console.error('localStorage write failed:', e);
   }
@@ -659,8 +689,8 @@ function yesterdayStr() {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
-function recordAnswer(question, correct, key = PROGRESS_KEY) {
-  const p = loadProgress(key);
+function recordAnswer(question, correct) {
+  const p = loadProgress();
   p.stats.total_answered += 1;
   if (correct) p.stats.total_correct += 1;
 
@@ -684,7 +714,7 @@ function recordAnswer(question, correct, key = PROGRESS_KEY) {
   p.category_progress[cat].answered += 1;
   if (correct) p.category_progress[cat].correct += 1;
 
-  saveProgress(p, key);
+  saveProgress(p);
 }
 
 function clearWrongQuestions() {
@@ -697,17 +727,14 @@ function clearWrongQuestions() {
 // 題庫資料載入
 // ============================================
 
-const QUIZ_DATA_URL = './data/quiz.json';
-const QUIZ_EXTENDED_DATA_URL = './data/quiz_extended.json';
-let quizData = null;
-let quizDataExtended = null;             // 200 題進階題庫（normalize 後）
+const QUIZ_DATA_URL = './data/quiz_extended.json';
+let quizData = null;                     // 200 題單一題庫（normalize 後）
 let quizLoaded = false;
 let quizLoadStarted = false;
 
 // 將 quiz_extended.json 的 schema (options:dict / answer:letter / source:string)
-// normalize 成既有 quiz.json 的 schema (options:array / correct_index:int / source:object)
-// 以最小化既有 render 程式變更（只在 source 與 _pending_review 處理上有微調）。
-// 設計選擇：normalize on load (Plan A)，兩個 source file 不動。
+// normalize 成內部一致格式 (options:array / correct_index:int / source:object)
+// 以最小化既有 render 程式變更（source 採 object form 並透過 law_id 動態補 url）
 function normalizeExtendedQuestion(q) {
   const optsArr = ['A', 'B', 'C', 'D'].map(k => q.options && q.options[k] || '');
   const correctIdx = ['A', 'B', 'C', 'D'].indexOf(q.answer);
@@ -715,7 +742,6 @@ function normalizeExtendedQuestion(q) {
   const diff = diffMap[q.difficulty] || q.difficulty || 'medium';
   return {
     id: q.id,
-    type: 'knowledge',                   // 保留欄位（情境模擬功能已移除）
     category: q.category || '其他',
     difficulty: diff,
     question: q.stem || '',
@@ -728,7 +754,6 @@ function normalizeExtendedQuestion(q) {
       article: '',
       url: '',
       law_id: q.law_id || '',
-      _from_extended: true,
     },
     _pending_review: q._pending_review === true,
     _added_at: q._added_at || '',
@@ -738,39 +763,26 @@ function normalizeExtendedQuestion(q) {
 async function ensureQuizLoaded() {
   if (quizLoaded || quizLoadStarted) return;
   quizLoadStarted = true;
-  // 並行載入精選 5 題與進階 200 題；兩者各自獨立失敗
-  const [quizResp, extResp] = await Promise.allSettled([
-    fetch(QUIZ_DATA_URL).then(r => r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))),
-    fetch(QUIZ_EXTENDED_DATA_URL).then(r => r.ok ? r.json() : Promise.reject(new Error(`HTTP ${r.status}`))),
-  ]);
-  if (quizResp.status === 'fulfilled') {
-    quizData = quizResp.value;
-  } else {
-    quizData = null;
-    console.error('[quiz] 精選 5 題載入失敗：', quizResp.reason);
-  }
-  if (extResp.status === 'fulfilled') {
-    const raw = extResp.value;
+  try {
+    const resp = await fetch(QUIZ_DATA_URL);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const raw = await resp.json();
     const list = Array.isArray(raw.questions) ? raw.questions : [];
-    quizDataExtended = {
+    quizData = {
       version: raw.version || '0',
       generated_at: raw.generated_at || '',
       categories: raw.categories || [],
       questions: list.map(normalizeExtendedQuestion),
     };
-  } else {
-    quizDataExtended = null;
-    console.error('[quiz] 進階 200 題載入失敗：', extResp.reason);
+  } catch (e) {
+    quizData = null;
+    console.error('[quiz] 題庫載入失敗：', e);
   }
   quizLoaded = true;
 }
 
 function questionById(id) {
-  // 兩個資料集各自查找（id 命名空間不重疊：精選 Q001-Q005、進階 QX001-QX200）
-  const inMain = (quizData && quizData.questions || []).find(q => q.id === id);
-  if (inMain) return inMain;
-  const inExt = (quizDataExtended && quizDataExtended.questions || []).find(q => q.id === id);
-  return inExt || null;
+  return (quizData && quizData.questions || []).find(q => q.id === id) || null;
 }
 
 // 從 source 字串擷取條號（"證券交易法第 36 條第 1 項" → "36"；"第 28 條之 2" → "28-2"）
@@ -816,21 +828,15 @@ const quizSessions = {
 
 function createSession(mode) {
   return {
-    mode,                          // 'quiz'（情境模擬已移除）
-    dataset: 'curated',            // 'curated' (精選 5 題) | 'extended' (進階 200 題)
+    mode,                          // 'quiz'（情境模擬已移除；現僅單一池）
     state: 'start',                // 'start' | 'playing' | 'feedback' | 'result'
-    filter: { category: 'all', difficulty: 'all', count: 5 },
+    filter: { category: 'all', difficulty: 'all', count: 10 },
     questions: [],
     currentIdx: 0,
     answers: [],
     selectedIdx: null,
     reviewMode: false,             // 錯題本模式
   };
-}
-
-// 該 session 應該寫入 / 讀取哪個 localStorage 進度 key
-function progressKeyForSession(sess) {
-  return sess.dataset === 'extended' ? PROGRESS_KEY_EXTENDED : PROGRESS_KEY;
 }
 
 function shuffle(arr) {
@@ -842,41 +848,18 @@ function shuffle(arr) {
   return a;
 }
 
-function poolForMode(mode) {
-  // 依 dataset 取對應題庫（情境模擬已移除）
-  const sess = quizSessions[mode];
-  if (sess && sess.dataset === 'extended') {
-    return (quizDataExtended && quizDataExtended.questions) || [];
-  }
+function poolForMode(_mode) {
   return (quizData && quizData.questions) || [];
-}
-
-// 切換題庫：reset filter 與 session state（避免上一個資料集殘留 category 不存在於新資料集）
-function switchDataset(mode, dataset) {
-  const sess = quizSessions[mode];
-  if (sess.dataset === dataset) return;
-  sess.dataset = dataset;
-  sess.filter = {
-    category: 'all',
-    difficulty: 'all',
-    count: dataset === 'extended' ? 10 : 5,
-  };
-  sess.state = 'start';
-  sess.questions = [];
-  sess.answers = [];
-  sess.currentIdx = 0;
-  sess.selectedIdx = null;
-  sess.reviewMode = false;
-  renderQuizPage(mode);
 }
 
 function startSession(mode, opts = {}) {
   const sess = quizSessions[mode];
   let pool = poolForMode(mode);
-  const progKey = progressKeyForSession(sess);
 
   if (opts.reviewMode) {
-    const wrongIds = loadProgress(progKey).wrong_questions;
+    // 錯題本：只看當前 pool 內 id（舊 progress 殘留之 id 對不上會自動忽略）
+    const validIds = new Set(pool.map(q => q.id));
+    const wrongIds = loadProgress().wrong_questions.filter(id => validIds.has(id));
     pool = pool.filter(q => wrongIds.includes(q.id));
     sess.reviewMode = true;
   } else {
@@ -890,7 +873,7 @@ function startSession(mode, opts = {}) {
     return;
   }
 
-  // count = 0 視為「全部」(進階模式提供)
+  // count = 0 視為「全部」
   const requested = sess.filter.count;
   const wantedCount = opts.reviewMode ? pool.length
                     : (requested === 0 ? pool.length : Math.min(requested, pool.length));
@@ -910,7 +893,7 @@ function selectAnswer(mode, idx) {
   sess.answers.push({ questionId: q.id, selectedIdx: idx, correct });
   sess.selectedIdx = idx;
   sess.state = 'feedback';
-  recordAnswer(q, correct, progressKeyForSession(sess));
+  recordAnswer(q, correct);
   renderQuizPage(mode);
 }
 
@@ -943,15 +926,11 @@ function renderQuizPage(mode) {
     area.innerHTML = `<div class="loading"><div class="spinner"></div><div>載入題庫中⋯</div></div>`;
     return;
   }
-  const sess = quizSessions[mode];
-  // 若使用者選 extended 但 extended 載入失敗 → 退回 curated 並提示
-  if (sess.dataset === 'extended' && !quizDataExtended) {
-    sess.dataset = 'curated';
-  }
-  if (!quizData && !quizDataExtended) {
+  if (!quizData) {
     area.innerHTML = renderQaEmpty('!', `題庫載入失敗<br><small style="color: var(--ink-dim);">請確認 ${QUIZ_DATA_URL} 存在</small>`);
     return;
   }
+  const sess = quizSessions[mode];
   if (sess.state === 'start') area.innerHTML = renderQuizStart(mode);
   else if (sess.state === 'result') area.innerHTML = renderQuizResult(mode);
   else area.innerHTML = renderQuizPlay(mode);
@@ -962,7 +941,6 @@ function renderQuizPage(mode) {
 function renderQuizStart(mode) {
   const sess = quizSessions[mode];
   const pool = poolForMode(mode);
-  const isExtended = (sess.dataset === 'extended');
   const cats = ['all', ...Array.from(new Set(pool.map(q => q.category)))];
   const diffs = [
     { v: 'all', label: '全部' },
@@ -970,41 +948,16 @@ function renderQuizStart(mode) {
     { v: 'medium', label: '中等' },
     { v: 'advanced', label: '進階' },
   ];
-  // 進階模式提供更大題數選項；count=0 代表「全部」
-  const counts = isExtended ? [10, 20, 50, 0] : [5, 10, 20];
+  // count=0 代表「全部」
+  const counts = [10, 20, 50, 0];
   const countLabel = n => n === 0 ? '全部' : `${n} 題`;
-  const progKey = progressKeyForSession(sess);
-  const wrongIds = loadProgress(progKey).wrong_questions;
-  const wrongCount = wrongIds.filter(id => {
-    const q = questionById(id);
-    if (!q) return false;
-    // 依據當前 dataset 過濾，避免精選 vs 進階錯題互相混淆
-    const inExt = (quizDataExtended && quizDataExtended.questions || []).some(x => x.id === id);
-    return isExtended ? inExt : !inExt;
-  }).length;
-  const pendingCount = pool.filter(q => q._pending_review).length;
-
-  // 題庫切換 segmented control
-  // 設計：用 pill 群組，與既有 chips 視覺一致；預設聚焦「精選 5 題」
-  const datasetToggle = `
-    <div class="quiz-section-label">題庫</div>
-    <div class="quiz-dataset-toggle" data-filter-group="dataset">
-      <button class="dataset-pill ${sess.dataset === 'curated' ? 'active' : ''}"
-              data-filter-value="curated">
-        精選 5 題
-      </button>
-      <button class="dataset-pill ${sess.dataset === 'extended' ? 'active' : ''}
-              ${!quizDataExtended ? 'disabled' : ''}"
-              data-filter-value="extended"
-              ${!quizDataExtended ? 'aria-disabled="true"' : ''}>
-        進階 200 題${quizDataExtended ? '' : '（暫無）'}
-      </button>
-    </div>
-  `;
+  // 錯題本：忽略 id 已不在當前 pool（舊 progress 殘留）
+  const validIds = new Set(pool.map(q => q.id));
+  const wrongCount = loadProgress().wrong_questions.filter(id => validIds.has(id)).length;
 
   return `
     <div class="quiz-start">
-      ${datasetToggle}
+      <div class="quiz-pool-summary">// 題庫共 ${pool.length} 題</div>
 
       <div class="quiz-section-label">分類</div>
       <div class="chips" data-filter-group="category">
@@ -1039,10 +992,6 @@ function renderQuizStart(mode) {
               ${wrongCount === 0 ? 'aria-disabled="true"' : ''}>
         錯題本（${wrongCount} 題）
       </button>
-
-      <div class="quiz-pool-info">
-        // 題庫共 ${pool.length} 題${isExtended && pendingCount > 0 ? `（其中 ${pendingCount} 題標記「待審」）` : ''}
-      </div>
     </div>
   `;
 }
@@ -1103,7 +1052,6 @@ function renderQuizPlay(mode) {
       <div class="quiz-meta">
         <span class="quiz-meta-cat">${escapeHTML(q.category)}</span>
         <span class="quiz-meta-diff">${escapeHTML(q.difficulty)}</span>
-        ${q._pending_review ? `<span class="quiz-pending-badge" title="尚未經人工驗證">待審</span>` : ''}
         <span class="quiz-meta-pos">${sess.currentIdx + 1} / ${total}</span>
       </div>
       <div class="quiz-question">${escapeHTML(q.question)}</div>
@@ -1160,16 +1108,10 @@ function bindQuizDelegates(area, mode) {
     if (!t) return;
 
     if (t.dataset.filterValue !== undefined) {
-      // disabled pill (如 extended 載入失敗) → 不動作
-      if (t.disabled || t.getAttribute('aria-disabled') === 'true') return;
       const group = t.parentElement.dataset.filterGroup;
       const val = t.dataset.filterValue;
-      if (group === 'dataset') {
-        switchDataset(mode, val);
-      } else {
-        sess.filter[group] = (group === 'count') ? parseInt(val, 10) : val;
-        renderQuizPage(mode);
-      }
+      sess.filter[group] = (group === 'count') ? parseInt(val, 10) : val;
+      renderQuizPage(mode);
       return;
     }
     const action = t.dataset.action;
@@ -1195,7 +1137,7 @@ function hashString(s) {
 }
 
 function getDailyQuestion() {
-  // 今日挑戰：從精選 5 題庫中依日期 hash 挑一題（情境模擬已移除，不再 prefer scenario type）
+  // 今日挑戰：從統一 200 題池依日期 hash 挑一題（每天同一題）
   if (!quizData) return null;
   const pool = quizData.questions || [];
   if (pool.length === 0) return null;
