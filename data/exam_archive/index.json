@@ -1,0 +1,492 @@
+{
+  "schema_version": "1.0",
+  "exam_name": "證券商高級業務員",
+  "papers": [
+    {
+      "year_roc": 109,
+      "year_label": "109 年",
+      "quarter": "Q3",
+      "subject_key": "investment",
+      "subject_label": "投資學",
+      "question_count": 50,
+      "json_path": "data/exam_archive/109_Q3_investment.json"
+    },
+    {
+      "year_roc": 109,
+      "year_label": "109 年",
+      "quarter": "Q3",
+      "subject_key": "finance",
+      "subject_label": "財務分析",
+      "question_count": 50,
+      "json_path": "data/exam_archive/109_Q3_finance.json"
+    },
+    {
+      "year_roc": 109,
+      "year_label": "109 年",
+      "quarter": "Q3",
+      "subject_key": "law",
+      "subject_label": "法規",
+      "question_count": 50,
+      "json_path": "data/exam_archive/109_Q3_law.json"
+    },
+    {
+      "year_roc": 109,
+      "year_label": "109 年",
+      "quarter": "Q4",
+      "subject_key": "investment",
+      "subject_label": "投資學",
+      "question_count": 50,
+      "json_path": "data/exam_archive/109_Q4_investment.json"
+    },
+    {
+      "year_roc": 109,
+      "year_label": "109 年",
+      "quarter": "Q4",
+      "subject_key": "finance",
+      "subject_label": "財務分析",
+      "question_count": 50,
+      "json_path": "data/exam_archive/109_Q4_finance.json"
+    },
+    {
+      "year_roc": 109,
+      "year_label": "109 年",
+      "quarter": "Q4",
+      "subject_key": "law",
+      "subject_label": "法規",
+      "question_count": 50,
+      "json_path": "data/exam_archive/109_Q4_law.json"
+    },
+    {
+      "year_roc": 110,
+      "year_label": "110 年",
+      "quarter": "Q1",
+      "subject_key": "investment",
+      "subject_label": "投資學",
+      "question_count": 50,
+      "json_path": "data/exam_archive/110_Q1_investment.json"
+    },
+    {
+      "year_roc": 110,
+      "year_label": "110 年",
+      "quarter": "Q1",
+      "subject_key": "finance",
+      "subject_label": "財務分析",
+      "question_count": 50,
+      "json_path": "data/exam_archive/110_Q1_finance.json"
+    },
+    {
+      "year_roc": 110,
+      "year_label": "110 年",
+      "quarter": "Q1",
+      "subject_key": "law",
+      "subject_label": "法規",
+      "question_count": 50,
+      "json_path": "data/exam_archive/110_Q1_law.json"
+    },
+    {
+      "year_roc": 110,
+      "year_label": "110 年",
+      "quarter": "Q2",
+      "subject_key": "investment",
+      "subject_label": "投資學",
+      "question_count": 50,
+      "json_path": "data/exam_archive/110_Q2_investment.json"
+    },
+    {
+      "year_roc": 110,
+      "year_label": "110 年",
+      "quarter": "Q2",
+      "subject_key": "finance",
+      "subject_label": "財務分析",
+      "question_count": 50,
+      "json_path": "data/exam_archive/110_Q2_finance.json"
+    },
+    {
+      "year_roc": 110,
+      "year_label": "110 年",
+      "quarter": "Q2",
+      "subject_key": "law",
+      "subject_label": "法規",
+      "question_count": 50,
+      "json_path": "data/exam_archive/110_Q2_law.json"
+    },
+    {
+      "year_roc": 110,
+      "year_label": "110 年",
+      "quarter": "Q3",
+      "subject_key": "investment",
+      "subject_label": "投資學",
+      "question_count": 50,
+      "json_path": "data/exam_archive/110_Q3_investment.json"
+    },
+    {
+      "year_roc": 110,
+      "year_label": "110 年",
+      "quarter": "Q3",
+      "subject_key": "finance",
+      "subject_label": "財務分析",
+      "question_count": 50,
+      "json_path": "data/exam_archive/110_Q3_finance.json"
+    },
+    {
+      "year_roc": 110,
+      "year_label": "110 年",
+      "quarter": "Q3",
+      "subject_key": "law",
+      "subject_label": "法規",
+      "question_count": 50,
+      "json_path": "data/exam_archive/110_Q3_law.json"
+    },
+    {
+      "year_roc": 111,
+      "year_label": "111 年",
+      "quarter": "Q1",
+      "subject_key": "investment",
+      "subject_label": "投資學",
+      "question_count": 50,
+      "json_path": "data/exam_archive/111_Q1_investment.json"
+    },
+    {
+      "year_roc": 111,
+      "year_label": "111 年",
+      "quarter": "Q1",
+      "subject_key": "finance",
+      "subject_label": "財務分析",
+      "question_count": 50,
+      "json_path": "data/exam_archive/111_Q1_finance.json"
+    },
+    {
+      "year_roc": 111,
+      "year_label": "111 年",
+      "quarter": "Q1",
+      "subject_key": "law",
+      "subject_label": "法規",
+      "question_count": 50,
+      "json_path": "data/exam_archive/111_Q1_law.json"
+    },
+    {
+      "year_roc": 111,
+      "year_label": "111 年",
+      "quarter": "Q2",
+      "subject_key": "investment",
+      "subject_label": "投資學",
+      "question_count": 50,
+      "json_path": "data/exam_archive/111_Q2_investment.json"
+    },
+    {
+      "year_roc": 111,
+      "year_label": "111 年",
+      "quarter": "Q2",
+      "subject_key": "finance",
+      "subject_label": "財務分析",
+      "question_count": 50,
+      "json_path": "data/exam_archive/111_Q2_finance.json"
+    },
+    {
+      "year_roc": 111,
+      "year_label": "111 年",
+      "quarter": "Q2",
+      "subject_key": "law",
+      "subject_label": "法規",
+      "question_count": 50,
+      "json_path": "data/exam_archive/111_Q2_law.json"
+    },
+    {
+      "year_roc": 111,
+      "year_label": "111 年",
+      "quarter": "Q3",
+      "subject_key": "investment",
+      "subject_label": "投資學",
+      "question_count": 50,
+      "json_path": "data/exam_archive/111_Q3_investment.json"
+    },
+    {
+      "year_roc": 111,
+      "year_label": "111 年",
+      "quarter": "Q3",
+      "subject_key": "finance",
+      "subject_label": "財務分析",
+      "question_count": 50,
+      "json_path": "data/exam_archive/111_Q3_finance.json"
+    },
+    {
+      "year_roc": 111,
+      "year_label": "111 年",
+      "quarter": "Q3",
+      "subject_key": "law",
+      "subject_label": "法規",
+      "question_count": 50,
+      "json_path": "data/exam_archive/111_Q3_law.json"
+    },
+    {
+      "year_roc": 112,
+      "year_label": "112 年",
+      "quarter": "Q1",
+      "subject_key": "investment",
+      "subject_label": "投資學",
+      "question_count": 50,
+      "json_path": "data/exam_archive/112_Q1_investment.json"
+    },
+    {
+      "year_roc": 112,
+      "year_label": "112 年",
+      "quarter": "Q1",
+      "subject_key": "finance",
+      "subject_label": "財務分析",
+      "question_count": 50,
+      "json_path": "data/exam_archive/112_Q1_finance.json"
+    },
+    {
+      "year_roc": 112,
+      "year_label": "112 年",
+      "quarter": "Q1",
+      "subject_key": "law",
+      "subject_label": "法規",
+      "question_count": 50,
+      "json_path": "data/exam_archive/112_Q1_law.json"
+    },
+    {
+      "year_roc": 112,
+      "year_label": "112 年",
+      "quarter": "Q2",
+      "subject_key": "investment",
+      "subject_label": "投資學",
+      "question_count": 50,
+      "json_path": "data/exam_archive/112_Q2_investment.json"
+    },
+    {
+      "year_roc": 112,
+      "year_label": "112 年",
+      "quarter": "Q2",
+      "subject_key": "finance",
+      "subject_label": "財務分析",
+      "question_count": 50,
+      "json_path": "data/exam_archive/112_Q2_finance.json"
+    },
+    {
+      "year_roc": 112,
+      "year_label": "112 年",
+      "quarter": "Q2",
+      "subject_key": "law",
+      "subject_label": "法規",
+      "question_count": 50,
+      "json_path": "data/exam_archive/112_Q2_law.json"
+    },
+    {
+      "year_roc": 112,
+      "year_label": "112 年",
+      "quarter": "Q3",
+      "subject_key": "investment",
+      "subject_label": "投資學",
+      "question_count": 50,
+      "json_path": "data/exam_archive/112_Q3_investment.json"
+    },
+    {
+      "year_roc": 112,
+      "year_label": "112 年",
+      "quarter": "Q3",
+      "subject_key": "finance",
+      "subject_label": "財務分析",
+      "question_count": 50,
+      "json_path": "data/exam_archive/112_Q3_finance.json"
+    },
+    {
+      "year_roc": 112,
+      "year_label": "112 年",
+      "quarter": "Q3",
+      "subject_key": "law",
+      "subject_label": "法規",
+      "question_count": 50,
+      "json_path": "data/exam_archive/112_Q3_law.json"
+    },
+    {
+      "year_roc": 113,
+      "year_label": "113 年",
+      "quarter": "Q1",
+      "subject_key": "investment",
+      "subject_label": "投資學",
+      "question_count": 50,
+      "json_path": "data/exam_archive/113_Q1_investment.json"
+    },
+    {
+      "year_roc": 113,
+      "year_label": "113 年",
+      "quarter": "Q1",
+      "subject_key": "finance",
+      "subject_label": "財務分析",
+      "question_count": 50,
+      "json_path": "data/exam_archive/113_Q1_finance.json"
+    },
+    {
+      "year_roc": 113,
+      "year_label": "113 年",
+      "quarter": "Q1",
+      "subject_key": "law",
+      "subject_label": "法規",
+      "question_count": 50,
+      "json_path": "data/exam_archive/113_Q1_law.json"
+    },
+    {
+      "year_roc": 113,
+      "year_label": "113 年",
+      "quarter": "Q2",
+      "subject_key": "investment",
+      "subject_label": "投資學",
+      "question_count": 50,
+      "json_path": "data/exam_archive/113_Q2_investment.json"
+    },
+    {
+      "year_roc": 113,
+      "year_label": "113 年",
+      "quarter": "Q2",
+      "subject_key": "finance",
+      "subject_label": "財務分析",
+      "question_count": 50,
+      "json_path": "data/exam_archive/113_Q2_finance.json"
+    },
+    {
+      "year_roc": 113,
+      "year_label": "113 年",
+      "quarter": "Q2",
+      "subject_key": "law",
+      "subject_label": "法規",
+      "question_count": 50,
+      "json_path": "data/exam_archive/113_Q2_law.json"
+    },
+    {
+      "year_roc": 113,
+      "year_label": "113 年",
+      "quarter": "Q3",
+      "subject_key": "investment",
+      "subject_label": "投資學",
+      "question_count": 50,
+      "json_path": "data/exam_archive/113_Q3_investment.json"
+    },
+    {
+      "year_roc": 113,
+      "year_label": "113 年",
+      "quarter": "Q3",
+      "subject_key": "finance",
+      "subject_label": "財務分析",
+      "question_count": 50,
+      "json_path": "data/exam_archive/113_Q3_finance.json"
+    },
+    {
+      "year_roc": 113,
+      "year_label": "113 年",
+      "quarter": "Q3",
+      "subject_key": "law",
+      "subject_label": "法規",
+      "question_count": 50,
+      "json_path": "data/exam_archive/113_Q3_law.json"
+    },
+    {
+      "year_roc": 114,
+      "year_label": "114 年",
+      "quarter": "Q1",
+      "subject_key": "investment",
+      "subject_label": "投資學",
+      "question_count": 50,
+      "json_path": "data/exam_archive/114_Q1_investment.json"
+    },
+    {
+      "year_roc": 114,
+      "year_label": "114 年",
+      "quarter": "Q1",
+      "subject_key": "finance",
+      "subject_label": "財務分析",
+      "question_count": 50,
+      "json_path": "data/exam_archive/114_Q1_finance.json"
+    },
+    {
+      "year_roc": 114,
+      "year_label": "114 年",
+      "quarter": "Q1",
+      "subject_key": "law",
+      "subject_label": "法規",
+      "question_count": 50,
+      "json_path": "data/exam_archive/114_Q1_law.json"
+    },
+    {
+      "year_roc": 114,
+      "year_label": "114 年",
+      "quarter": "Q2",
+      "subject_key": "investment",
+      "subject_label": "投資學",
+      "question_count": 50,
+      "json_path": "data/exam_archive/114_Q2_investment.json"
+    },
+    {
+      "year_roc": 114,
+      "year_label": "114 年",
+      "quarter": "Q2",
+      "subject_key": "finance",
+      "subject_label": "財務分析",
+      "question_count": 50,
+      "json_path": "data/exam_archive/114_Q2_finance.json"
+    },
+    {
+      "year_roc": 114,
+      "year_label": "114 年",
+      "quarter": "Q2",
+      "subject_key": "law",
+      "subject_label": "法規",
+      "question_count": 50,
+      "json_path": "data/exam_archive/114_Q2_law.json"
+    },
+    {
+      "year_roc": 114,
+      "year_label": "114 年",
+      "quarter": "Q3",
+      "subject_key": "investment",
+      "subject_label": "投資學",
+      "question_count": 50,
+      "json_path": "data/exam_archive/114_Q3_investment.json"
+    },
+    {
+      "year_roc": 114,
+      "year_label": "114 年",
+      "quarter": "Q3",
+      "subject_key": "finance",
+      "subject_label": "財務分析",
+      "question_count": 50,
+      "json_path": "data/exam_archive/114_Q3_finance.json"
+    },
+    {
+      "year_roc": 114,
+      "year_label": "114 年",
+      "quarter": "Q3",
+      "subject_key": "law",
+      "subject_label": "法規",
+      "question_count": 50,
+      "json_path": "data/exam_archive/114_Q3_law.json"
+    },
+    {
+      "year_roc": 115,
+      "year_label": "115 年",
+      "quarter": "Q1",
+      "subject_key": "investment",
+      "subject_label": "投資學",
+      "question_count": 50,
+      "json_path": "data/exam_archive/115_Q1_investment.json"
+    },
+    {
+      "year_roc": 115,
+      "year_label": "115 年",
+      "quarter": "Q1",
+      "subject_key": "finance",
+      "subject_label": "財務分析",
+      "question_count": 50,
+      "json_path": "data/exam_archive/115_Q1_finance.json"
+    },
+    {
+      "year_roc": 115,
+      "year_label": "115 年",
+      "quarter": "Q1",
+      "subject_key": "law",
+      "subject_label": "法規",
+      "question_count": 50,
+      "json_path": "data/exam_archive/115_Q1_law.json"
+    }
+  ]
+}

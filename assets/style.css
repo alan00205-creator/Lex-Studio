@@ -1425,3 +1425,216 @@ mark {
     font-size: 16px;
   }
 }
+
+/* ===== 考古題 ===== */
+.exam-home {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.exam-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  padding: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  margin-bottom: 4px;
+}
+
+.exam-stats-item {
+  text-align: center;
+  padding: 4px 0;
+}
+
+.exam-stats-num {
+  font-family: var(--display);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--primary);
+  line-height: 1.1;
+}
+
+.exam-stats-label {
+  font-size: 10.5px;
+  color: var(--ink-dim);
+  margin-top: 2px;
+  letter-spacing: 0.05em;
+}
+
+.exam-paper-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.exam-paper-card {
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 14px 14px 12px;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s, transform 0.15s;
+  font-family: inherit;
+}
+
+.exam-paper-card:hover {
+  border-color: var(--primary);
+  transform: translateY(-1px);
+}
+
+.exam-paper-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.exam-paper-year {
+  font-family: var(--display);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.exam-paper-q {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-dim);
+  background: var(--bg-soft);
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.exam-paper-subject {
+  font-size: 14px;
+  color: var(--ink);
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.exam-paper-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--ink-dim);
+  font-family: var(--mono);
+}
+
+.exam-paper-stat { color: var(--gold); }
+
+.exam-paper-detail-head {
+  margin: 8px 0 12px;
+}
+
+.exam-paper-detail-title {
+  font-family: var(--serif);
+  font-size: 18px;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+
+.exam-paper-detail-meta {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-dim);
+}
+
+.exam-paper-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.exam-paper-actions a.btn-secondary {
+  text-align: center;
+  text-decoration: none;
+  display: block;
+}
+
+.exam-browse-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 12px;
+}
+
+.exam-browse-item {
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--primary);
+  border-radius: 4px;
+  padding: 14px 14px 12px;
+}
+
+.exam-browse-num {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--gold);
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+}
+
+.exam-browse-stem {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--ink);
+  margin-bottom: 10px;
+}
+
+.exam-browse-opts {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 10px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.exam-browse-opt {
+  display: flex;
+  gap: 8px;
+  padding: 6px 10px;
+  font-size: 13px;
+  color: var(--ink-soft);
+  border-radius: 3px;
+}
+
+.exam-browse-opt.correct {
+  background: rgba(45, 122, 79, 0.08);
+  color: var(--ink);
+  border-left: 2px solid var(--jade);
+}
+
+.exam-browse-opt .opt-letter {
+  font-family: var(--mono);
+  font-weight: 700;
+  width: 16px;
+}
+
+.exam-browse-ans {
+  font-size: 12px;
+  color: var(--ink-dim);
+  border-top: 1px dashed var(--line);
+  padding-top: 8px;
+  font-family: var(--mono);
+}
+
+.exam-browse-ans strong { color: var(--jade); font-family: var(--serif); }
+
+@media (min-width: 768px) {
+  .exam-paper-list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .exam-paper-list {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

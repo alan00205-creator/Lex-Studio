@@ -1173,6 +1173,7 @@ function goPage(name) {
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.page === name));
   window.scrollTo(0, 0);
   if (name === 'qa') ensureQaLoaded();
+  if (name === 'exam') ensureExamLoaded();
   if (name === 'quiz') ensureQuizLoaded().then(() => renderQuizPage('quiz'));
   if (name === 'scenario') ensureQuizLoaded().then(() => renderQuizPage('scenario'));
   if (name === 'home') initHome();
@@ -1227,3 +1228,563 @@ document.getElementById('footerVersion').textContent = APP_VERSION;
 
 loadData();
 initHome();   // 預先載入題庫，讓首頁的今日挑戰可立即顯示
+
+// ============================================
+// 考古題（證券商高級業務員歷屆試題）
+// PRD: data/exam_archive/index.json + 各卷 JSON
+// ============================================
+
+const EXAM_INDEX_URL = './data/exam_archive/index.json';
+const EXAM_PROGRESS_KEY = 'underwriter_lex_exam_progress';
+
+let examIndex = null;
+let examLoaded = false;
+let examLoadStarted = false;
+let examPapersCache = {};   // json_path → loaded paper
+
+// State machine for 考古題
+const examState = {
+  view: 'home',           // 'home' | 'paper-select' | 'browse' | 'play' | 'result'
+  filter: { year: 'all', subject: 'all', count: 20 },
+  // 練習 session
+  questions: [],
+  currentIdx: 0,
+  answers: [],
+  selectedIdx: null,
+  // 瀏覽模式
+  selectedPaperPath: null,
+  selectedPaperData: null,
+};
+
+const EXAM_SUBJECT_LABELS = {
+  investment: '投資學',
+  finance: '財務分析',
+  law: '法規',
+};
+
+// 把 paper.questions 轉成 quiz 用 schema (id, stem, options[], correct_index, source)
+function examQuestionToQuizFormat(paper, q) {
+  // 送分 → answer === '*'，前端視為任何選項皆正確
+  const optionLetters = ['A', 'B', 'C', 'D'];
+  const optionTexts = optionLetters.map(L => q.options[L] || '');
+  const correctIdx = q.answer === '*' ? -1 : optionLetters.indexOf(q.answer);
+
+  return {
+    id: q.id,
+    type: 'exam',
+    category: paper.subject_label,
+    difficulty: 'exam',
+    question: q.stem,
+    options: optionTexts,
+    correct_index: correctIdx,        // -1 = 送分
+    answer_letter: q.answer,          // 原 letter，方便顯示
+    explanation: q.answer === '*'
+      ? '本題經審題委員確認為「送分」，所有選項均給分。'
+      : `正確答案：${q.answer}. ${q.options[q.answer] || ''}`,
+    source: {
+      law_id: '',
+      law_name: `${paper.year_label} ${paper.quarter} ${paper.subject_label}`,
+      article: `第 ${q.number} 題`,
+      url: paper.source_pdf,           // 連到 source PDF（repo 內路徑）
+    },
+    _meta: {
+      year_roc: paper.year_roc,
+      year_label: paper.year_label,
+      quarter: paper.quarter,
+      subject_key: paper.subject_key,
+      number: q.number,
+      pdf: paper.source_pdf,
+    },
+  };
+}
+
+async function ensureExamLoaded() {
+  if (examLoaded || examLoadStarted) return;
+  examLoadStarted = true;
+  try {
+    const resp = await fetch(EXAM_INDEX_URL);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    examIndex = await resp.json();
+    examLoaded = true;
+  } catch (e) {
+    examIndex = null;
+    examLoaded = true;
+    console.log('[exam] index.json 載入失敗：', e.message);
+  }
+  renderExam();
+}
+
+async function loadExamPaper(jsonPath) {
+  if (examPapersCache[jsonPath]) return examPapersCache[jsonPath];
+  const url = './' + jsonPath;
+  const resp = await fetch(url);
+  if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+  const data = await resp.json();
+  examPapersCache[jsonPath] = data;
+  return data;
+}
+
+// ----- Progress (localStorage) -----
+
+function loadExamProgress() {
+  try {
+    const raw = localStorage.getItem(EXAM_PROGRESS_KEY);
+    if (!raw) return { version: 1, papers_played: {}, total_answered: 0, total_correct: 0 };
+    const p = JSON.parse(raw);
+    if (!p || p.version !== 1) return { version: 1, papers_played: {}, total_answered: 0, total_correct: 0 };
+    p.papers_played = p.papers_played || {};
+    return p;
+  } catch (e) {
+    return { version: 1, papers_played: {}, total_answered: 0, total_correct: 0 };
+  }
+}
+
+function saveExamProgress(p) {
+  try { localStorage.setItem(EXAM_PROGRESS_KEY, JSON.stringify(p)); } catch (e) {}
+}
+
+function recordExamAnswer(question, correct) {
+  const p = loadExamProgress();
+  p.total_answered = (p.total_answered || 0) + 1;
+  if (correct) p.total_correct = (p.total_correct || 0) + 1;
+  const meta = question._meta;
+  if (meta) {
+    const k = `${meta.year_roc}_${meta.quarter}_${meta.subject_key}`;
+    if (!p.papers_played[k]) p.papers_played[k] = { answered: 0, correct: 0 };
+    p.papers_played[k].answered += 1;
+    if (correct) p.papers_played[k].correct += 1;
+  }
+  saveExamProgress(p);
+}
+
+// ----- Filter & query helpers -----
+
+function examFilteredPapers() {
+  if (!examIndex) return [];
+  return (examIndex.papers || []).filter(p => {
+    if (examState.filter.year !== 'all' && String(p.year_roc) !== String(examState.filter.year)) return false;
+    if (examState.filter.subject !== 'all' && p.subject_key !== examState.filter.subject) return false;
+    return true;
+  });
+}
+
+function examYearOptions() {
+  if (!examIndex) return [];
+  const set = new Set((examIndex.papers || []).map(p => p.year_roc));
+  return Array.from(set).sort((a, b) => b - a);
+}
+
+// ----- Random pool builder -----
+
+async function buildRandomPool() {
+  const papers = examFilteredPapers();
+  const all = [];
+  for (const meta of papers) {
+    try {
+      const data = await loadExamPaper(meta.json_path);
+      for (const q of (data.questions || [])) {
+        all.push(examQuestionToQuizFormat(data, q));
+      }
+    } catch (e) {
+      console.warn('[exam] paper load failed', meta.json_path, e);
+    }
+  }
+  return all;
+}
+
+// ----- Render -----
+
+function renderExamSyncBanner() {
+  const el = document.getElementById('examSyncInfo');
+  if (!examLoaded) { el.textContent = '載入中⋯'; return; }
+  if (!examIndex) {
+    el.innerHTML = '尚未產生 <code>data/exam_archive/index.json</code>';
+    return;
+  }
+  const papers = examIndex.papers || [];
+  const totalQ = papers.reduce((s, p) => s + (p.question_count || 0), 0);
+  const years = examYearOptions();
+  const yearRange = years.length ? `${years[years.length - 1]}–${years[0]}` : '—';
+  el.innerHTML = `
+    收錄 <strong>${papers.length}</strong> 份試卷 · <strong>${totalQ}</strong> 題（${escapeHTML(yearRange)} 年）<br>
+    <span style="color: var(--ink-dim); font-size: 11px;">資料來源：金融研訓院公告試題與解答（PDF）</span>
+  `;
+}
+
+function renderExamHome() {
+  const yearOpts = ['all', ...examYearOptions().map(String)];
+  const subjOpts = [
+    { v: 'all', label: '全部' },
+    { v: 'investment', label: '投資學' },
+    { v: 'finance', label: '財務分析' },
+    { v: 'law', label: '法規' },
+  ];
+  const counts = [10, 20, 50];
+  const filtered = examFilteredPapers();
+  const totalQ = filtered.reduce((s, p) => s + (p.question_count || 0), 0);
+  const progress = loadExamProgress();
+  const overallPct = progress.total_answered > 0
+    ? Math.round(progress.total_correct * 100 / progress.total_answered)
+    : 0;
+
+  const yearChips = yearOpts.map(y => `
+    <button class="chip ${examState.filter.year === y ? 'active' : ''}" data-exam-filter="year" data-val="${escapeHTML(y)}">
+      ${y === 'all' ? '全部' : escapeHTML(y) + ' 年'}
+    </button>`).join('');
+
+  const subjChips = subjOpts.map(s => `
+    <button class="chip ${examState.filter.subject === s.v ? 'active' : ''}" data-exam-filter="subject" data-val="${s.v}">
+      ${escapeHTML(s.label)}
+    </button>`).join('');
+
+  const countChips = counts.map(n => `
+    <button class="chip ${examState.filter.count === n ? 'active' : ''}" data-exam-filter="count" data-val="${n}">
+      ${n} 題
+    </button>`).join('');
+
+  return `
+    <div class="exam-home">
+      <div class="exam-stats">
+        <div class="exam-stats-item">
+          <div class="exam-stats-num">${filtered.length}</div>
+          <div class="exam-stats-label">符合條件試卷</div>
+        </div>
+        <div class="exam-stats-item">
+          <div class="exam-stats-num">${totalQ}</div>
+          <div class="exam-stats-label">題庫總數</div>
+        </div>
+        <div class="exam-stats-item">
+          <div class="exam-stats-num">${progress.total_answered || 0}</div>
+          <div class="exam-stats-label">已答題</div>
+        </div>
+        <div class="exam-stats-item">
+          <div class="exam-stats-num">${overallPct}<span class="progress-unit">%</span></div>
+          <div class="exam-stats-label">答對率</div>
+        </div>
+      </div>
+
+      <div class="quiz-section-label">年度</div>
+      <div class="chips">${yearChips}</div>
+
+      <div class="quiz-section-label">主題</div>
+      <div class="chips">${subjChips}</div>
+
+      <div class="quiz-section-label">隨機抽題量</div>
+      <div class="chips">${countChips}</div>
+
+      <button class="btn-primary" data-exam-action="start-random">
+        開始隨機練習（${examState.filter.count} 題）
+      </button>
+
+      <button class="btn-secondary" data-exam-action="goto-paper-select">
+        瀏覽單份試卷（${filtered.length} 份）
+      </button>
+    </div>
+  `;
+}
+
+function renderExamPaperSelect() {
+  const list = examFilteredPapers();
+  if (list.length === 0) {
+    return `
+      <button class="back-link" data-exam-action="back-home">← 回考古題首頁</button>
+      <div class="empty"><div class="empty-mark">∅</div><div class="empty-text">無符合條件試卷<br>請放寬年度或主題</div></div>`;
+  }
+  // 按年降冪 → 季 → 主題排序
+  list.sort((a, b) => (b.year_roc - a.year_roc) || (a.quarter > b.quarter ? 1 : -1) || a.subject_key.localeCompare(b.subject_key));
+  const progress = loadExamProgress();
+
+  const cards = list.map(p => {
+    const k = `${p.year_roc}_${p.quarter}_${p.subject_key}`;
+    const stat = progress.papers_played[k];
+    const statTxt = stat ? `${stat.correct}/${stat.answered}` : '—';
+    return `
+      <button class="exam-paper-card" data-exam-paper="${escapeHTML(p.json_path)}">
+        <div class="exam-paper-head">
+          <span class="exam-paper-year">${escapeHTML(p.year_label)}</span>
+          <span class="exam-paper-q">${escapeHTML(p.quarter)}</span>
+        </div>
+        <div class="exam-paper-subject">${escapeHTML(p.subject_label)}</div>
+        <div class="exam-paper-meta">
+          <span>${p.question_count} 題</span>
+          <span class="exam-paper-stat">${escapeHTML(statTxt)}</span>
+        </div>
+      </button>`;
+  }).join('');
+
+  return `
+    <button class="back-link" data-exam-action="back-home">← 回考古題首頁</button>
+    <div class="quiz-section-label">選一份試卷（${list.length}）</div>
+    <div class="exam-paper-list">${cards}</div>
+  `;
+}
+
+function renderExamPaperDetail() {
+  const data = examState.selectedPaperData;
+  if (!data) {
+    return `<button class="back-link" data-exam-action="back-paper-select">← 回試卷清單</button><div class="loading"><div class="spinner"></div><div>載入試卷中⋯</div></div>`;
+  }
+  return `
+    <button class="back-link" data-exam-action="back-paper-select">← 回試卷清單</button>
+    <div class="exam-paper-detail-head">
+      <h3 class="exam-paper-detail-title">${escapeHTML(data.year_label)} ${escapeHTML(data.quarter)} · ${escapeHTML(data.subject_label)}</h3>
+      <div class="exam-paper-detail-meta">${data.question_count} 題</div>
+    </div>
+    <div class="exam-paper-actions">
+      <button class="btn-primary" data-exam-action="start-paper">開始作答（依序 ${data.question_count} 題）</button>
+      <button class="btn-secondary" data-exam-action="browse-paper">瀏覽全卷（直接看答案）</button>
+      ${data.source_pdf ? `<a class="btn-secondary" href="${escapeHTML(data.source_pdf)}" target="_blank" rel="noopener">查看原始 PDF ↗</a>` : ''}
+    </div>
+  `;
+}
+
+function renderExamBrowse() {
+  const data = examState.selectedPaperData;
+  if (!data) return '';
+  const items = (data.questions || []).map(q => {
+    const opts = ['A','B','C','D'].map(L => {
+      const isCorrect = (q.answer === L);
+      const isAllCorrect = q.answer === '*';
+      const cls = isCorrect || isAllCorrect ? 'exam-browse-opt correct' : 'exam-browse-opt';
+      return `<li class="${cls}"><span class="opt-letter">${L}</span><span class="opt-text">${escapeHTML(q.options[L] || '')}</span></li>`;
+    }).join('');
+    const ansLabel = q.answer === '*' ? '送分（全選給分）' : `${q.answer}. ${escapeHTML(q.options[q.answer] || '')}`;
+    return `
+      <article class="exam-browse-item">
+        <div class="exam-browse-num">第 ${q.number} 題</div>
+        <div class="exam-browse-stem">${escapeHTML(q.stem)}</div>
+        <ul class="exam-browse-opts">${opts}</ul>
+        <div class="exam-browse-ans">正解：<strong>${ansLabel}</strong></div>
+      </article>
+    `;
+  }).join('');
+  return `
+    <button class="back-link" data-exam-action="back-paper-detail">← 回試卷說明</button>
+    <h3 class="exam-paper-detail-title">${escapeHTML(data.year_label)} ${escapeHTML(data.quarter)} · ${escapeHTML(data.subject_label)}（瀏覽）</h3>
+    <div class="exam-browse-list">${items}</div>
+  `;
+}
+
+function renderExamPlay() {
+  const q = examState.questions[examState.currentIdx];
+  const total = examState.questions.length;
+  const isFeedback = examState.view === 'feedback';
+
+  const dots = examState.questions.map((_, i) => {
+    let cls = 'dot';
+    if (i < examState.currentIdx) cls += examState.answers[i] && examState.answers[i].correct ? ' correct' : ' wrong';
+    if (i === examState.currentIdx) cls += ' current';
+    return `<span class="${cls}"></span>`;
+  }).join('');
+
+  const opts = q.options.map((opt, i) => {
+    let cls = 'quiz-option';
+    let mark = '';
+    if (isFeedback) {
+      const isCorrect = (q.correct_index === -1) || (i === q.correct_index);  // 送分時全部標 correct
+      if (isCorrect) { cls += ' correct'; mark = '✓'; }
+      else if (i === examState.selectedIdx) { cls += ' wrong'; mark = '✗'; }
+    } else if (i === examState.selectedIdx) {
+      cls += ' selected';
+    }
+    return `<button class="${cls}" data-exam-action="select" data-opt="${i}" ${isFeedback ? 'disabled' : ''}>
+      <span class="opt-letter">${'ABCD'[i]}</span>
+      <span class="opt-text">${escapeHTML(opt)}</span>
+      ${mark ? `<span class="opt-mark">${mark}</span>` : ''}
+    </button>`;
+  }).join('');
+
+  const feedback = !isFeedback ? '' : `
+    <div class="quiz-feedback">
+      <div class="feedback-label ${examState.answers[examState.currentIdx].correct ? 'correct' : 'wrong'}">
+        ${examState.answers[examState.currentIdx].correct ? '✓ 答對' : '✗ 答錯'}
+      </div>
+      <div class="feedback-explanation">${escapeHTML(q.explanation)}</div>
+      <div class="feedback-source">
+        出處：<strong>${escapeHTML(q.source.law_name)} ${escapeHTML(q.source.article)}</strong>
+        ${q.source.url ? `· <a href="${escapeHTML(q.source.url)}" target="_blank" rel="noopener">原始 PDF ↗</a>` : ''}
+      </div>
+      <button class="btn-primary" data-exam-action="next">
+        ${examState.currentIdx + 1 >= total ? '查看結果' : '下一題'}
+      </button>
+    </div>
+  `;
+
+  return `
+    <button class="back-link" data-exam-action="quit">← 結束練習</button>
+    <div class="quiz-progress-dots">${dots}</div>
+    <div class="quiz-meta">
+      <span class="quiz-meta-cat">${escapeHTML(q.category)}</span>
+      <span class="quiz-meta-diff">${escapeHTML(q._meta.year_label)} ${escapeHTML(q._meta.quarter)}</span>
+      <span class="quiz-meta-pos">${examState.currentIdx + 1} / ${total}</span>
+    </div>
+    <div class="quiz-question">${escapeHTML(q.question)}</div>
+    <div class="quiz-options">${opts}</div>
+    ${feedback}
+  `;
+}
+
+function renderExamResult() {
+  const total = examState.questions.length;
+  const correct = examState.answers.filter(a => a.correct).length;
+  const pct = total > 0 ? Math.round(correct * 100 / total) : 0;
+  const wrongAnswers = examState.answers.filter(a => !a.correct);
+
+  const wrongList = wrongAnswers.map(a => {
+    const q = examState.questions.find(x => x.id === a.questionId);
+    if (!q) return '';
+    const correctLabel = q.correct_index === -1
+      ? '送分（全選給分）'
+      : `${'ABCD'[q.correct_index]}. ${escapeHTML(q.options[q.correct_index])}`;
+    return `<li>
+      <div class="result-wrong-cat">${escapeHTML(q._meta.year_label)} ${escapeHTML(q._meta.quarter)} · ${escapeHTML(q.category)} · 第 ${q._meta.number} 題</div>
+      <div class="result-wrong-q">${escapeHTML(q.question)}</div>
+      <div class="result-wrong-correct">正解：${correctLabel}</div>
+    </li>`;
+  }).join('');
+
+  return `
+    <div class="quiz-result">
+      <div class="result-headline">
+        <div class="result-pct">${pct}%</div>
+        <div class="result-fraction">${correct} / ${total}</div>
+      </div>
+      ${wrongAnswers.length > 0 ? `
+        <div class="quiz-section-label">答錯題目（${wrongAnswers.length}）</div>
+        <ul class="result-wrong-list">${wrongList}</ul>
+      ` : `<div class="quiz-section-label" style="color: var(--jade);">完美！全部答對</div>`}
+      <div class="result-actions">
+        <button class="btn-primary" data-exam-action="back-home">回考古題首頁</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderExam() {
+  renderExamSyncBanner();
+  const area = document.getElementById('examArea');
+
+  if (!examLoaded) {
+    area.innerHTML = `<div class="loading"><div class="spinner"></div><div>載入考古題中⋯</div></div>`;
+    return;
+  }
+  if (!examIndex) {
+    area.innerHTML = `<div class="empty"><div class="empty-mark">!</div><div class="empty-text">考古題索引尚未產生<br><small style="color: var(--ink-dim);">請執行 scripts/extract_exam_archive.py</small></div></div>`;
+    return;
+  }
+
+  switch (examState.view) {
+    case 'paper-select': area.innerHTML = renderExamPaperSelect(); break;
+    case 'paper-detail': area.innerHTML = renderExamPaperDetail(); break;
+    case 'browse':       area.innerHTML = renderExamBrowse();      break;
+    case 'play':
+    case 'feedback':     area.innerHTML = renderExamPlay();        break;
+    case 'result':       area.innerHTML = renderExamResult();      break;
+    default:             area.innerHTML = renderExamHome();        break;
+  }
+
+  bindExamDelegates(area);
+}
+
+function bindExamDelegates(area) {
+  if (area.dataset.examBound === '1') return;
+  area.dataset.examBound = '1';
+
+  area.addEventListener('click', async e => {
+    // filter chips
+    const filterBtn = e.target.closest('[data-exam-filter]');
+    if (filterBtn) {
+      const grp = filterBtn.dataset.examFilter;
+      const v = filterBtn.dataset.val;
+      examState.filter[grp] = (grp === 'count') ? parseInt(v, 10) : v;
+      renderExam();
+      return;
+    }
+    // paper card
+    const paperCard = e.target.closest('.exam-paper-card');
+    if (paperCard) {
+      const path = paperCard.dataset.examPaper;
+      examState.selectedPaperPath = path;
+      examState.selectedPaperData = null;
+      examState.view = 'paper-detail';
+      renderExam();
+      try {
+        const data = await loadExamPaper(path);
+        examState.selectedPaperData = data;
+        renderExam();
+      } catch (err) {
+        alert('試卷載入失敗：' + err.message);
+      }
+      return;
+    }
+    // actions
+    const actionBtn = e.target.closest('[data-exam-action]');
+    if (!actionBtn) return;
+    const act = actionBtn.dataset.examAction;
+
+    if (act === 'goto-paper-select') {
+      examState.view = 'paper-select';
+      renderExam();
+    } else if (act === 'back-home') {
+      examState.view = 'home';
+      renderExam();
+    } else if (act === 'back-paper-select') {
+      examState.view = 'paper-select';
+      renderExam();
+    } else if (act === 'back-paper-detail') {
+      examState.view = 'paper-detail';
+      renderExam();
+    } else if (act === 'browse-paper') {
+      examState.view = 'browse';
+      renderExam();
+      window.scrollTo(0, 0);
+    } else if (act === 'start-paper') {
+      const data = examState.selectedPaperData;
+      if (!data) return;
+      examState.questions = (data.questions || []).map(q => examQuestionToQuizFormat(data, q));
+      examState.currentIdx = 0;
+      examState.answers = [];
+      examState.selectedIdx = null;
+      examState.view = 'play';
+      renderExam();
+      window.scrollTo(0, 0);
+    } else if (act === 'start-random') {
+      const pool = await buildRandomPool();
+      if (pool.length === 0) {
+        alert('無符合條件題目，請放寬年度或主題。');
+        return;
+      }
+      const n = Math.min(examState.filter.count, pool.length);
+      examState.questions = shuffle(pool).slice(0, n);
+      examState.currentIdx = 0;
+      examState.answers = [];
+      examState.selectedIdx = null;
+      examState.view = 'play';
+      renderExam();
+      window.scrollTo(0, 0);
+    } else if (act === 'select') {
+      const idx = parseInt(actionBtn.dataset.opt, 10);
+      const q = examState.questions[examState.currentIdx];
+      // 送分 (correct_index === -1) → 一律 correct
+      const correct = (q.correct_index === -1) || (idx === q.correct_index);
+      examState.answers.push({ questionId: q.id, selectedIdx: idx, correct });
+      examState.selectedIdx = idx;
+      examState.view = 'feedback';
+      recordExamAnswer(q, correct);
+      renderExam();
+    } else if (act === 'next') {
+      if (examState.currentIdx + 1 >= examState.questions.length) {
+        examState.view = 'result';
+      } else {
+        examState.currentIdx += 1;
+        examState.selectedIdx = null;
+        examState.view = 'play';
+      }
+      renderExam();
+      window.scrollTo(0, 0);
+    } else if (act === 'quit') {
+      examState.view = 'home';
+      renderExam();
+    }
+  });
+}
