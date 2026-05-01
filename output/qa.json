@@ -1,163 +1,712 @@
 {
-  "fetched_at": "2026-05-01T08:35:08Z",
+  "fetched_at": "2026-05-01T08:45:12Z",
   "source": "https://www.sfb.gov.tw/ch/home.jsp?id=858&parentpath=0,6",
   "categories": [
     {
       "id": 862,
       "name": "1.公司治理",
-      "url": "https://www.sfb.gov.tw/home.jsp?id=862&parentpath=0,6,858",
-      "documents": []
+      "url": "https://www.sfb.gov.tw/ch/home.jsp?id=862&parentpath=0,6,858",
+      "documents": [
+        {
+          "title": "1.獨立董事篇",
+          "publish_date": "2020-04-14",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/202004141034100.pdf&filedisplay=%E5%95%8F%E7%AD%94%E9%9B%86-%E5%85%AC%E5%8F%B8%E6%B2%BB%E7%90%86-%E7%8D%A8%E7%AB%8B%E8%91%A3%E4%BA%8B%E7%AF%87%28114.1%29.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/862/202004141034100.pdf",
+          "raw_text": "",
+          "page_count": 0
+        },
+        {
+          "title": "2.審計委員會篇",
+          "publish_date": "2019-08-15",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/201908151414040.pdf&filedisplay=%E5%95%8F%E7%AD%94%E9%9B%86-%E5%85%AC%E5%8F%B8%E6%B2%BB%E7%90%86-%E5%AF%A9%E8%A8%88%E5%A7%94%E5%93%A1%E6%9C%83%E7%AF%87%28113.3%29.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/862/201908151414040.pdf",
+          "raw_text": "",
+          "page_count": 0
+        },
+        {
+          "title": "3.董事會議事辦法篇",
+          "publish_date": "2021-05-24",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/202105241448250.pdf&filedisplay=110.05.24+%E5%85%AC%E5%8F%B8%E6%B2%BB%E7%90%86%E5%95%8F%E7%AD%94%E9%9B%86-%E8%91%A3%E4%BA%8B%E6%9C%83%E8%AD%B0%E4%BA%8B%E8%BE%A6%E6%B3%95%E7%AF%87%EF%BC%881100524%E4%BF%AE%E6%AD%A3%EF%BC%89.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/862/202105241448250.pdf",
+          "raw_text": "",
+          "page_count": 0
+        },
+        {
+          "title": "4.強化董事會、監察人獨立性篇",
+          "publish_date": "2019-08-15",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/201908151419490.pdf&filedisplay=%E5%95%8F%E7%AD%94%E9%9B%86104-%E5%85%AC%E5%8F%B8%E6%B2%BB%E7%90%86-%E5%BC%B7%E5%8C%96%E8%91%A3%E4%BA%8B%E6%9C%83%E3%80%81%E7%9B%A3%E5%AF%9F%E4%BA%BA%E4%B9%8B%E7%8D%A8%E7%AB%8B%E6%80%A7%E7%AF%87%281020301%29.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/862/201908151419490.pdf",
+          "raw_text": "",
+          "page_count": 0
+        },
+        {
+          "title": "5.薪資報酬委員會篇",
+          "publish_date": "2019-08-15",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/201908151421280.pdf&filedisplay=%E5%95%8F%E7%AD%94%E9%9B%86105-%E5%85%AC%E5%8F%B8%E6%B2%BB%E7%90%86-%E8%96%AA%E8%B3%87%E5%A0%B1%E9%85%AC%E5%A7%94%E5%93%A1%E6%9C%83%E7%AF%87%281030401%29.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/862/201908151421280.pdf",
+          "raw_text": "",
+          "page_count": 0
+        }
+      ]
     },
     {
       "id": 863,
       "name": "2.公開發行公司募集發行",
-      "url": "https://www.sfb.gov.tw/home.jsp?id=863&parentpath=0,6,858",
-      "documents": []
+      "url": "https://www.sfb.gov.tw/ch/home.jsp?id=863&parentpath=0,6,858",
+      "documents": [
+        {
+          "title": "1.員工認股權憑證疑義問答",
+          "publish_date": "2023-06-27",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/202306271657170.pdf&filedisplay=112%E5%B9%B46%E6%9C%88%E4%BF%AE%E6%AD%A3%E5%93%A1%E5%B7%A5%E8%AA%8D%E8%82%A1%E6%AC%8A%E6%86%91%E8%AD%89%E7%96%91%E7%BE%A9%E5%95%8F%E7%AD%94.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/863/202306271657170.pdf",
+          "raw_text": "",
+          "page_count": 0
+        },
+        {
+          "title": "2.限制員工權利新股疑義問答",
+          "publish_date": "2023-06-27",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/202306271705060.pdf&filedisplay=114%E5%B9%B42%E6%9C%88-%E9%99%90%E5%88%B6%E5%93%A1%E5%B7%A5%E6%AC%8A%E5%88%A9%E6%96%B0%E8%82%A1%E7%96%91%E7%BE%A9%E5%95%8F%E7%AD%94%E4%BF%AE%E6%AD%A3.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/863/202306271705060.pdf",
+          "raw_text": "",
+          "page_count": 0
+        },
+        {
+          "title": "3.有價證券私募疑義問答",
+          "publish_date": "2019-08-19",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/201908191610290.pdf&filedisplay=%E5%95%8F%E7%AD%94%E9%9B%86203-%E5%85%AC%E9%96%8B%E7%99%BC%E8%A1%8C%E5%85%AC%E5%8F%B8%E5%8B%9F%E9%9B%86%E7%99%BC%E8%A1%8C-%E6%9C%89%E5%83%B9%E8%AD%89%E5%88%B8%E7%A7%81%E5%8B%9F%E7%96%91%E7%BE%A9%E5%95%8F%E7%AD%94%281070330%29.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/863/201908191610290.pdf",
+          "raw_text": "",
+          "page_count": 0
+        },
+        {
+          "title": "4.總括申報發行新股疑義問答",
+          "publish_date": "2022-03-28",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/202203280758040.pdf&filedisplay=11103%E7%B8%BD%E6%8B%AC%E7%94%B3%E5%A0%B1%E7%99%BC%E8%A1%8C%E6%96%B0%E8%82%A1%E9%81%A9%E7%94%A8%E7%96%91%E7%BE%A9%E5%95%8F%E7%AD%94.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/863/202203280758040.pdf",
+          "raw_text": "",
+          "page_count": 0
+        },
+        {
+          "title": "5.發行人募集與發行有價證券處理準則適用疑義問答",
+          "publish_date": "2023-12-29",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/202312291551580.pdf&filedisplay=11406%E7%99%BC%E8%A1%8C%E4%BA%BA%E5%8B%9F%E9%9B%86%E8%88%87%E7%99%BC%E8%A1%8C%E6%9C%89%E5%83%B9%E8%AD%89%E5%88%B8%E8%99%95%E7%90%86%E5%8B%9F%E7%99%BC%E6%BA%96%E5%89%87%E7%96%91%E7%BE%A9%E5%95%8F%E7%AD%94.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/863/202312291551580.pdf",
+          "raw_text": "",
+          "page_count": 0
+        }
+      ]
     },
     {
       "id": 864,
       "name": "3.公開發行公司財務業務管理",
-      "url": "https://www.sfb.gov.tw/home.jsp?id=864&parentpath=0,6,858",
-      "documents": []
+      "url": "https://www.sfb.gov.tw/ch/home.jsp?id=864&parentpath=0,6,858",
+      "documents": [
+        {
+          "title": "1.公開發行公司取得或處分資產處理準則問答集",
+          "publish_date": "2020-03-04",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/202003040836460.pdf&filedisplay=%E5%85%AC%E9%96%8B%E7%99%BC%E8%A1%8C%E5%85%AC%E5%8F%B8%E5%8F%96%E5%BE%97%E6%88%96%E8%99%95%E5%88%86%E8%B3%87%E7%94%A2%E8%99%95%E7%90%86%E6%BA%96%E5%89%87%E5%95%8F%E7%AD%94%E9%9B%861141110.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/864/202003040836460.pdf",
+          "raw_text": "",
+          "page_count": 0
+        },
+        {
+          "title": "2.併購特別委員會設置相關疑義問答集",
+          "publish_date": "2019-08-19",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/201908191628180.pdf&filedisplay=%E5%95%8F%E7%AD%94%E9%9B%86302-%E4%BD%B5%E8%B3%BC%E7%89%B9%E5%88%A5%E5%A7%94%E5%93%A1%E6%9C%83%E8%A8%AD%E7%BD%AE%E7%9B%B8%E9%97%9C%E7%96%91%E7%BE%A9%E5%95%8F%E7%AD%94%E9%9B%86%281050108%29.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/864/201908191628180.pdf",
+          "raw_text": "",
+          "page_count": 0
+        },
+        {
+          "title": "3.公開發行公司應公告或向本會申報事項一覽表",
+          "publish_date": "2019-08-19",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/201908191629330.pdf&filedisplay=%E5%85%AC%E9%96%8B%E7%99%BC%E8%A1%8C%E5%85%AC%E5%8F%B8%E6%87%89%E5%85%AC%E5%91%8A%E6%88%96%E5%90%91%E6%9C%AC%E6%9C%83%E7%94%B3%E5%A0%B1%E4%BA%8B%E9%A0%85%E4%B8%80%E8%A6%BD%E8%A1%A820241018.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/864/201908191629330.pdf",
+          "raw_text": "",
+          "page_count": 0
+        },
+        {
+          "title": "4.健全股利政策相關措施之疑義",
+          "publish_date": "2019-08-19",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/201908191630470.pdf&filedisplay=11211%E5%81%A5%E5%85%A8%E8%82%A1%E5%88%A9%E6%94%BF%E7%AD%96%E7%9B%B8%E9%97%9C%E6%8E%AA%E6%96%BD%E4%B9%8B%E7%96%91%E7%BE%A9.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/864/201908191630470.pdf",
+          "raw_text": "",
+          "page_count": 0
+        },
+        {
+          "title": "5.採用國際財務報導準則(IFRSs)後，提列特別盈餘公積之適用疑義問答",
+          "publish_date": "2019-08-19",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/201908191632080.pdf&filedisplay=11403%E7%89%B9%E5%88%A5%E7%9B%88%E9%A4%98%E5%85%AC%E7%A9%8D%E5%95%8F%E7%AD%94%E9%9B%86.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/864/201908191632080.pdf",
+          "raw_text": "",
+          "page_count": 0
+        },
+        {
+          "title": "6.有關公開發行公司配合採權益法之保險被投資公司辦理金融資產重分類，提列特別盈餘公積之適用疑義問答",
+          "publish_date": "2023-02-16",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/202302161152320.pdf&filedisplay=%E6%9C%89%E9%97%9C%E5%85%AC%E9%96%8B%E7%99%BC%E8%A1%8C%E5%85%AC%E5%8F%B8%E9%85%8D%E5%90%88%E6%8E%A1%E6%AC%8A%E7%9B%8A%E6%B3%95%E4%B9%8B%E4%BF%9D%E9%9A%AA%E8%A2%AB%E6%8A%95%E8%B3%87%E5%85%AC%E5%8F%B8%E8%BE%A6%E7%90%86%E9%87%91%E8%9E%8D%E8%B3%87%E7%94%A2%E9%87%8D%E5%88%86%E9%A1%9E%EF%BC%8C%E6%8F%90%E5%88%97%E7%89%B9%E5%88%A5%E7%9B%88%E9%A4%98%E5%85%AC%E7%A9%8D%E4%B9%8B%E9%81%A9%E7%94%A8%E7%96%91%E7%BE%A9%E5%95%8F%E7%AD%94.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/864/202302161152320.pdf",
+          "raw_text": "",
+          "page_count": 0
+        },
+        {
+          "title": "7.證券交易法第14條第6項問答集",
+          "publish_date": "2024-11-12",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/202411120929160.pdf&filedisplay=%E8%AD%89%E5%88%B8%E4%BA%A4%E6%98%93%E6%B3%95%E7%AC%AC14%E6%A2%9D%E7%AC%AC6%E9%A0%85%E5%95%8F%E7%AD%94%E9%9B%86.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/864/202411120929160.pdf",
+          "raw_text": "",
+          "page_count": 0
+        }
+      ]
     },
     {
       "id": 865,
       "name": "4.股權股務",
-      "url": "https://www.fsc.gov.tw/ch/home.jsp?id=865&parentpath=0,7",
+      "url": "https://www.sfb.gov.tw/ch/home.jsp?id=865&parentpath=0,6,858",
       "documents": [
         {
-          "title": "失智者經濟安全保障推動計畫",
-          "publish_date": null,
-          "source_url": "https://www.fsc.gov.tw/websitedowndoc?file=chfsc/202204281146430.pdf&filedisplay=%E5%A4%B1%E6%99%BA%E8%80%85%E7%B6%93%E6%BF%9F%E5%AE%89%E5%85%A8%E4%BF%9D%E9%9A%9C%E6%8E%A8%E5%8B%95%E8%A8%88%E7%95%AB%282021%7E2025%29.pdf",
-          "local_pdf": "qa_pdfs/865/websitedowndoc",
-          "raw_text": "失智者經濟安全保障推動計畫(2021-2025 年)\n壹、 緣起：\n依據內政部之統計數據，我國人口快速老化，108\n年國民平均壽命為 80.9 歲，並於 107 年正式邁入高齡\n社會，預估 115 年將進入超高齡社會，即每 5 人中就有\n1 人為 65 歲以上之高齡者。\n隨著我國人口結構快速老化，失智人口明顯增加，\n依據全國失智症盛行率調查結果估算，108 年底台灣失\n智症人口超過 29 萬人。同時，由於我國少子化現象日\n趨嚴重，扶養比及扶老比逐年增高，家庭的照顧功能逐\n漸式微，造成個人與家庭的照顧壓力日益加重。\n因應失智人口之成長，衛生福利部於 106 年 12\n月公布「失智症防治照護政策綱領暨行動方案 2.0」，\n參酌世界衛生組織(WHO)公布之「2017-2025 年全球失\n智症行動計畫」，提出將失智症列為公共衛生之優先任\n務、提升大眾對失智症之認識及降低失智的風險、健全\n診斷、治療及照護，並普及對照顧者的支持協助、及建\n置相關資訊蒐集、分析及研究發展等策略，由衛生福利\n部結合各部會共同推動失智症防治照護工作，爰金融監\n督管理委員會(下稱金管會)在方案中訂定推動失智友善\n金融體系及失智者財務安全保障計畫，希望透過金融相\n關措施之推動，保障失智者之資產安全，使失智者免於\n被金融剝削。\n貳、 計畫目標：\n保障失智者之經濟安全及提供失智者友善金融環境。\n參、 推動策略：\n一、 推動失智友善金融體系，並規劃與推動失智者財務安\n1\n全保障策略。\n二、 將失智症認識、財產信託及保險等議題納入金融體系\n相關宣導內容。\n肆、 具體措施：\n一、 推動失智友善金融體系及失智者財務安全保障策略：\n(一) 為確保高齡者(含失智者)經濟安全之保障，金管會將\n持續推動金融機構辦理高齡化保險商品、安養信託商\n品及商業型不動產逆向抵押貸款(簡稱以房養老)等業\n務：\n1. 高齡化保險商品：\n(1)辦理以全民健保資料庫為基礎之失智症經驗統計研究：\n基於全民健康保險資料庫（下稱資料庫）包含失\n智症族群醫療紀錄，為利保險業得參考國內失智症族\n群之就醫經驗資料，發展完善國人健康安全保障網之\n相關商業保險商品，金管會刻進行以該資料庫為基礎\n之失智症經驗統計研究，以提供保險業者設計保險商\n品定價之參考。\n(2)強化保險業對高齡客戶銷售投資型保險商品之控管：\n適時檢討相關規定，保障高齡消費者之投保權益，\n以預防高齡失智者因不當保險招攬或銷售誤導造成\n權益受損。\n2. 安養信託：\n為鼓勵業者積極開發符合高齡者及身心障礙者需\n求之安養信託商品，金管會於 104 年 11 月 10 日發布\n「信託業辦理高齡者及身心障礙者財產信託評鑑及獎\n勵措施」，自 105 年度起實施五年。\n為因應高齡社會需求，進一步發展為高齡者量身\n2\n訂作之信託商品，金管會已於 109 年 9 月 1 日發布信\n託2.0計畫，鼓勵業者整合內部資源及對外跨業合作，\n提供符合客戶全方位需求之信託商品。使銀行提供之\n信託服務，由傳統財產管理，進一步結合安養照護、\n醫療服務等功能，針對高齡者實際需求，量身訂作合\n適的安養信託商品。失智者亦可透過上述信託機制，\n來確保財產安全並專款專用於養老生活所需，使失智\n者生活得保有尊嚴。\n3. 以房養老：\n有鑑於我國高齡化及少子化之趨勢，逐漸衍生各\n項老年經濟安全議題，包括因退休後之安老費用、疾\n病或意外導致之長期看護等需求，金融需求也隨之產\n生變化。針對上開趨勢，金管會鼓勵銀行開辦「商業\n型以房養老貸款」，在既有社會保險及社會救助體系\n外，成為年長者生活經濟保障之補充性措施之一。年\n長者辦理以房養老貸款，可確保未來如發生失智情形\n時，仍可獲得經濟安全之保障。\n(二) 為防止失智者遭金融剝削，將持續督導金融機構落實\n認識客戶政策，及臨櫃關懷提問之防詐騙措施：\n1. 依據「存款帳戶及其疑似不法或顯屬異常交易管理辦\n法」規定，銀行應建立明確之認識客戶政策及作業程\n序，對於受理開戶時有異常情形，且客戶無法提出說\n明者，應拒絕客戶開立存款帳戶。另為避免失智者遭\n金融詐騙，銀行如察覺客戶申請之交易功能與其年齡\n或背景顯不相當，則應對帳戶進行查證及持續進行監\n控，以防範金融詐騙案件。\n2. 於臨櫃作業面，依銀行公會所訂之「臨櫃作業關懷客\n3\n戶提問參考範本」，要求銀行行員於民眾辦理相關交\n易時，詢問辦理動機及目的。銀行如對客戶之智慮能\n力有所懷疑或認為有顯屬遭詐騙之情形，金融機構將\n協助撥打「165 反詐騙諮詢專線」或逕向警方報案，\n以減少民眾財產損失。\n3. 對於內政部警政署按月分析之重大財損詐騙案件(含\n被害人年齡及詐騙手法)，請銀行公會按月函轉予各\n金融機構作為關懷提問之參考，以配合警察機關保障\n民眾財產安全。\n(三) 持續督導金融機構依銀行公會「銀行業金融友善服務\n準則」(下稱友善服務準則)辦理：依據友善服務準則\n規定，金融機構應依不同類別身心障礙人士之需求，\n提供適當之友善服務措施，不得有歧視性之行為，並\n應設置「無障礙服務櫃台」，優先提供身心障礙人士\n各項金融服務，及於營業廳進出口裝設「服務鈴」，\n協助引導身心障礙人士辦理各項金融業務等。友善服\n務準則可確保失智者充分享有基本權利、平等及合理\n便利之友善金融服務。\n(四) 建立友善櫃檯人員獎勵機制：為提升金融機構行員對\n身心障礙人士的理解，金融機構總行應負有擬具明確\n服務身心障礙人士(如失智者)之流程及標準，並有教\n育分行主管及第一線櫃檯人員之責任及義務，金管會\n已於 110 年 5 月 26 日函請銀行公會於友善服務準則\n內增訂要求會員機構應訂定內部教育訓練計畫，及相\n關獎勵方案或措施，對服務身心障礙人士績效優良之\n分行或第一線櫃檯人員予以獎勵。\n(五) 將持續加強金融機構監理，督導金融機構落實前述\n4\nKYC、「銀行業金融友善服務準則」，並針對金融機構\n對高齡者銷售商品金融剝削案件納入金融檢查，若發\n現缺失者將視情節加重裁罰。\n二、 將失智症認識、財產信託及保險等議題納入金融體系宣\n導：\n(一) 將失智症認識、財產信託等議題納入相關宣導內容：\n1. 為協助高齡者建立正確消費金融與理財理債觀念，金\n管會「走入校園與社區辦理金融知識宣導活動」宣導\n對象亦包含高齡者。高齡長者組教材之內容涵蓋「以\n房養老」、「安養信託｣、「防止高齡者被金融剝削之相\n關措施」及「防詐騙」等內容。\n2. 持續請信託公會辦理安養信託相關宣導，於公會網頁\n設置安養信託專區，提供相關資訊供外界查閱參考，\n並請信託公會規劃製作宣導短片以辦理於媒體託播\n事宜，對高齡者宣導可針對其需求量身訂作合適之安\n養信託商品，未來如發生失智情形，仍可獲得財務安\n全保障。\n3. 為培養推動信託 2.0 計畫所需人才，信託公會推動之\n「高齡金融規劃顧問師」信託專業能力認證制度，已\n於其課程單元中納入認識失智症的相關說明。\n4. 金管會業已於108年督導財團法人金融消費評議中心\n撰寫『樂齡生活好聰明』指引教材，提供金管會周邊\n單位作為教育宣導教材，並已列入 109、110 年金融\n教育宣導重點，避免高齡者遭到金融剝削，並將督請\n該中心持續更新案例，及該中心調處、評議案件如有\n發現新的高齡者金融剝削爭議類型，應及時告知金管\n會研處。\n5\n(二) 將失智症相關保險議題納入相關宣導內容：\n責成周邊單位辦理保險宣導活動，將失智症相關\n保險議題（如滿足所需之醫療照護及經濟安全需求相\n關保險商品等）納入宣導。\n6",
-          "page_count": 6
+          "title": "1.公開發行股票公司股務處理準則問答集",
+          "publish_date": "2021-07-05",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/202107051713190.pdf&filedisplay=%E5%85%AC%E9%96%8B%E7%99%BC%E8%A1%8C%E8%82%A1%E7%A5%A8%E5%85%AC%E5%8F%B8%E8%82%A1%E5%8B%99%E8%99%95%E7%90%86%E6%BA%96%E5%89%87%E5%95%8F%E7%AD%94%E9%9B%86%2811303%E4%BF%AE%E6%AD%A3%29.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/865/202107051713190.pdf",
+          "raw_text": "",
+          "page_count": 0
         },
         {
-          "title": "性別平等英文簡報",
-          "publish_date": null,
-          "source_url": "https://www.fsc.gov.tw/websitedowndoc?file=chfsc/202004281454290.pdf&filedisplay=Promotion and Development ofGender Equality.pdf",
-          "local_pdf": "qa_pdfs/865/websitedowndoc",
-          "raw_text": "失智者經濟安全保障推動計畫(2021-2025 年)\n壹、 緣起：\n依據內政部之統計數據，我國人口快速老化，108\n年國民平均壽命為 80.9 歲，並於 107 年正式邁入高齡\n社會，預估 115 年將進入超高齡社會，即每 5 人中就有\n1 人為 65 歲以上之高齡者。\n隨著我國人口結構快速老化，失智人口明顯增加，\n依據全國失智症盛行率調查結果估算，108 年底台灣失\n智症人口超過 29 萬人。同時，由於我國少子化現象日\n趨嚴重，扶養比及扶老比逐年增高，家庭的照顧功能逐\n漸式微，造成個人與家庭的照顧壓力日益加重。\n因應失智人口之成長，衛生福利部於 106 年 12\n月公布「失智症防治照護政策綱領暨行動方案 2.0」，\n參酌世界衛生組織(WHO)公布之「2017-2025 年全球失\n智症行動計畫」，提出將失智症列為公共衛生之優先任\n務、提升大眾對失智症之認識及降低失智的風險、健全\n診斷、治療及照護，並普及對照顧者的支持協助、及建\n置相關資訊蒐集、分析及研究發展等策略，由衛生福利\n部結合各部會共同推動失智症防治照護工作，爰金融監\n督管理委員會(下稱金管會)在方案中訂定推動失智友善\n金融體系及失智者財務安全保障計畫，希望透過金融相\n關措施之推動，保障失智者之資產安全，使失智者免於\n被金融剝削。\n貳、 計畫目標：\n保障失智者之經濟安全及提供失智者友善金融環境。\n參、 推動策略：\n一、 推動失智友善金融體系，並規劃與推動失智者財務安\n1\n全保障策略。\n二、 將失智症認識、財產信託及保險等議題納入金融體系\n相關宣導內容。\n肆、 具體措施：\n一、 推動失智友善金融體系及失智者財務安全保障策略：\n(一) 為確保高齡者(含失智者)經濟安全之保障，金管會將\n持續推動金融機構辦理高齡化保險商品、安養信託商\n品及商業型不動產逆向抵押貸款(簡稱以房養老)等業\n務：\n1. 高齡化保險商品：\n(1)辦理以全民健保資料庫為基礎之失智症經驗統計研究：\n基於全民健康保險資料庫（下稱資料庫）包含失\n智症族群醫療紀錄，為利保險業得參考國內失智症族\n群之就醫經驗資料，發展完善國人健康安全保障網之\n相關商業保險商品，金管會刻進行以該資料庫為基礎\n之失智症經驗統計研究，以提供保險業者設計保險商\n品定價之參考。\n(2)強化保險業對高齡客戶銷售投資型保險商品之控管：\n適時檢討相關規定，保障高齡消費者之投保權益，\n以預防高齡失智者因不當保險招攬或銷售誤導造成\n權益受損。\n2. 安養信託：\n為鼓勵業者積極開發符合高齡者及身心障礙者需\n求之安養信託商品，金管會於 104 年 11 月 10 日發布\n「信託業辦理高齡者及身心障礙者財產信託評鑑及獎\n勵措施」，自 105 年度起實施五年。\n為因應高齡社會需求，進一步發展為高齡者量身\n2\n訂作之信託商品，金管會已於 109 年 9 月 1 日發布信\n託2.0計畫，鼓勵業者整合內部資源及對外跨業合作，\n提供符合客戶全方位需求之信託商品。使銀行提供之\n信託服務，由傳統財產管理，進一步結合安養照護、\n醫療服務等功能，針對高齡者實際需求，量身訂作合\n適的安養信託商品。失智者亦可透過上述信託機制，\n來確保財產安全並專款專用於養老生活所需，使失智\n者生活得保有尊嚴。\n3. 以房養老：\n有鑑於我國高齡化及少子化之趨勢，逐漸衍生各\n項老年經濟安全議題，包括因退休後之安老費用、疾\n病或意外導致之長期看護等需求，金融需求也隨之產\n生變化。針對上開趨勢，金管會鼓勵銀行開辦「商業\n型以房養老貸款」，在既有社會保險及社會救助體系\n外，成為年長者生活經濟保障之補充性措施之一。年\n長者辦理以房養老貸款，可確保未來如發生失智情形\n時，仍可獲得經濟安全之保障。\n(二) 為防止失智者遭金融剝削，將持續督導金融機構落實\n認識客戶政策，及臨櫃關懷提問之防詐騙措施：\n1. 依據「存款帳戶及其疑似不法或顯屬異常交易管理辦\n法」規定，銀行應建立明確之認識客戶政策及作業程\n序，對於受理開戶時有異常情形，且客戶無法提出說\n明者，應拒絕客戶開立存款帳戶。另為避免失智者遭\n金融詐騙，銀行如察覺客戶申請之交易功能與其年齡\n或背景顯不相當，則應對帳戶進行查證及持續進行監\n控，以防範金融詐騙案件。\n2. 於臨櫃作業面，依銀行公會所訂之「臨櫃作業關懷客\n3\n戶提問參考範本」，要求銀行行員於民眾辦理相關交\n易時，詢問辦理動機及目的。銀行如對客戶之智慮能\n力有所懷疑或認為有顯屬遭詐騙之情形，金融機構將\n協助撥打「165 反詐騙諮詢專線」或逕向警方報案，\n以減少民眾財產損失。\n3. 對於內政部警政署按月分析之重大財損詐騙案件(含\n被害人年齡及詐騙手法)，請銀行公會按月函轉予各\n金融機構作為關懷提問之參考，以配合警察機關保障\n民眾財產安全。\n(三) 持續督導金融機構依銀行公會「銀行業金融友善服務\n準則」(下稱友善服務準則)辦理：依據友善服務準則\n規定，金融機構應依不同類別身心障礙人士之需求，\n提供適當之友善服務措施，不得有歧視性之行為，並\n應設置「無障礙服務櫃台」，優先提供身心障礙人士\n各項金融服務，及於營業廳進出口裝設「服務鈴」，\n協助引導身心障礙人士辦理各項金融業務等。友善服\n務準則可確保失智者充分享有基本權利、平等及合理\n便利之友善金融服務。\n(四) 建立友善櫃檯人員獎勵機制：為提升金融機構行員對\n身心障礙人士的理解，金融機構總行應負有擬具明確\n服務身心障礙人士(如失智者)之流程及標準，並有教\n育分行主管及第一線櫃檯人員之責任及義務，金管會\n已於 110 年 5 月 26 日函請銀行公會於友善服務準則\n內增訂要求會員機構應訂定內部教育訓練計畫，及相\n關獎勵方案或措施，對服務身心障礙人士績效優良之\n分行或第一線櫃檯人員予以獎勵。\n(五) 將持續加強金融機構監理，督導金融機構落實前述\n4\nKYC、「銀行業金融友善服務準則」，並針對金融機構\n對高齡者銷售商品金融剝削案件納入金融檢查，若發\n現缺失者將視情節加重裁罰。\n二、 將失智症認識、財產信託及保險等議題納入金融體系宣\n導：\n(一) 將失智症認識、財產信託等議題納入相關宣導內容：\n1. 為協助高齡者建立正確消費金融與理財理債觀念，金\n管會「走入校園與社區辦理金融知識宣導活動」宣導\n對象亦包含高齡者。高齡長者組教材之內容涵蓋「以\n房養老」、「安養信託｣、「防止高齡者被金融剝削之相\n關措施」及「防詐騙」等內容。\n2. 持續請信託公會辦理安養信託相關宣導，於公會網頁\n設置安養信託專區，提供相關資訊供外界查閱參考，\n並請信託公會規劃製作宣導短片以辦理於媒體託播\n事宜，對高齡者宣導可針對其需求量身訂作合適之安\n養信託商品，未來如發生失智情形，仍可獲得財務安\n全保障。\n3. 為培養推動信託 2.0 計畫所需人才，信託公會推動之\n「高齡金融規劃顧問師」信託專業能力認證制度，已\n於其課程單元中納入認識失智症的相關說明。\n4. 金管會業已於108年督導財團法人金融消費評議中心\n撰寫『樂齡生活好聰明』指引教材，提供金管會周邊\n單位作為教育宣導教材，並已列入 109、110 年金融\n教育宣導重點，避免高齡者遭到金融剝削，並將督請\n該中心持續更新案例，及該中心調處、評議案件如有\n發現新的高齡者金融剝削爭議類型，應及時告知金管\n會研處。\n5\n(二) 將失智症相關保險議題納入相關宣導內容：\n責成周邊單位辦理保險宣導活動，將失智症相關\n保險議題（如滿足所需之醫療照護及經濟安全需求相\n關保險商品等）納入宣導。\n6",
-          "page_count": 6
+          "title": "2.公開發行公司以電子方式傳送股東會資料問答篇",
+          "publish_date": "2019-08-19",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/201908191645380.pdf&filedisplay=%E5%95%8F%E7%AD%94%E9%9B%86402-%E5%85%AC%E9%96%8B%E7%99%BC%E8%A1%8C%E5%85%AC%E5%8F%B8%E4%BB%A5%E9%9B%BB%E5%AD%90%E6%96%B9%E5%BC%8F%E5%82%B3%E9%80%81%E8%82%A1%E6%9D%B1%E6%9C%83%E8%B3%87%E6%96%99%E5%95%8F%E7%AD%94%E7%AF%87%281010517%29.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/865/201908191645380.pdf",
+          "raw_text": "",
+          "page_count": 0
         },
         {
-          "title": "委託研究計畫作業規定",
-          "publish_date": null,
-          "source_url": "https://www.fsc.gov.tw/websitedowndoc?file=chfsc/202403211157330.pdf&filedisplay=%E9%87%91%E8%9E%8D%E7%9B%A3%E7%9D%A3%E7%AE%A1%E7%90%86%E5%A7%94%E5%93%A1%E6%9C%83%E5%8F%8A%E6%89%80%E5%B1%AC%E6%A9%9F%E9%97%9C%28%E6%A7%8B%29%E5%A7%94%E8%A8%97%E7%A0%94%E7%A9%B6%E8%A8%88%E7%95%AB%E4%BD%9C%E6%A5%AD%E8%A6%8F%E5%AE%9A%28%E5%90%AB%E9%99%84%E4%BB%B6%E5%8F%8A%E9%99%84%E8%A1%A8%29.pdf",
-          "local_pdf": "qa_pdfs/865/websitedowndoc",
-          "raw_text": "失智者經濟安全保障推動計畫(2021-2025 年)\n壹、 緣起：\n依據內政部之統計數據，我國人口快速老化，108\n年國民平均壽命為 80.9 歲，並於 107 年正式邁入高齡\n社會，預估 115 年將進入超高齡社會，即每 5 人中就有\n1 人為 65 歲以上之高齡者。\n隨著我國人口結構快速老化，失智人口明顯增加，\n依據全國失智症盛行率調查結果估算，108 年底台灣失\n智症人口超過 29 萬人。同時，由於我國少子化現象日\n趨嚴重，扶養比及扶老比逐年增高，家庭的照顧功能逐\n漸式微，造成個人與家庭的照顧壓力日益加重。\n因應失智人口之成長，衛生福利部於 106 年 12\n月公布「失智症防治照護政策綱領暨行動方案 2.0」，\n參酌世界衛生組織(WHO)公布之「2017-2025 年全球失\n智症行動計畫」，提出將失智症列為公共衛生之優先任\n務、提升大眾對失智症之認識及降低失智的風險、健全\n診斷、治療及照護，並普及對照顧者的支持協助、及建\n置相關資訊蒐集、分析及研究發展等策略，由衛生福利\n部結合各部會共同推動失智症防治照護工作，爰金融監\n督管理委員會(下稱金管會)在方案中訂定推動失智友善\n金融體系及失智者財務安全保障計畫，希望透過金融相\n關措施之推動，保障失智者之資產安全，使失智者免於\n被金融剝削。\n貳、 計畫目標：\n保障失智者之經濟安全及提供失智者友善金融環境。\n參、 推動策略：\n一、 推動失智友善金融體系，並規劃與推動失智者財務安\n1\n全保障策略。\n二、 將失智症認識、財產信託及保險等議題納入金融體系\n相關宣導內容。\n肆、 具體措施：\n一、 推動失智友善金融體系及失智者財務安全保障策略：\n(一) 為確保高齡者(含失智者)經濟安全之保障，金管會將\n持續推動金融機構辦理高齡化保險商品、安養信託商\n品及商業型不動產逆向抵押貸款(簡稱以房養老)等業\n務：\n1. 高齡化保險商品：\n(1)辦理以全民健保資料庫為基礎之失智症經驗統計研究：\n基於全民健康保險資料庫（下稱資料庫）包含失\n智症族群醫療紀錄，為利保險業得參考國內失智症族\n群之就醫經驗資料，發展完善國人健康安全保障網之\n相關商業保險商品，金管會刻進行以該資料庫為基礎\n之失智症經驗統計研究，以提供保險業者設計保險商\n品定價之參考。\n(2)強化保險業對高齡客戶銷售投資型保險商品之控管：\n適時檢討相關規定，保障高齡消費者之投保權益，\n以預防高齡失智者因不當保險招攬或銷售誤導造成\n權益受損。\n2. 安養信託：\n為鼓勵業者積極開發符合高齡者及身心障礙者需\n求之安養信託商品，金管會於 104 年 11 月 10 日發布\n「信託業辦理高齡者及身心障礙者財產信託評鑑及獎\n勵措施」，自 105 年度起實施五年。\n為因應高齡社會需求，進一步發展為高齡者量身\n2\n訂作之信託商品，金管會已於 109 年 9 月 1 日發布信\n託2.0計畫，鼓勵業者整合內部資源及對外跨業合作，\n提供符合客戶全方位需求之信託商品。使銀行提供之\n信託服務，由傳統財產管理，進一步結合安養照護、\n醫療服務等功能，針對高齡者實際需求，量身訂作合\n適的安養信託商品。失智者亦可透過上述信託機制，\n來確保財產安全並專款專用於養老生活所需，使失智\n者生活得保有尊嚴。\n3. 以房養老：\n有鑑於我國高齡化及少子化之趨勢，逐漸衍生各\n項老年經濟安全議題，包括因退休後之安老費用、疾\n病或意外導致之長期看護等需求，金融需求也隨之產\n生變化。針對上開趨勢，金管會鼓勵銀行開辦「商業\n型以房養老貸款」，在既有社會保險及社會救助體系\n外，成為年長者生活經濟保障之補充性措施之一。年\n長者辦理以房養老貸款，可確保未來如發生失智情形\n時，仍可獲得經濟安全之保障。\n(二) 為防止失智者遭金融剝削，將持續督導金融機構落實\n認識客戶政策，及臨櫃關懷提問之防詐騙措施：\n1. 依據「存款帳戶及其疑似不法或顯屬異常交易管理辦\n法」規定，銀行應建立明確之認識客戶政策及作業程\n序，對於受理開戶時有異常情形，且客戶無法提出說\n明者，應拒絕客戶開立存款帳戶。另為避免失智者遭\n金融詐騙，銀行如察覺客戶申請之交易功能與其年齡\n或背景顯不相當，則應對帳戶進行查證及持續進行監\n控，以防範金融詐騙案件。\n2. 於臨櫃作業面，依銀行公會所訂之「臨櫃作業關懷客\n3\n戶提問參考範本」，要求銀行行員於民眾辦理相關交\n易時，詢問辦理動機及目的。銀行如對客戶之智慮能\n力有所懷疑或認為有顯屬遭詐騙之情形，金融機構將\n協助撥打「165 反詐騙諮詢專線」或逕向警方報案，\n以減少民眾財產損失。\n3. 對於內政部警政署按月分析之重大財損詐騙案件(含\n被害人年齡及詐騙手法)，請銀行公會按月函轉予各\n金融機構作為關懷提問之參考，以配合警察機關保障\n民眾財產安全。\n(三) 持續督導金融機構依銀行公會「銀行業金融友善服務\n準則」(下稱友善服務準則)辦理：依據友善服務準則\n規定，金融機構應依不同類別身心障礙人士之需求，\n提供適當之友善服務措施，不得有歧視性之行為，並\n應設置「無障礙服務櫃台」，優先提供身心障礙人士\n各項金融服務，及於營業廳進出口裝設「服務鈴」，\n協助引導身心障礙人士辦理各項金融業務等。友善服\n務準則可確保失智者充分享有基本權利、平等及合理\n便利之友善金融服務。\n(四) 建立友善櫃檯人員獎勵機制：為提升金融機構行員對\n身心障礙人士的理解，金融機構總行應負有擬具明確\n服務身心障礙人士(如失智者)之流程及標準，並有教\n育分行主管及第一線櫃檯人員之責任及義務，金管會\n已於 110 年 5 月 26 日函請銀行公會於友善服務準則\n內增訂要求會員機構應訂定內部教育訓練計畫，及相\n關獎勵方案或措施，對服務身心障礙人士績效優良之\n分行或第一線櫃檯人員予以獎勵。\n(五) 將持續加強金融機構監理，督導金融機構落實前述\n4\nKYC、「銀行業金融友善服務準則」，並針對金融機構\n對高齡者銷售商品金融剝削案件納入金融檢查，若發\n現缺失者將視情節加重裁罰。\n二、 將失智症認識、財產信託及保險等議題納入金融體系宣\n導：\n(一) 將失智症認識、財產信託等議題納入相關宣導內容：\n1. 為協助高齡者建立正確消費金融與理財理債觀念，金\n管會「走入校園與社區辦理金融知識宣導活動」宣導\n對象亦包含高齡者。高齡長者組教材之內容涵蓋「以\n房養老」、「安養信託｣、「防止高齡者被金融剝削之相\n關措施」及「防詐騙」等內容。\n2. 持續請信託公會辦理安養信託相關宣導，於公會網頁\n設置安養信託專區，提供相關資訊供外界查閱參考，\n並請信託公會規劃製作宣導短片以辦理於媒體託播\n事宜，對高齡者宣導可針對其需求量身訂作合適之安\n養信託商品，未來如發生失智情形，仍可獲得財務安\n全保障。\n3. 為培養推動信託 2.0 計畫所需人才，信託公會推動之\n「高齡金融規劃顧問師」信託專業能力認證制度，已\n於其課程單元中納入認識失智症的相關說明。\n4. 金管會業已於108年督導財團法人金融消費評議中心\n撰寫『樂齡生活好聰明』指引教材，提供金管會周邊\n單位作為教育宣導教材，並已列入 109、110 年金融\n教育宣導重點，避免高齡者遭到金融剝削，並將督請\n該中心持續更新案例，及該中心調處、評議案件如有\n發現新的高齡者金融剝削爭議類型，應及時告知金管\n會研處。\n5\n(二) 將失智症相關保險議題納入相關宣導內容：\n責成周邊單位辦理保險宣導活動，將失智症相關\n保險議題（如滿足所需之醫療照護及經濟安全需求相\n關保險商品等）納入宣導。\n6",
-          "page_count": 6
+          "title": "3.公開發行公司董事監察人股權成數及查核實施規則問答集",
+          "publish_date": "2019-08-19",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/201908191646390.pdf&filedisplay=%E5%95%8F%E7%AD%94%E9%9B%86403-%E5%85%AC%E9%96%8B%E7%99%BC%E8%A1%8C%E5%85%AC%E5%8F%B8%E8%91%A3%E4%BA%8B%E7%9B%A3%E5%AF%9F%E4%BA%BA%E8%82%A1%E6%AC%8A%E6%88%90%E6%95%B8%E5%8F%8A%E6%9F%A5%E6%A0%B8%E5%AF%A6%E6%96%BD%E8%A6%8F%E5%89%87%E5%95%8F%E7%AD%94%E9%9B%86%281031015%29.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/865/201908191646390.pdf",
+          "raw_text": "",
+          "page_count": 0
+        },
+        {
+          "title": "4.公開發行公司內部人股權申報問答集",
+          "publish_date": "2019-08-19",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/201908191647390.pdf&filedisplay=114.3%E5%85%A7%E9%83%A8%E4%BA%BA%E8%82%A1%E6%AC%8A%E7%94%B3%E5%A0%B1%E5%95%8F%E7%AD%94%E9%9B%86.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/865/201908191647390.pdf",
+          "raw_text": "",
+          "page_count": 0
+        },
+        {
+          "title": "5.公開發行公司出席股東會使用委託書規則問答集",
+          "publish_date": "2020-02-27",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/202002270915260.pdf&filedisplay=%E5%85%AC%E9%96%8B%E7%99%BC%E8%A1%8C%E5%85%AC%E5%8F%B8%E5%87%BA%E5%B8%AD%E8%82%A1%E6%9D%B1%E6%9C%83%E4%BD%BF%E7%94%A8%E5%A7%94%E8%A8%97%E6%9B%B8%E8%A6%8F%E5%89%87%E5%95%8F%E7%AD%94%E9%9B%861130607.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/865/202002270915260.pdf",
+          "raw_text": "",
+          "page_count": 0
+        },
+        {
+          "title": "6.證券交易法第43條之1第1項及企業併購法第27條第14項取得股權申報制度疑義問答",
+          "publish_date": "2024-04-16",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/202404161404340.pdf&filedisplay=%E5%96%AE%E7%8D%A8%E5%85%B1%E5%90%8C%E5%8F%96%E5%BE%97%E8%82%A1%E6%AC%8A%E7%94%B3%E5%A0%B1%E5%88%B6%E5%BA%A6%28%E8%AD%89%E4%BA%A4%E6%B3%95%C2%A743%E4%B9%8B1%E5%8F%8A%E4%BC%81%E4%BD%B5%E6%B3%95%C2%A727%29%E7%96%91%E7%BE%A9%E5%95%8F%E7%AD%94%28113%E5%B9%B44%E6%9C%88%E6%9B%B4%E6%96%B0%EF%BC%8C113%E5%B9%B45%E6%9C%8810%E6%97%A5%E8%B5%B7%E9%81%A9%E7%94%A8%29.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/865/202404161404340.pdf",
+          "raw_text": "",
+          "page_count": 0
         }
       ]
     },
     {
       "id": 866,
       "name": "5.公開收購",
-      "url": "https://www.sfb.gov.tw/home.jsp?id=866&parentpath=0,6,858",
-      "documents": []
+      "url": "https://www.sfb.gov.tw/ch/home.jsp?id=866&parentpath=0,6,858",
+      "documents": [
+        {
+          "title": "公開收購相關疑義問答",
+          "publish_date": "2021-10-18",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/202110181034100.doc&filedisplay=%E5%95%8F%E7%AD%94%E9%9B%86501-%E5%85%AC%E9%96%8B%E6%94%B6%E8%B3%BC%E7%9B%B8%E9%97%9C%E7%96%91%E7%BE%A9%E5%95%8F%E7%AD%94%281130216%29.doc&flag=doc",
+          "local_pdf": "qa_pdfs/866/202110181034100.doc",
+          "raw_text": "",
+          "page_count": 0
+        },
+        {
+          "title": "公開收購相關疑義問答",
+          "publish_date": "2021-10-18",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/202110181034101.pdf&filedisplay=%E5%95%8F%E7%AD%94%E9%9B%86501-%E5%85%AC%E9%96%8B%E6%94%B6%E8%B3%BC%E7%9B%B8%E9%97%9C%E7%96%91%E7%BE%A9%E5%95%8F%E7%AD%94%281130216%29.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/866/202110181034101.pdf",
+          "raw_text": "",
+          "page_count": 0
+        },
+        {
+          "title": "公開收購相關疑義問答",
+          "publish_date": "2021-10-18",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/202110181034102.odt&filedisplay=%E5%95%8F%E7%AD%94%E9%9B%86501-%E5%85%AC%E9%96%8B%E6%94%B6%E8%B3%BC%E7%9B%B8%E9%97%9C%E7%96%91%E7%BE%A9%E5%95%8F%E7%AD%94%281130216%29.odt&flag=doc",
+          "local_pdf": "qa_pdfs/866/202110181034102.odt",
+          "raw_text": "",
+          "page_count": 0
+        }
+      ]
     },
     {
       "id": 867,
       "name": "6.庫藏股",
-      "url": "https://www.sfb.gov.tw/home.jsp?id=867&parentpath=0,6,858",
-      "documents": []
+      "url": "https://www.sfb.gov.tw/ch/home.jsp?id=867&parentpath=0,6,858",
+      "documents": [
+        {
+          "title": "庫藏股疑義問答",
+          "publish_date": "2022-03-03",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/202203031550190.odt&filedisplay=%E5%BA%AB%E8%97%8F%E8%82%A1%E7%96%91%E7%BE%A9%E5%95%8F%E7%AD%94%E5%BD%99%E6%95%B4%E7%89%8811103%E7%89%88.odt&flag=doc",
+          "local_pdf": "qa_pdfs/867/202203031550190.odt",
+          "raw_text": "",
+          "page_count": 0
+        },
+        {
+          "title": "庫藏股疑義問答",
+          "publish_date": "2022-03-03",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/202203031550191.pdf&filedisplay=%E5%BA%AB%E8%97%8F%E8%82%A1%E7%96%91%E7%BE%A9%E5%95%8F%E7%AD%94%E5%BD%99%E6%95%B4%E7%89%8811103%E7%89%88.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/867/202203031550191.pdf",
+          "raw_text": "",
+          "page_count": 0
+        },
+        {
+          "title": "庫藏股疑義問答",
+          "publish_date": "2022-03-03",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/202203031550192.doc&filedisplay=%E5%BA%AB%E8%97%8F%E8%82%A1%E7%96%91%E7%BE%A9%E5%95%8F%E7%AD%94%E5%BD%99%E6%95%B4%E7%89%8811103%E7%89%88.doc&flag=doc",
+          "local_pdf": "qa_pdfs/867/202203031550192.doc",
+          "raw_text": "",
+          "page_count": 0
+        }
+      ]
     },
     {
       "id": 868,
       "name": "7.內線交易",
-      "url": "https://www.sfb.gov.tw/home.jsp?id=868&parentpath=0,6,858",
-      "documents": []
+      "url": "https://www.sfb.gov.tw/ch/home.jsp?id=868&parentpath=0,6,858",
+      "documents": [
+        {
+          "title": "證券交易法第一百五十七條之一禁止內線交易相關規範問答集",
+          "publish_date": "2025-11-18",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/202511180853170.pdf&filedisplay=%E5%85%A7%E7%B7%9A%E4%BA%A4%E6%98%93%E5%95%8F%E7%AD%94%E9%9B%86.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/868/202511180853170.pdf",
+          "raw_text": "",
+          "page_count": 0
+        }
+      ]
     },
     {
       "id": 869,
       "name": "8.公開發行公司財務報告及財務預測",
-      "url": "https://www.sfb.gov.tw/home.jsp?id=869&parentpath=0,6,858",
-      "documents": []
+      "url": "https://www.sfb.gov.tw/ch/home.jsp?id=869&parentpath=0,6,858",
+      "documents": [
+        {
+          "title": "1.關係企業合併營業報告書關係企業合併財務報表及關係報告書編製準則問答集",
+          "publish_date": "2019-08-20",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/201908201115080.pdf&filedisplay=%E5%95%8F%E7%AD%94%E9%9B%86801-%E9%97%9C%E4%BF%82%E4%BC%81%E6%A5%AD%E5%90%88%E4%BD%B5%E7%87%9F%E6%A5%AD%E5%A0%B1%E5%91%8A%E6%9B%B8%E9%97%9C%E4%BF%82%E4%BC%81%E6%A5%AD%E5%90%88%E4%BD%B5%E8%B2%A1%E5%8B%99%E5%A0%B1%E8%A1%A8%E5%8F%8A%E9%97%9C%E4%BF%82%E5%A0%B1%E5%91%8A%E6%9B%B8%E7%B7%A8%E8%A3%BD%E6%BA%96%E5%89%87%E5%95%8F%E7%AD%94%E9%9B%86%28980615%29.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/869/201908201115080.pdf",
+          "raw_text": "",
+          "page_count": 0
+        },
+        {
+          "title": "2.財務報告聲明書及財務報告不實相關人員責任問答集",
+          "publish_date": "2019-08-20",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/201908201116240.pdf&filedisplay=%E5%95%8F%E7%AD%94%E9%9B%86802-%E8%B2%A1%E5%8B%99%E5%A0%B1%E5%91%8A%E8%81%B2%E6%98%8E%E6%9B%B8%E5%8F%8A%E8%B2%A1%E5%8B%99%E5%A0%B1%E5%91%8A%E4%B8%8D%E5%AF%A6%E7%9B%B8%E9%97%9C%E4%BA%BA%E5%93%A1%E8%B2%AC%E4%BB%BB%E5%95%8F%E7%AD%94%E9%9B%86%281040805%29.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/869/201908201116240.pdf",
+          "raw_text": "",
+          "page_count": 0
+        },
+        {
+          "title": "3.員工酬勞制度相關疑義問答集",
+          "publish_date": "2019-08-20",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/201908201117520.pdf&filedisplay=%E5%95%8F%E7%AD%94%E9%9B%86803-%E5%93%A1%E5%B7%A5%E9%85%AC%E5%8B%9E%E5%88%B6%E5%BA%A6%E7%9B%B8%E9%97%9C%E7%96%91%E7%BE%A9%E5%95%8F%E7%AD%94%E9%9B%86%281060608%29.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/869/201908201117520.pdf",
+          "raw_text": "",
+          "page_count": 0
+        },
+        {
+          "title": "4.證券發行人財務報告編製準則問答集",
+          "publish_date": "2023-06-16",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/202306161339460.pdf&filedisplay=%E8%AD%89%E5%88%B8%E7%99%BC%E8%A1%8C%E4%BA%BA%E8%B2%A1%E5%8B%99%E5%A0%B1%E5%91%8A%E7%B7%A8%E8%A3%BD%E6%BA%96%E5%89%87%E5%95%8F%E7%AD%94%E9%9B%8620240424.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/869/202306161339460.pdf",
+          "raw_text": "",
+          "page_count": 0
+        },
+        {
+          "title": "6.「公開發行公司公開財務預測資訊處理準則」問答集及簡式財務預測範例",
+          "publish_date": "2019-08-20",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/201908201143430.pdf&filedisplay=%E5%95%8F%E7%AD%94%E9%9B%86805-%E3%80%8C%E5%85%AC%E9%96%8B%E7%99%BC%E8%A1%8C%E5%85%AC%E5%8F%B8%E5%85%AC%E9%96%8B%E8%B2%A1%E5%8B%99%E9%A0%90%E6%B8%AC%E8%B3%87%E8%A8%8A%E8%99%95%E7%90%86%E6%BA%96%E5%89%87%E3%80%8D%E5%95%8F%E7%AD%94%E9%9B%86%E5%8F%8A%E7%B0%A1%E5%BC%8F%E8%B2%A1%E5%8B%99%E9%A0%90%E6%B8%AC%E7%AF%84%E4%BE%8B%281011210%29.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/869/201908201143430.pdf",
+          "raw_text": "",
+          "page_count": 0
+        }
+      ]
     },
     {
       "id": 870,
       "name": "9.公開發行公司內部控制制度",
-      "url": "https://www.sfb.gov.tw/home.jsp?id=870&parentpath=0,6,858",
-      "documents": []
+      "url": "https://www.sfb.gov.tw/ch/home.jsp?id=870&parentpath=0,6,858",
+      "documents": [
+        {
+          "title": "1.公開發行公司建立內部控制制度處理準則",
+          "publish_date": "2022-12-29",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/202212291737400.pdf&filedisplay=%E5%85%AC%E9%96%8B%E7%99%BC%E8%A1%8C%E5%85%AC%E5%8F%B8%E5%BB%BA%E7%AB%8B%E5%85%A7%E9%83%A8%E6%8E%A7%E5%88%B6%E5%88%B6%E5%BA%A6%E8%99%95%E7%90%86%E6%BA%96%E5%89%87%E5%95%8F%E7%AD%94%E9%9B%86%28113.10.7%29.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/870/202212291737400.pdf",
+          "raw_text": "",
+          "page_count": 0
+        },
+        {
+          "title": "2.公開發行公司資金貸與及背書保證處理準則",
+          "publish_date": "2021-02-08",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/202102080955190.pdf&filedisplay=%E5%85%AC%E9%96%8B%E7%99%BC%E8%A1%8C%E5%85%AC%E5%8F%B8%E8%B3%87%E9%87%91%E8%B2%B8%E8%88%87%E5%8F%8A%E8%83%8C%E6%9B%B8%E4%BF%9D%E8%AD%89%E8%99%95%E7%90%86%E6%BA%96%E5%89%87%E5%95%8F%E7%AD%94%E9%9B%86%2811012%29.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/870/202102080955190.pdf",
+          "raw_text": "",
+          "page_count": 0
+        }
+      ]
     },
     {
       "id": 871,
       "name": "10.公開發行公司會計主管",
-      "url": "https://www.sfb.gov.tw/home.jsp?id=871&parentpath=0,6,858",
-      "documents": []
+      "url": "https://www.sfb.gov.tw/ch/home.jsp?id=871&parentpath=0,6,858",
+      "documents": [
+        {
+          "title": "1-1.「發行人證券商證券交易所會計主管資格條件及專業進修辦法」暨「發行人證券商證券交易所會計主管進修機構審核辦法」",
+          "publish_date": "2020-09-14",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/202009141646420.pdf&filedisplay=%E6%9C%83%E8%A8%88%E4%B8%BB%E7%AE%A1%E8%B3%87%E6%A0%BC%E6%A2%9D%E4%BB%B6%E5%8F%8A%E5%B0%88%E6%A5%AD%E9%80%B2%E4%BF%AE%E5%95%8F%E7%AD%94%E9%9B%86%2811407%29.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/871/202009141646420.pdf",
+          "raw_text": "",
+          "page_count": 0
+        },
+        {
+          "title": "1-2.附件：發行人證券商證券交易所會計主管資格條件及專業進修辦法第五條第三款會計主管不符第三條所訂資格條件之專業進修課程抵減方式",
+          "publish_date": "2019-08-20",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/201908201153310.pdf&filedisplay=%E5%95%8F%E7%AD%94%E9%9B%861001-%E9%99%84%E4%BB%B6%EF%BC%9A%E7%99%BC%E8%A1%8C%E4%BA%BA%E8%AD%89%E5%88%B8%E5%95%86%E8%AD%89%E5%88%B8%E4%BA%A4%E6%98%93%E6%89%80%E6%9C%83%E8%A8%88%E4%B8%BB%E7%AE%A1%E8%B3%87%E6%A0%BC%E6%A2%9D%E4%BB%B6%E5%8F%8A%E5%B0%88%E6%A5%AD%E9%80%B2%E4%BF%AE%E8%BE%A6%E6%B3%95%E7%AC%AC%E4%BA%94%E6%A2%9D%E7%AC%AC%E4%B8%89%E6%AC%BE%E6%9C%83%E8%A8%88%E4%B8%BB%E7%AE%A1%E4%B8%8D%E7%AC%A6%E7%AC%AC%E4%B8%89%E6%A2%9D%E6%89%80%E8%A8%82%E8%B3%87%E6%A0%BC%E6%A2%9D%E4%BB%B6%E4%B9%8B%E5%B0%88%E6%A5%AD%E9%80%B2%E4%BF%AE%E8%AA%B2%E7%A8%8B%E6%8A%B5%E6%B8%9B%E6%96%B9%E5%BC%8F%281061212%29.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/871/201908201153310.pdf",
+          "raw_text": "",
+          "page_count": 0
+        },
+        {
+          "title": "2.會計主管進修機構申請疑義問答集",
+          "publish_date": "2019-08-20",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/201908201156140.pdf&filedisplay=%E5%95%8F%E7%AD%94%E9%9B%861003-%E6%9C%83%E8%A8%88%E4%B8%BB%E7%AE%A1%E9%80%B2%E4%BF%AE%E6%A9%9F%E6%A7%8B%E7%94%B3%E8%AB%8B%E7%96%91%E7%BE%A9%E5%95%8F%E7%AD%94%E9%9B%86%280990831%29.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/871/201908201156140.pdf",
+          "raw_text": "",
+          "page_count": 0
+        }
+      ]
     },
     {
       "id": 872,
       "name": "11.華僑及外國人投資登記問答集",
-      "url": "https://www.sfb.gov.tw/home.jsp?id=872&parentpath=0,6,858",
-      "documents": []
+      "url": "https://www.sfb.gov.tw/ch/home.jsp?id=872&parentpath=0,6,858",
+      "documents": [
+        {
+          "title": "華僑及外國人投資問答集",
+          "publish_date": "2021-09-11",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/202109111235180.pdf&filedisplay=202404+%E8%8F%AF%E5%83%91%E5%8F%8A%E5%A4%96%E5%9C%8B%E4%BA%BA%E6%8A%95%E8%B3%87%E5%95%8F%E7%AD%94%E9%9B%86_%E4%B8%AD%E6%96%87.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/872/202109111235180.pdf",
+          "raw_text": "",
+          "page_count": 0
+        }
+      ]
     },
     {
       "id": 873,
       "name": "12.外資投資問答集",
-      "url": "https://www.sfb.gov.tw/home.jsp?id=873&parentpath=0,6,858",
-      "documents": []
+      "url": "https://www.sfb.gov.tw/ch/home.jsp?id=873&parentpath=0,6,858",
+      "documents": [
+        {
+          "title": "外資投資問答集",
+          "publish_date": "2019-08-20",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/201908201159160.pdf&filedisplay=%E5%95%8F%E7%AD%94%E9%9B%861201-%E5%A4%96%E8%B3%87%E6%8A%95%E8%B3%87%E5%95%8F%E7%AD%94%E9%9B%86%281060516%29.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/873/201908201159160.pdf",
+          "raw_text": "",
+          "page_count": 0
+        }
+      ]
     },
     {
       "id": 874,
       "name": "13.證券商特定業務",
-      "url": "https://www.sfb.gov.tw/home.jsp?id=874&parentpath=0,6,858",
-      "documents": []
+      "url": "https://www.sfb.gov.tw/ch/home.jsp?id=874&parentpath=0,6,858",
+      "documents": [
+        {
+          "title": "1.證券商辦理財富管理業務應注意事項問答集",
+          "publish_date": "2022-11-08",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/202211080744350.pdf&filedisplay=%E8%AD%89%E5%88%B8%E5%95%86%E8%BE%A6%E7%90%86%E8%B2%A1%E5%AF%8C%E7%AE%A1%E7%90%86%E6%A5%AD%E5%8B%99%E6%87%89%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A0%85%E5%95%8F%E7%AD%94%E9%9B%86.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/874/202211080744350.pdf",
+          "raw_text": "",
+          "page_count": 0
+        },
+        {
+          "title": "2.境外結構型商品申報問答集",
+          "publish_date": "2019-08-20",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/201908201201360.pdf&filedisplay=%E5%95%8F%E7%AD%94%E9%9B%861302-%E5%A2%83%E5%A4%96%E7%B5%90%E6%A7%8B%E5%9E%8B%E5%95%86%E5%93%81%E7%94%B3%E5%A0%B1%E5%95%8F%E7%AD%94%E9%9B%86%281050630%29.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/874/201908201201360.pdf",
+          "raw_text": "",
+          "page_count": 0
+        }
+      ]
     },
     {
       "id": 876,
       "name": "15.證券投資信託事業申請(報)證券投資信託基金問答集",
-      "url": "https://www.sfb.gov.tw/home.jsp?id=876&parentpath=0,6,858",
-      "documents": []
+      "url": "https://www.sfb.gov.tw/ch/home.jsp?id=876&parentpath=0,6,858",
+      "documents": [
+        {
+          "title": "證券投資信託事業申請(報)證券投資信託基金問答集",
+          "publish_date": "2019-08-20",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/201908201339090.pdf&filedisplay=114.1.20%E8%AD%89%E5%88%B8%E6%8A%95%E8%B3%87%E4%BF%A1%E8%A8%97%E4%BA%8B%E6%A5%AD%E7%94%B3%E8%AB%8B%EF%BC%88%E5%A0%B1%EF%BC%89%E8%AD%89%E5%88%B8%E6%8A%95%E8%B3%87%E4%BF%A1%E8%A8%97%E5%9F%BA%E9%87%91%E5%95%8F%E7%AD%94%E9%9B%86.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/876/201908201339090.pdf",
+          "raw_text": "",
+          "page_count": 0
+        }
+      ]
     },
     {
       "id": 877,
       "name": "16.鼓勵投信躍進計畫問答集",
-      "url": "https://www.sfb.gov.tw/home.jsp?id=877&parentpath=0,6,858",
-      "documents": []
+      "url": "https://www.sfb.gov.tw/ch/home.jsp?id=877&parentpath=0,6,858",
+      "documents": [
+        {
+          "title": "鼓勵投信躍進計畫問答集",
+          "publish_date": "2021-06-11",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/202106111352450.pdf&filedisplay=%E9%BC%93%E5%8B%B5%E6%8A%95%E4%BF%A1%E8%BA%8D%E9%80%B2%E8%A8%88%E7%95%AB%E5%95%8F%E7%AD%94%E9%9B%86%28114%E5%B9%B412%E6%9C%8812%E6%97%A5%29.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/877/202106111352450.pdf",
+          "raw_text": "",
+          "page_count": 0
+        }
+      ]
     },
     {
       "id": 878,
       "name": "17.證券投資信託基金、證券投資顧問及全權委託業務",
-      "url": "https://www.sfb.gov.tw/home.jsp?id=878&parentpath=0,6,858",
-      "documents": []
+      "url": "https://www.sfb.gov.tw/ch/home.jsp?id=878&parentpath=0,6,858",
+      "documents": [
+        {
+          "title": "1-1.含新臺幣多幣別基金及外幣計價基金問答集",
+          "publish_date": "2023-11-02",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/202311021020110.pdf&filedisplay=1-1%E5%90%AB%E6%96%B0%E8%87%BA%E5%B9%A3%E5%A4%9A%E5%B9%A3%E5%88%A5%E5%9F%BA%E9%87%91%E5%8F%8A%E5%A4%96%E5%B9%A3%E8%A8%88%E5%83%B9%E5%9F%BA%E9%87%91%E5%95%8F%E7%AD%94%E9%9B%861121102.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/878/202311021020110.pdf",
+          "raw_text": "",
+          "page_count": 0
+        },
+        {
+          "title": "1-2.含新臺幣多幣別基金及外幣計價基金問答集修正對照表",
+          "publish_date": "2023-11-02",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/202311021021380.pdf&filedisplay=1-2%E5%90%AB%E6%96%B0%E8%87%BA%E5%B9%A3%E5%A4%9A%E5%B9%A3%E5%88%A5%E5%9F%BA%E9%87%91%E5%8F%8A%E5%A4%96%E5%B9%A3%E8%A8%88%E5%83%B9%E5%9F%BA%E9%87%91%E5%95%8F%E7%AD%94%E9%9B%86%E4%BF%AE%E6%AD%A3%E5%B0%8D%E7%85%A7%E8%A1%A81121102.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/878/202311021021380.pdf",
+          "raw_text": "",
+          "page_count": 0
+        },
+        {
+          "title": "2.指數股票型基金(ETF)問答集",
+          "publish_date": "2019-08-20",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/201908201345190.pdf&filedisplay=%E5%95%8F%E7%AD%94%E9%9B%861702-%E6%8C%87%E6%95%B8%E8%82%A1%E7%A5%A8%E5%9E%8B%E5%9F%BA%E9%87%91%28ETF%29%E5%95%8F%E7%AD%94%E9%9B%86%280980615%29.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/878/201908201345190.pdf",
+          "raw_text": "",
+          "page_count": 0
+        },
+        {
+          "title": "3.投資人投資高收益債券基金及新興市場債券基金應注意事項問答集",
+          "publish_date": "2019-08-20",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/201908201346410.pdf&filedisplay=%E5%95%8F%E7%AD%94%E9%9B%861703-%E6%8A%95%E8%B3%87%E4%BA%BA%E6%8A%95%E8%B3%87%E9%AB%98%E6%94%B6%E7%9B%8A%E5%82%B5%E5%88%B8%E5%9F%BA%E9%87%91%E5%8F%8A%E6%96%B0%E8%88%88%E5%B8%82%E5%A0%B4%E5%82%B5%E5%88%B8%E5%9F%BA%E9%87%91%E6%87%89%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A0%85%E5%95%8F%E7%AD%94%E9%9B%86%281021121%29.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/878/201908201346410.pdf",
+          "raw_text": "",
+          "page_count": 0
+        },
+        {
+          "title": "4-1.私募證券投資信託基金問答集",
+          "publish_date": "2023-12-29",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/202312291718400.pdf&filedisplay=4-1.%E7%A7%81%E5%8B%9F%E8%AD%89%E5%88%B8%E6%8A%95%E8%B3%87%E4%BF%A1%E8%A8%97%E5%9F%BA%E9%87%91%E5%95%8F%E7%AD%94%E9%9B%86.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/878/202312291718400.pdf",
+          "raw_text": "",
+          "page_count": 0
+        },
+        {
+          "title": "4-2.私募證券投資信託基金問答集修正對照表",
+          "publish_date": "2023-12-29",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/202312291720190.pdf&filedisplay=4-2.%E7%A7%81%E5%8B%9F%E8%AD%89%E5%88%B8%E6%8A%95%E8%B3%87%E4%BF%A1%E8%A8%97%E5%9F%BA%E9%87%91%E5%95%8F%E7%AD%94%E9%9B%86%E4%BF%AE%E6%AD%A3%E5%B0%8D%E7%85%A7%E8%A1%A8.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/878/202312291720190.pdf",
+          "raw_text": "",
+          "page_count": 0
+        },
+        {
+          "title": "5-1.基金辦理借款問答集",
+          "publish_date": "2019-08-20",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/201908201351020.pdf&filedisplay=%E5%95%8F%E7%AD%94%E9%9B%861705-1%E5%9F%BA%E9%87%91%E8%BE%A6%E7%90%86%E5%80%9F%E6%AC%BE%E5%95%8F%E7%AD%94%E9%9B%86%281030724%29.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/878/201908201351020.pdf",
+          "raw_text": "",
+          "page_count": 0
+        },
+        {
+          "title": "5-2.基金辦理借款問答集修正對照表",
+          "publish_date": "2019-08-20",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/201908201442120.pdf&filedisplay=%E5%95%8F%E7%AD%94%E9%9B%861705-2%E5%9F%BA%E9%87%91%E8%BE%A6%E7%90%86%E5%80%9F%E6%AC%BE%E5%95%8F%E7%AD%94%E9%9B%86%E4%BF%AE%E6%AD%A3%E5%B0%8D%E7%85%A7%E8%A1%A8%281030724%29.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/878/201908201442120.pdf",
+          "raw_text": "",
+          "page_count": 0
+        },
+        {
+          "title": "6.證券投資顧問事業於傳播媒體從事證券投資分析問答集",
+          "publish_date": "2019-08-20",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/201908201443080.pdf&filedisplay=%E5%95%8F%E7%AD%94%E9%9B%861706-%E8%AD%89%E5%88%B8%E6%8A%95%E8%B3%87%E9%A1%A7%E5%95%8F%E4%BA%8B%E6%A5%AD%E6%96%BC%E5%82%B3%E6%92%AD%E5%AA%92%E9%AB%94%E5%BE%9E%E4%BA%8B%E8%AD%89%E5%88%B8%E6%8A%95%E8%B3%87%E5%88%86%E6%9E%90%E5%95%8F%E7%AD%94%E9%9B%86%281031024%29.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/878/201908201443080.pdf",
+          "raw_text": "",
+          "page_count": 0
+        },
+        {
+          "title": "7-1.全權委託投資業務問答集",
+          "publish_date": "2019-08-20",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/201908201444100.pdf&filedisplay=11207%E5%85%A8%E6%AC%8A%E5%A7%94%E8%A8%97%E6%8A%95%E8%B3%87%E6%A5%AD%E5%8B%99%E5%95%8F%E7%AD%94%E9%9B%86.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/878/201908201444100.pdf",
+          "raw_text": "",
+          "page_count": 0
+        },
+        {
+          "title": "7-2.全權委託投資業務問答集修正對照表",
+          "publish_date": "2019-08-20",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/201908201445100.pdf&filedisplay=11207%E5%85%A8%E6%AC%8A%E5%A7%94%E8%A8%97%E6%8A%95%E8%B3%87%E6%A5%AD%E5%8B%99%E5%95%8F%E7%AD%94%E9%9B%86%E4%BF%AE%E6%AD%A3%E5%B0%8D%E7%85%A7%E8%A1%A8.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/878/201908201445100.pdf",
+          "raw_text": "",
+          "page_count": 0
+        },
+        {
+          "title": "8.有關證券投資信託事業及證券投資顧問事業人員管理規則經理人問責制度之「 經理人」定義問答集",
+          "publish_date": "2022-12-21",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/202212211024210.pdf&filedisplay=11.12%E6%8A%95%E4%BF%A1%E5%8F%8A%E6%8A%95%E9%A1%A7%E4%BA%8B%E6%A5%AD%E5%95%8F%E8%B2%AC%E5%88%B6%E5%BA%A6%E6%89%80%E7%A8%B1%E3%80%8C%E7%B6%93%E7%90%86%E4%BA%BA%E3%80%8D%E5%95%8F%E7%AD%94%E9%9B%86.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/878/202212211024210.pdf",
+          "raw_text": "",
+          "page_count": 0
+        }
+      ]
     },
     {
       "id": 879,
       "name": "18.證券期貨事業投資抵減",
-      "url": "https://www.sfb.gov.tw/home.jsp?id=879&parentpath=0,6,858",
-      "documents": []
+      "url": "https://www.sfb.gov.tw/ch/home.jsp?id=879&parentpath=0,6,858",
+      "documents": [
+        {
+          "title": "金融監督管理委員會證券期貨局所轄金融機構及周邊單位申請研究發展活動支出適用投資抵減問答集",
+          "publish_date": "2020-12-17",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/202012171012310.pdf&filedisplay=9.%E9%87%91%E7%AE%A1%E6%9C%83%E8%AD%89%E5%88%B8%E6%9C%9F%E8%B2%A8%E5%B1%80%E6%89%80%E8%BD%84%E9%87%91%E8%9E%8D%E6%A9%9F%E6%A7%8B%E5%8F%8A%E5%91%A8%E9%82%8A%E5%96%AE%E4%BD%8D%E7%94%B3%E8%AB%8B%E7%A0%94%E7%A9%B6%E7%99%BC%E5%B1%95%E6%B4%BB%E5%8B%95%E6%94%AF%E5%87%BA%E9%81%A9%E7%94%A8%E6%8A%95%E8%B3%87%E6%8A%B5%E6%B8%9B%E5%95%8F%E7%AD%94%E9%9B%86%28109.12%29%28%E9%99%84%E4%BB%B63%29.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/879/202012171012310.pdf",
+          "raw_text": "",
+          "page_count": 0
+        }
+      ]
     },
     {
       "id": 880,
       "name": "20.期貨信託及顧問業務",
-      "url": "https://www.sfb.gov.tw/home.jsp?id=880&parentpath=0,6,858",
-      "documents": []
+      "url": "https://www.sfb.gov.tw/ch/home.jsp?id=880&parentpath=0,6,858",
+      "documents": [
+        {
+          "title": "1.期貨顧問事業於媒體提供期貨交易研究分析意見或建議問答集",
+          "publish_date": "2021-10-13",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/202110130827150.pdf&filedisplay=1.%E6%9C%9F%E8%B2%A8%E9%A1%A7%E5%95%8F%E4%BA%8B%E6%A5%AD%E6%96%BC%E5%AA%92%E9%AB%94%E6%8F%90%E4%BE%9B%E6%9C%9F%E8%B2%A8%E4%BA%A4%E6%98%93%E7%A0%94%E7%A9%B6%E5%88%86%E6%9E%90%E6%84%8F%E8%A6%8B%E6%88%96%E5%BB%BA%E8%AD%B0%E5%95%8F%E7%AD%94%E9%9B%86.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/880/202110130827150.pdf",
+          "raw_text": "",
+          "page_count": 0
+        },
+        {
+          "title": "2.期貨信託事業設置及人員問答集",
+          "publish_date": "2021-10-13",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/202110130825140.pdf&filedisplay=%E6%9C%9F%E8%B2%A8%E4%BF%A1%E8%A8%97%E4%BA%8B%E6%A5%AD%E8%A8%AD%E7%BD%AE%E5%8F%8A%E4%BA%BA%E5%93%A1%E5%95%8F%E7%AD%94%E9%9B%86%281141013%29.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/880/202110130825140.pdf",
+          "raw_text": "",
+          "page_count": 0
+        },
+        {
+          "title": "3.期貨信託基金問答集",
+          "publish_date": "2021-10-13",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/202110130823360.pdf&filedisplay=3.%E6%9C%9F%E8%B2%A8%E4%BF%A1%E8%A8%97%E5%9F%BA%E9%87%91%E5%95%8F%E7%AD%94%E9%9B%86.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/880/202110130823360.pdf",
+          "raw_text": "",
+          "page_count": 0
+        }
+      ]
     },
     {
       "id": 1033,
       "name": "21.有關證券期貨業辦理金融機構間資料共享業務問答集",
-      "url": "https://www.sfb.gov.tw/home.jsp?id=1033&parentpath=0,6,858",
-      "documents": []
+      "url": "https://www.sfb.gov.tw/ch/home.jsp?id=1033&parentpath=0,6,858",
+      "documents": [
+        {
+          "title": "20.有關證券期貨業辦理金融機構間資料共享業務問答集",
+          "publish_date": "2022-01-20",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/202201201214530.pdf&filedisplay=%E6%9C%89%E9%97%9C%E8%AD%89%E5%88%B8%E6%9C%9F%E8%B2%A8%E6%A5%AD%E8%BE%A6%E7%90%86%E9%87%91%E8%9E%8D%E6%A9%9F%E6%A7%8B%E9%96%93%E8%B3%87%E6%96%99%E5%85%B1%E4%BA%AB%E6%A5%AD%E5%8B%99%E5%95%8F%E7%AD%94%E9%9B%86.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/1033/202201201214530.pdf",
+          "raw_text": "",
+          "page_count": 0
+        }
+      ]
     },
     {
       "id": 1061,
       "name": "19.證券投資信託及顧問法第70條之1問答集",
-      "url": "https://www.sfb.gov.tw/home.jsp?id=1061&parentpath=0,6,858",
-      "documents": []
+      "url": "https://www.sfb.gov.tw/ch/home.jsp?id=1061&parentpath=0,6,858",
+      "documents": [
+        {
+          "title": "證券投資信託及顧問法第70條之1問答集",
+          "publish_date": "2023-06-30",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/202306301404250.pdf&filedisplay=%E8%AD%89%E5%88%B8%E6%8A%95%E8%B3%87%E4%BF%A1%E8%A8%97%E5%8F%8A%E9%A1%A7%E5%95%8F%E6%B3%95%E7%AC%AC70%E6%A2%9D%E4%B9%8B1%E5%95%8F%E7%AD%94%E9%9B%8620230630.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/1061/202306301404250.pdf",
+          "raw_text": "",
+          "page_count": 0
+        }
+      ]
     },
     {
       "id": 1062,
       "name": "22.證券商、期貨商及證券投資信託事業證券投資顧問事業作業委託他人處理應注意事項問答集",
-      "url": "https://www.sfb.gov.tw/home.jsp?id=1062&parentpath=0,6,858",
-      "documents": []
+      "url": "https://www.sfb.gov.tw/ch/home.jsp?id=1062&parentpath=0,6,858",
+      "documents": [
+        {
+          "title": "1.證券商作業委託他人處理應注意事項問答集",
+          "publish_date": "2023-08-31",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/202308311719090.pdf&filedisplay=%E8%AD%89%E5%88%B8%E5%95%86%E4%BD%9C%E6%A5%AD%E5%A7%94%E8%A8%97%E4%BB%96%E4%BA%BA%E8%99%95%E7%90%86%E6%87%89%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A0%85%E5%95%8F%E7%AD%94%E9%9B%8611411.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/1062/202308311719090.pdf",
+          "raw_text": "",
+          "page_count": 0
+        },
+        {
+          "title": "2.期貨商作業委託他人處理應注意事項問答集",
+          "publish_date": "2023-08-31",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/202308311723000.pdf&filedisplay=%E6%9C%9F%E8%B2%A8%E5%95%86%E4%BD%9C%E6%A5%AD%E5%A7%94%E8%A8%97%E4%BB%96%E4%BA%BA%E8%99%95%E7%90%86%E6%87%89%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A0%85%E5%95%8F%E7%AD%94%E9%9B%86.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/1062/202308311723000.pdf",
+          "raw_text": "",
+          "page_count": 0
+        },
+        {
+          "title": "3.證券投資信託事業證券投資顧問事業作業委託他人處理應注意事項問答集",
+          "publish_date": "2023-08-31",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/202308311725390.pdf&filedisplay=%E7%99%BC%E6%96%87%E9%99%84%E4%BB%B62-%E6%8A%95%E4%BF%A1%E6%8A%95%E9%A1%A7%E4%BA%8B%E6%A5%AD%E5%A7%94%E5%A4%96%E5%95%8F%E7%AD%94%E9%9B%861140110.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/1062/202308311725390.pdf",
+          "raw_text": "",
+          "page_count": 0
+        }
+      ]
     },
     {
       "id": 1073,
       "name": "23.金融業申請進駐地方資產管理專區試辦業務作業原則問答集",
-      "url": "https://www.sfb.gov.tw/home.jsp?id=1073&parentpath=0,6,858",
-      "documents": []
+      "url": "https://www.sfb.gov.tw/ch/home.jsp?id=1073&parentpath=0,6,858",
+      "documents": [
+        {
+          "title": "金融業申請進駐地方資產管理專區試辦業務作業原則問答集(投信投顧業部分)",
+          "publish_date": "2025-05-22",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/202505221541000.pdf&filedisplay=%E9%87%91%E8%9E%8D%E6%A5%AD%E7%94%B3%E8%AB%8B%E9%80%B2%E9%A7%90%E5%9C%B0%E6%96%B9%E8%B3%87%E7%94%A2%E7%AE%A1%E7%90%86%E5%B0%88%E5%8D%80%E8%A9%A6%E8%BE%A6%E6%A5%AD%E5%8B%99%E4%BD%9C%E6%A5%AD%E5%8E%9F%E5%89%87%E5%95%8F%E7%AD%94%E9%9B%86%28%E6%8A%95%E4%BF%A1%E6%8A%95%E9%A1%A7%E6%A5%AD%E9%83%A8%E5%88%86%2920250923.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/1073/202505221541000.pdf",
+          "raw_text": "",
+          "page_count": 0
+        },
+        {
+          "title": "金融業申請進駐地方資產管理專區試辦業務作業原則問答集(證券商部分)",
+          "publish_date": "2025-05-05",
+          "source_url": "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/202505051742240.pdf&filedisplay=%E9%87%91%E8%9E%8D%E6%A5%AD%E7%94%B3%E8%AB%8B%E9%80%B2%E9%A7%90%E5%9C%B0%E6%96%B9%E8%B3%87%E7%94%A2%E7%AE%A1%E7%90%86%E5%B0%88%E5%8D%80%E8%A9%A6%E8%BE%A6%E6%A5%AD%E5%8B%99%E4%BD%9C%E6%A5%AD%E5%8E%9F%E5%89%87%28%E8%AD%89%E5%88%B8%E5%95%86%E9%83%A8%E5%88%86%29.pdf&flag=doc",
+          "local_pdf": "qa_pdfs/1073/202505051742240.pdf",
+          "raw_text": "",
+          "page_count": 0
+        }
+      ]
     },
     {
       "id": 9999,
