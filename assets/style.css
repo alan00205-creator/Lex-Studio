@@ -806,6 +806,57 @@ mark {
 .btn-pdf-download:hover { background: var(--primary-soft); }
 .btn-pdf-download:active { transform: scale(0.99); }
 
+/* Q&A error states (when fetch_qa.py 標 doc.error，例如 SFB 直連被擋) */
+.qa-doc-item-error {
+  opacity: 0.78;
+}
+.qa-doc-item-error:hover {
+  opacity: 1;
+}
+.qa-doc-error-badge {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  color: #b07005;
+  background: rgba(245, 166, 35, 0.12);
+  border: 1px solid rgba(245, 166, 35, 0.45);
+  padding: 1px 6px;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+.qa-doc-error {
+  margin: 12px 0;
+  padding: 14px 16px;
+  border-left: 3px solid #f5a623;
+  background: rgba(245, 166, 35, 0.06);
+  border-radius: 0 4px 4px 0;
+}
+.qa-doc-error-title {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: #b07005;
+  margin-bottom: 8px;
+  letter-spacing: 0.03em;
+}
+.qa-doc-error-msg {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--ink);
+  margin-bottom: 12px;
+}
+.qa-doc-error-msg code {
+  font-family: var(--mono);
+  font-size: 11px;
+  background: var(--bg-soft, rgba(0,0,0,0.04));
+  padding: 1px 5px;
+  border-radius: 3px;
+  color: var(--ink-dim);
+}
+.qa-doc-error .btn-pdf-download {
+  margin-top: 4px;
+}
+
 .qa-detail-footer {
   font-family: var(--mono);
   font-size: 10px;

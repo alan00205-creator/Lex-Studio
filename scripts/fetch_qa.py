@@ -292,6 +292,22 @@ def find_subcategories(html: str) -> list[Category]:
 # 強塞 /ch/ 前綴（會變成 /ch/uploaddowndoc 不存在 → 200 OK + HTML 錯誤頁）。
 DOWNLOAD_ENDPOINTS = ("/uploaddowndoc", "/fckdowndoc", "/websitedowndoc")
 
+# 只接受 PDF 副檔名。SFB 同份問答集常以 .pdf / .doc / .odt 三種格式同步上架，
+# fetcher 只取 PDF 版本（同份內容的 dup，沒必要重複收）；其他副檔名 skip 不
+# 進 documents 列表，省得後續 download 跑 magic-byte 拒收浪費 quota，前端
+# 也不會出現一份問答集三個 entry。白名單比黑名單安全。
+PDF_EXTENSIONS = (".pdf",)
+
+
+def _is_pdf_link(file_path: Optional[str], href: str) -> bool:
+    """判斷一條下載連結指向 PDF。
+
+    優先看 file_path（uploaddowndoc 的 ?file= 參數）的副檔名；
+    若 file_path 為 None（例如 href 是直接 .pdf 連結），看 href 結尾。
+    """
+    candidate = (file_path or href).split("?", 1)[0].lower()
+    return candidate.endswith(PDF_EXTENSIONS)
+
 
 def _ensure_ch_prefix(href: str) -> str:
     """補 /ch/ 前綴；下載 endpoint 例外（在 root，不掛 /ch/）。
@@ -348,6 +364,9 @@ def parse_subcategory_documents(html: str, category_url: str) -> list[Document]:
         href = _ensure_ch_prefix(a["href"])  # 補 /ch/ 前綴避免 urljoin 把它吃掉
         file_path, filename = parse_uploaddowndoc(href)
         if not file_path and not href.lower().endswith(".pdf"):
+            continue
+        # 只收 PDF 副檔名；.doc / .odt 等同份問答集的 dup 副本 skip
+        if not _is_pdf_link(file_path, href):
             continue
         full_url = urljoin(category_url, href)
         if full_url in seen_urls:

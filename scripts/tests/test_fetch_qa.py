@@ -457,3 +457,68 @@ class TestDocumentSchema(unittest.TestCase):
         from dataclasses import asdict
         d = fetch_qa.Document(title="t", publish_date=None, source_url="u", error="non-PDF response")
         self.assertEqual(asdict(d)["error"], "non-PDF response")
+
+
+# ============================================
+# Fix: 過濾非 PDF 副檔名（.doc / .odt 等同份問答集的 dup 副本）
+# ============================================
+
+class TestIsPdfLink(unittest.TestCase):
+    def test_pdf_extension_accepted(self):
+        self.assertTrue(fetch_qa._is_pdf_link("chdownload/202004141034100.pdf", ""))
+        self.assertTrue(fetch_qa._is_pdf_link("x.PDF", ""))  # 大小寫不敏感
+
+    def test_doc_odt_xls_rejected(self):
+        for ext in (".doc", ".docx", ".odt", ".ods", ".xls", ".xlsx", ".html", ".txt"):
+            self.assertFalse(
+                fetch_qa._is_pdf_link(f"chdownload/x{ext}", ""),
+                f"副檔名 {ext} 應被拒",
+            )
+
+    def test_falls_back_to_href_when_file_path_none(self):
+        self.assertTrue(fetch_qa._is_pdf_link(None, "https://example.com/foo.pdf"))
+        self.assertFalse(fetch_qa._is_pdf_link(None, "https://example.com/foo.doc"))
+
+    def test_query_string_ignored(self):
+        # file_path 帶 query string 也應該只看副檔名
+        self.assertTrue(fetch_qa._is_pdf_link("foo.pdf?cache=1", ""))
+        self.assertFalse(fetch_qa._is_pdf_link("foo.doc?cache=1", ""))
+
+
+class TestParseSubcategoryDocumentsFiltersDups(unittest.TestCase):
+    """parse_subcategory_documents 應 skip .doc / .odt 同份 dup。"""
+
+    def test_only_pdf_documents_kept(self):
+        # 模擬 SFB 子分類頁：同份問答集三個格式
+        html = """
+        <html><body>
+        <a href="/uploaddowndoc?file=chdownload/202004141034100.pdf&filedisplay=Q1.pdf&flag=doc">
+            1.公開收購相關疑義問答 (PDF)
+        </a>
+        <a href="/uploaddowndoc?file=chdownload/202004141034101.doc&filedisplay=Q1.doc&flag=doc">
+            1.公開收購相關疑義問答 (DOC)
+        </a>
+        <a href="/uploaddowndoc?file=chdownload/202004141034102.odt&filedisplay=Q1.odt&flag=doc">
+            1.公開收購相關疑義問答 (ODT)
+        </a>
+        </body></html>
+        """
+        cat_url = "https://www.sfb.gov.tw/ch/home.jsp?id=866&parentpath=0,6,858"
+        docs = fetch_qa.parse_subcategory_documents(html, cat_url)
+        self.assertEqual(len(docs), 1, f"預期 1 份 PDF，實際 {len(docs)}：{[d.title for d in docs]}")
+        self.assertIn(".pdf", docs[0].source_url.lower())
+        # source_url 不應再含 /ch/uploaddowndoc（DOWNLOAD_ENDPOINTS fix）
+        self.assertNotIn("/ch/uploaddowndoc", docs[0].source_url)
+        # 但應含 /uploaddowndoc（root，不加 /ch/）
+        self.assertIn("/uploaddowndoc", docs[0].source_url)
+
+    def test_direct_pdf_link_still_accepted(self):
+        html = """
+        <html><body>
+        <a href="https://example.com/some.pdf">直接 PDF</a>
+        <a href="https://example.com/some.doc">非 PDF</a>
+        </body></html>
+        """
+        docs = fetch_qa.parse_subcategory_documents(html, "https://example.com/")
+        self.assertEqual(len(docs), 1)
+        self.assertTrue(docs[0].source_url.endswith(".pdf"))

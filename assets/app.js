@@ -420,11 +420,12 @@ function renderQaDocumentsView() {
   const list = docs.length === 0
     ? renderQaEmpty('∅', '此分類尚無文件')
     : `<div class="qa-doc-list">${docs.map((d, i) => `
-        <button class="qa-doc-item" data-doc-index="${i}">
+        <button class="qa-doc-item${d.error ? ' qa-doc-item-error' : ''}" data-doc-index="${i}">
           <div class="qa-doc-title">${escapeHTML(d.title || '(無標題)')}</div>
           <div class="qa-doc-meta">
             <span class="qa-doc-date">${escapeHTML(d.publish_date || '—')}</span>
             ${d.page_count ? `<span class="qa-doc-pages">${d.page_count} 頁</span>` : ''}
+            ${d.error ? `<span class="qa-doc-error-badge" title="${escapeHTML(d.error)}">⚠ 來源暫無法存取</span>` : ''}
           </div>
         </button>
       `).join('')}</div>`;
@@ -452,10 +453,20 @@ function renderQaDetailView() {
         ${doc.publish_date ? `<span>發布日期：<strong>${escapeHTML(doc.publish_date)}</strong></span>` : ''}
         ${doc.page_count ? `<span>${doc.page_count} 頁</span>` : ''}
       </div>
-      <pre class="qa-raw-text">${escapeHTML(doc.raw_text || '(無原文)')}</pre>
-      ${doc.source_url ? `<a class="btn-pdf-download" href="${escapeHTML(doc.source_url)}" target="_blank" rel="noopener noreferrer">
-        下載原始 PDF（連至證期局網站）↗
-      </a>` : ''}
+      ${doc.error
+        ? `<div class="qa-doc-error">
+            <div class="qa-doc-error-title">⚠ 來源暫無法存取</div>
+            <div class="qa-doc-error-msg">本工具上次抓取此份文件時發生：<code>${escapeHTML(doc.error)}</code>。<br>
+              這通常是 SFB 站台對直連下載暫時擋下，或文件已下架。請點下方連結直接到證期局原站閱覽。</div>
+            ${doc.source_url ? `<a class="btn-pdf-download" href="${escapeHTML(doc.source_url)}" target="_blank" rel="noopener noreferrer">
+              前往 SFB 原站 ↗
+            </a>` : ''}
+          </div>`
+        : `<pre class="qa-raw-text">${escapeHTML(doc.raw_text || '(無原文)')}</pre>
+           ${doc.source_url ? `<a class="btn-pdf-download" href="${escapeHTML(doc.source_url)}" target="_blank" rel="noopener noreferrer">
+             下載原始 PDF（連至證期局網站）↗
+           </a>` : ''}`
+      }
       <div class="qa-detail-footer">
         ※ 本文件為主管機關原文，工具不對其內容做任何改寫。法令引用以證期局正式公告為準。
       </div>
