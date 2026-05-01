@@ -724,6 +724,71 @@ function clearWrongQuestions() {
 }
 
 // ============================================
+// 今日挑戰（daily challenge）：10 題、日期 seed、與一般練習進度分流
+// ============================================
+
+const DAILY_KEY = 'underwriter_lex_daily_challenge';
+const DAILY_TARGET_COUNT = 10;
+
+// Mulberry32：32-bit seeded PRNG（純函式；同 seed → 同序列；跨裝置一致）
+function mulberry32(seed) {
+  let s = seed >>> 0;
+  return function() {
+    s = (s + 0x6D2B79F5) >>> 0;
+    let t = s;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+// 以 seed 驅動的 Fisher-Yates shuffle（不修改原陣列）
+function seededShuffle(arr, seed) {
+  const a = arr.slice();
+  const rng = mulberry32(seed);
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// 給定 pool 與日期字串，回傳當日固定 10 題（pool 不足時取全部）
+function pickDailyQuestions(pool, dateStr, n = DAILY_TARGET_COUNT) {
+  if (!pool || pool.length === 0) return [];
+  const seed = hashString(dateStr);
+  return seededShuffle(pool, seed).slice(0, Math.min(n, pool.length));
+}
+
+// daily progress: { date, answered: [{id, selectedIdx, correct}], completed, score }
+// 換日（date mismatch）自動 reset
+function loadDailyProgress() {
+  const today = todayStr();
+  try {
+    const raw = localStorage.getItem(DAILY_KEY);
+    if (raw) {
+      const p = JSON.parse(raw);
+      if (p && p.date === today) {
+        return {
+          date: today,
+          answered: Array.isArray(p.answered) ? p.answered : [],
+          completed: !!p.completed,
+          score: typeof p.score === 'number' ? p.score : 0,
+        };
+      }
+    }
+  } catch (e) {
+    console.error('[daily] loadDailyProgress 失敗：', e);
+  }
+  return { date: today, answered: [], completed: false, score: 0 };
+}
+
+function saveDailyProgress(p) {
+  try { localStorage.setItem(DAILY_KEY, JSON.stringify(p)); }
+  catch (e) { console.error('[daily] saveDailyProgress 失敗：', e); }
+}
+
+// ============================================
 // 題庫資料載入
 // ============================================
 
@@ -824,19 +889,72 @@ function renderSourceLink(source) {
 
 const quizSessions = {
   quiz: createSession('quiz'),
+  daily: createSession('daily'),    // 今日挑戰：10 題（日期 seed），與一般練習分流
 };
 
 function createSession(mode) {
   return {
-    mode,                          // 'quiz'（情境模擬已移除；現僅單一池）
+    mode,                          // 'quiz' | 'daily'
     state: 'start',                // 'start' | 'playing' | 'feedback' | 'result'
     filter: { category: 'all', difficulty: 'all', count: 10 },
     questions: [],
     currentIdx: 0,
     answers: [],
     selectedIdx: null,
-    reviewMode: false,             // 錯題本模式
+    reviewMode: false,             // 錯題本模式（僅 quiz mode 使用）
   };
+}
+
+// 從 localStorage 與當日 seeded 題目組裝 daily session 狀態（resume-aware）
+// 回傳 true 表示成功；false 表示題庫尚未載入或為空
+function setupDailySession() {
+  if (!quizData) return false;
+  const pool = quizData.questions || [];
+  if (pool.length === 0) return false;
+
+  const dp = loadDailyProgress();
+  const dailyQuestions = pickDailyQuestions(pool, dp.date, DAILY_TARGET_COUNT);
+  if (dailyQuestions.length === 0) return false;
+
+  const sess = quizSessions.daily;
+  sess.questions = dailyQuestions;
+  // resume：從 daily progress 還原已答內容
+  sess.answers = dp.answered.map(a => ({
+    questionId: a.id,
+    selectedIdx: typeof a.selectedIdx === 'number' ? a.selectedIdx : -1,
+    correct: !!a.correct,
+  }));
+  sess.currentIdx = Math.min(sess.answers.length, sess.questions.length);
+  sess.selectedIdx = null;
+  sess.reviewMode = false;
+  if (dp.completed || sess.currentIdx >= sess.questions.length) {
+    sess.state = 'result';
+  } else {
+    sess.state = 'playing';
+  }
+  return true;
+}
+
+// 從首頁 CTA 進入 daily 挑戰：切到 quiz page、render daily mode
+function enterDailyChallenge() {
+  ensureQuizLoaded().then(() => {
+    if (!setupDailySession()) {
+      alert('題庫尚未就緒，請稍候再試。');
+      return;
+    }
+    showQuizPage('daily');
+  });
+}
+
+// 主動切換到題庫頁並 render 指定 mode（不經 goPage 的固定 mode 路由）
+function showQuizPage(mode) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById('page-quiz');
+  if (target) target.classList.add('active');
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.page === 'quiz'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.page === 'quiz'));
+  window.scrollTo(0, 0);
+  renderQuizPage(mode);
 }
 
 function shuffle(arr) {
@@ -893,7 +1011,14 @@ function selectAnswer(mode, idx) {
   sess.answers.push({ questionId: q.id, selectedIdx: idx, correct });
   sess.selectedIdx = idx;
   sess.state = 'feedback';
-  recordAnswer(q, correct);
+  if (mode === 'daily') {
+    // daily 不寫進一般進度（避免錯題本被強迫餵食）；只記在 daily key
+    const dp = loadDailyProgress();
+    dp.answered.push({ id: q.id, selectedIdx: idx, correct });
+    saveDailyProgress(dp);
+  } else {
+    recordAnswer(q, correct);
+  }
   renderQuizPage(mode);
 }
 
@@ -901,6 +1026,13 @@ function nextQuestion(mode) {
   const sess = quizSessions[mode];
   if (sess.currentIdx + 1 >= sess.questions.length) {
     sess.state = 'result';
+    if (mode === 'daily') {
+      // 完成：同步 completed + score 至 daily key
+      const dp = loadDailyProgress();
+      dp.completed = true;
+      dp.score = sess.answers.filter(a => a.correct).length;
+      saveDailyProgress(dp);
+    }
   } else {
     sess.currentIdx += 1;
     sess.selectedIdx = null;
@@ -922,6 +1054,9 @@ function quizAreaEl(mode) {
 
 function renderQuizPage(mode) {
   const area = quizAreaEl(mode);
+  // 紀錄當前 mode 給 click delegate 動態讀取（quiz / daily 共用 #quizArea，
+  // closure 裡寫死 mode 會在切換時拿到舊值）
+  area.dataset.currentMode = mode;
   if (!quizLoaded) {
     area.innerHTML = `<div class="loading"><div class="spinner"></div><div>載入題庫中⋯</div></div>`;
     return;
@@ -931,11 +1066,13 @@ function renderQuizPage(mode) {
     return;
   }
   const sess = quizSessions[mode];
+  // daily mode 沒有 start 篩選頁，最低狀態為 playing；保險：若是 'start' 視為 result
+  if (mode === 'daily' && sess.state === 'start') sess.state = 'result';
   if (sess.state === 'start') area.innerHTML = renderQuizStart(mode);
   else if (sess.state === 'result') area.innerHTML = renderQuizResult(mode);
   else area.innerHTML = renderQuizPlay(mode);
 
-  bindQuizDelegates(area, mode);
+  bindQuizDelegates(area);
 }
 
 function renderQuizStart(mode) {
@@ -1045,9 +1182,14 @@ function renderQuizPlay(mode) {
     </div>
   `;
 
+  const isDaily = mode === 'daily';
+  const quitLabel = isDaily ? '← 暫存進度，回首頁' : '← 結束練習';
+  const headLabel = isDaily ? `<div class="daily-play-head">⌖ 今日挑戰 · ${escapeHTML(todayStr())}</div>` : '';
+
   return `
     <div class="quiz-play">
-      <button class="back-link" data-action="quit">← 結束練習</button>
+      <button class="back-link" data-action="quit">${quitLabel}</button>
+      ${headLabel}
       <div class="quiz-progress-dots">${dots}</div>
       <div class="quiz-meta">
         <span class="quiz-meta-cat">${escapeHTML(q.category)}</span>
@@ -1078,8 +1220,23 @@ function renderQuizResult(mode) {
     </li>`;
   }).join('');
 
+  const isDaily = mode === 'daily';
+  const headBadge = isDaily
+    ? `<div class="result-daily-badge">⌖ 今日挑戰 · ${escapeHTML(todayStr())} 完成</div>`
+    : '';
+  const actions = isDaily
+    ? `
+      <button class="btn-primary" data-action="back-home">回首頁</button>
+      <div class="result-tomorrow">🌅 明日再見</div>
+    `
+    : `
+      <button class="btn-primary" data-action="restart">重新開始</button>
+      ${wrongAnswers.length > 0 ? `<button class="btn-secondary" data-action="review">複習錯題本</button>` : ''}
+    `;
+
   return `
     <div class="quiz-result">
+      ${headBadge}
       <div class="result-headline">
         <div class="result-pct">${pct}%</div>
         <div class="result-fraction">${correct} / ${total}</div>
@@ -1090,19 +1247,18 @@ function renderQuizResult(mode) {
         <ul class="result-wrong-list">${wrongList}</ul>
       ` : `<div class="quiz-section-label" style="color: var(--jade);">完美！全部答對</div>`}
 
-      <div class="result-actions">
-        <button class="btn-primary" data-action="restart">重新開始</button>
-        ${wrongAnswers.length > 0 ? `<button class="btn-secondary" data-action="review">複習錯題本</button>` : ''}
-      </div>
+      <div class="result-actions">${actions}</div>
     </div>
   `;
 }
 
-function bindQuizDelegates(area, mode) {
+function bindQuizDelegates(area) {
   if (area.dataset.qzBound === '1') return;
   area.dataset.qzBound = '1';
 
   area.addEventListener('click', e => {
+    // 動態讀 mode（quiz / daily 共用 #quizArea；不能在 closure 裡寫死）
+    const mode = area.dataset.currentMode || 'quiz';
     const sess = quizSessions[mode];
     const t = e.target.closest('[data-action], [data-filter-value]');
     if (!t) return;
@@ -1120,9 +1276,15 @@ function bindQuizDelegates(area, mode) {
     else if (action === 'select') selectAnswer(mode, parseInt(t.dataset.opt, 10));
     else if (action === 'next') nextQuestion(mode);
     else if (action === 'quit') {
-      sess.state = 'start';
-      renderQuizPage(mode);
+      // daily 中途離開：暫存進度（已寫入 daily key）並回首頁
+      if (mode === 'daily') {
+        goPage('home');
+      } else {
+        sess.state = 'start';
+        renderQuizPage(mode);
+      }
     } else if (action === 'restart') restartSession(mode);
+    else if (action === 'back-home') goPage('home');
   });
 }
 
@@ -1136,15 +1298,14 @@ function hashString(s) {
   return Math.abs(h);
 }
 
+// 今日挑戰首題（給首頁卡片預覽用）：回傳當日 10 題的第 1 題
 function getDailyQuestion() {
-  // 今日挑戰：從統一 200 題池依日期 hash 挑一題（每天同一題）
   if (!quizData) return null;
   const pool = quizData.questions || [];
   if (pool.length === 0) return null;
-  return pool[hashString(todayStr()) % pool.length];
+  const picks = pickDailyQuestions(pool, todayStr(), DAILY_TARGET_COUNT);
+  return picks[0] || null;
 }
-
-let dailyAnswerSelected = null;
 
 function renderDailyChallenge() {
   const el = document.getElementById('dailyChallenge');
@@ -1156,93 +1317,76 @@ function renderDailyChallenge() {
     el.innerHTML = renderQaEmpty('!', '題庫尚未載入');
     return;
   }
-  const q = getDailyQuestion();
-  if (!q) { el.innerHTML = renderQaEmpty('⌖', '今日無題目可挑戰'); return; }
-
-  const progress = loadProgress();
+  const pool = quizData.questions || [];
   const today = todayStr();
-  const completedQid = progress.daily_completed[today];
-  const completed = completedQid === q.id;
+  const dailyQuestions = pickDailyQuestions(pool, today, DAILY_TARGET_COUNT);
+  if (dailyQuestions.length === 0) {
+    el.innerHTML = renderQaEmpty('⌖', '今日無題目可挑戰');
+    return;
+  }
+  const dp = loadDailyProgress();
+  const total = dailyQuestions.length;
+  const answered = Math.min(dp.answered.length, total);
+  const completed = dp.completed || answered >= total;
 
-  if (!completed && dailyAnswerSelected === null) {
+  // 進度 dots：已答用 correct / wrong；剩餘空 dot
+  const dots = dailyQuestions.map((_, i) => {
+    const a = dp.answered[i];
+    let cls = 'dot';
+    if (a) cls += a.correct ? ' correct' : ' wrong';
+    return `<span class="${cls}"></span>`;
+  }).join('');
+
+  if (completed) {
+    const score = typeof dp.score === 'number' && dp.score > 0 ? dp.score
+                : dp.answered.filter(a => a.correct).length;
+    const pct = Math.round(score * 100 / total);
     el.innerHTML = `
-      <div class="daily-card">
-        <div class="daily-label">⌖ 今日挑戰 · ${escapeHTML(today)}</div>
-        <div class="daily-meta">
-          <span class="quiz-meta-cat">${escapeHTML(q.category)}</span>
-          <span class="quiz-meta-diff">${escapeHTML(q.difficulty)}</span>
+      <div class="daily-card daily-card-done">
+        <div class="daily-label">⌖ 今日挑戰 · ${escapeHTML(today)} · <span class="daily-done-mark">已完成 ✓</span></div>
+        <div class="daily-done-score">
+          <span class="daily-done-pct">${pct}%</span>
+          <span class="daily-done-frac">${score} / ${total}</span>
         </div>
-        <div class="daily-question">${escapeHTML(q.question)}</div>
-        <div class="quiz-options">
-          ${q.options.map((opt, i) => `
-            <button class="quiz-option" data-daily-opt="${i}">
-              <span class="opt-letter">${'ABCD'[i]}</span>
-              <span class="opt-text">${escapeHTML(opt)}</span>
-            </button>
-          `).join('')}
-        </div>
+        <div class="quiz-progress-dots">${dots}</div>
+        <div class="daily-tomorrow">🌅 明日再見</div>
       </div>
     `;
-  } else {
-    const selected = completed ? null : dailyAnswerSelected;
-    const isCorrect = completed
-      ? null   // 已答過，不再強調對錯（保留學習感）
-      : (selected === q.correct_index);
-    const opts = q.options.map((opt, i) => {
-      let cls = 'quiz-option';
-      let mark = '';
-      if (i === q.correct_index) { cls += ' correct'; mark = '✓'; }
-      else if (selected !== null && i === selected) { cls += ' wrong'; mark = '✗'; }
-      return `<button class="${cls}" disabled>
-        <span class="opt-letter">${'ABCD'[i]}</span>
-        <span class="opt-text">${escapeHTML(opt)}</span>
-        ${mark ? `<span class="opt-mark">${mark}</span>` : ''}
-      </button>`;
-    }).join('');
-
-    el.innerHTML = `
-      <div class="daily-card">
-        <div class="daily-label">⌖ 今日挑戰 · ${escapeHTML(today)} ${completed ? '· <span style="color:var(--jade)">已完成</span>' : ''}</div>
-        <div class="daily-meta">
-          <span class="quiz-meta-cat">${escapeHTML(q.category)}</span>
-          <span class="quiz-meta-diff">${escapeHTML(q.difficulty)}</span>
-        </div>
-        <div class="daily-question">${escapeHTML(q.question)}</div>
-        <div class="quiz-options">${opts}</div>
-        <div class="quiz-feedback">
-          ${isCorrect === true ? '<div class="feedback-label correct">✓ 答對</div>' : ''}
-          ${isCorrect === false ? '<div class="feedback-label wrong">✗ 答錯</div>' : ''}
-          <div class="feedback-explanation">${escapeHTML(q.explanation)}</div>
-          ${q.source ? `
-          <div class="feedback-source">
-            法源依據：
-            <a href="${escapeHTML(q.source.url)}" target="_blank" rel="noopener">
-              ${escapeHTML(q.source.law_name || '')}${q.source.article ? ` 第 ${escapeHTML(q.source.article)} 條` : ''} ↗
-            </a>
-          </div>` : ''}
-        </div>
-      </div>
-    `;
+    return;
   }
 
-  bindDailyDelegates(el, q);
+  const ctaLabel = answered === 0
+    ? `開始今日挑戰（${total} 題）`
+    : `繼續挑戰（第 ${answered + 1} / ${total} 題）`;
+  const preview = dailyQuestions[answered] || dailyQuestions[0];
+
+  el.innerHTML = `
+    <div class="daily-card">
+      <div class="daily-label">⌖ 今日挑戰 · ${escapeHTML(today)}</div>
+      <div class="daily-headline">每日 ${total} 題 · 跨裝置同步</div>
+      <div class="daily-progress-line">
+        <span class="daily-progress-text">${answered} / ${total}</span>
+        <span class="quiz-progress-dots">${dots}</span>
+      </div>
+      <div class="daily-preview">
+        <span class="quiz-meta-cat">${escapeHTML(preview.category)}</span>
+        <span class="quiz-meta-diff">${escapeHTML(preview.difficulty)}</span>
+        <span class="daily-preview-hint">${answered === 0 ? '首題預覽' : '下一題'}</span>
+      </div>
+      <button class="btn-primary daily-cta" data-action="enter-daily">${ctaLabel}</button>
+    </div>
+  `;
+
+  bindDailyDelegates(el);
 }
 
-function bindDailyDelegates(el, q) {
+function bindDailyDelegates(el) {
   if (el.dataset.dailyBound === '1') return;
   el.dataset.dailyBound = '1';
   el.addEventListener('click', e => {
-    const t = e.target.closest('[data-daily-opt]');
+    const t = e.target.closest('[data-action="enter-daily"]');
     if (!t) return;
-    const idx = parseInt(t.dataset.dailyOpt, 10);
-    dailyAnswerSelected = idx;
-    const correct = idx === q.correct_index;
-    recordAnswer(q, correct);
-    const p = loadProgress();
-    p.daily_completed[todayStr()] = q.id;
-    saveProgress(p);
-    renderDailyChallenge();
-    renderProgress();
+    enterDailyChallenge();
   });
 }
 

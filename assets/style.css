@@ -1710,3 +1710,122 @@ mark {
   line-height: 1.6;
   border-radius: 2px;
 }
+
+/* ===== Daily challenge：10 題卡片（首頁）===== */
+.daily-headline {
+  font-family: var(--serif);
+  font-size: 14px;
+  color: var(--ink-soft);
+  margin-bottom: 14px;
+  letter-spacing: 0.04em;
+}
+
+.daily-progress-line {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.daily-progress-text {
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: 0.05em;
+}
+
+.daily-preview {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  font-size: 11px;
+  flex-wrap: wrap;
+}
+
+.daily-preview-hint {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--ink-dim);
+  letter-spacing: 0.08em;
+}
+
+.daily-cta {
+  width: 100%;
+  margin-top: 4px;
+}
+
+/* ===== Daily 完成卡片 ===== */
+.daily-card-done {
+  border-left-color: var(--jade);
+}
+
+.daily-done-mark {
+  color: var(--jade);
+  font-weight: 700;
+}
+
+.daily-done-score {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin: 8px 0 12px;
+}
+
+.daily-done-pct {
+  font-family: var(--display);
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--jade);
+  line-height: 1;
+}
+
+.daily-done-frac {
+  font-family: var(--mono);
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+
+.daily-tomorrow {
+  margin-top: 14px;
+  text-align: center;
+  font-family: var(--serif);
+  font-size: 13px;
+  color: var(--ink-soft);
+  letter-spacing: 0.1em;
+  padding-top: 12px;
+  border-top: 1px dashed var(--line);
+}
+
+/* ===== Daily 在 quiz play / result 頁面的小裝飾 ===== */
+.daily-play-head {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--gold);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin: 8px 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px dashed var(--line);
+}
+
+.result-daily-badge {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--jade);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  text-align: center;
+}
+
+.result-tomorrow {
+  margin-top: 14px;
+  text-align: center;
+  font-family: var(--serif);
+  font-size: 14px;
+  color: var(--ink-soft);
+  letter-spacing: 0.1em;
+}
