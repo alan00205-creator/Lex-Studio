@@ -170,10 +170,16 @@ def find_subcategories(html: str) -> list[Category]:
     完全無關的 sitemap 項目。直接全收會把不相關 PDF（例如施政計畫、
     預決算書、契約等）抽進 qa.json 並淹沒真正的問答集。
 
-    只保留 id ∈ QA_CATEGORY_IDS 的連結，且優先採用較長的 name（同一個 id
-    可能在頁內出現多次，標題可能是「公司治理」或「1.公司治理」，
-    取較長者比較有資訊量）。順序維持 QA_CATEGORY_IDS 的數值順序，
-    讓輸出穩定。
+    URL 採直接構造（不靠 HTML href + urljoin），因為：
+    1. 23 個分類 id 與 URL pattern 都是已知固定的：
+       https://www.sfb.gov.tw/ch/home.jsp?id={id}&parentpath=0,6,858
+    2. HTML 上同 id 可能出現在 sfb 與 fsc 兩個 domain 的導覽中，依
+       href 組 URL 會誤抓到 fsc.gov.tw（例如 id=865 抓到 FSC 研究報告
+       而非 SFB 問答集）。
+    3. 部分 href 寫成 /home.jsp?... 省略 /ch/，urljoin 用 href 蓋掉 base
+       path 後產生 https://www.sfb.gov.tw/home.jsp?... 必 404。
+
+    Name 仍從 HTML 取（取較長者），輸出依 id 排序穩定。
     """
     soup = BeautifulSoup(html, "lxml")
     seen: dict[int, Category] = {}
@@ -184,18 +190,31 @@ def find_subcategories(html: str) -> list[Category]:
         name = a.get_text(strip=True)
         if not name or len(name) > 80:  # 太長可能是把整段文字抓進來
             continue
+        url = f"{BASE}/ch/home.jsp?id={sid}&parentpath=0,6,858"
         existing = seen.get(sid)
         if existing is None:
-            seen[sid] = Category(
-                id=sid,
-                name=name,
-                url=urljoin(BASE + "/", a["href"]),
-            )
+            seen[sid] = Category(id=sid, name=name, url=url)
         else:
             # 已存在：若新名稱較長（含編號前綴等），用新名稱覆蓋
             if len(name) > len(existing.name):
                 existing.name = name
+            # URL 因 sid 相同必相同，無需更新
     return [seen[i] for i in sorted(seen)]
+
+
+def _ensure_ch_prefix(href: str) -> str:
+    """確保 sfb.gov.tw 的 root-relative href 帶 /ch/ 前綴。
+
+    sfb.gov.tw 站台所有實際內容頁與下載連結都掛在 /ch/ 之下，但 HTML
+    內 <a href> 偶爾會寫成 /home.jsp?... 或 /uploaddowndoc?...（從
+    domain root 起算，省略 /ch/）。urlib.parse.urljoin 會用 href 完全
+    覆蓋 base 的 path，導致 /ch/ 被吃掉，組出 404 連結
+    （例如 https://www.sfb.gov.tw/home.jsp?id=863&parentpath=0,6,858）。
+    對 root-relative 但又不是 /ch/ 開頭的 href，補上 /ch 前綴。
+    """
+    if href.startswith("/") and not href.startswith("//") and not href.startswith("/ch/"):
+        return "/ch" + href
+    return href
 
 
 def parse_uploaddowndoc(href: str) -> tuple[Optional[str], Optional[str]]:
@@ -228,7 +247,7 @@ def parse_subcategory_documents(html: str, category_url: str) -> list[Document]:
     docs: list[Document] = []
     seen_urls = set()
     for a in soup.find_all("a", href=True):
-        href = a["href"]
+        href = _ensure_ch_prefix(a["href"])  # 補 /ch/ 前綴避免 urljoin 把它吃掉
         file_path, filename = parse_uploaddowndoc(href)
         if not file_path and not href.lower().endswith(".pdf"):
             continue
