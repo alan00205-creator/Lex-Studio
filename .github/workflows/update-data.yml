@@ -37,6 +37,12 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r scripts/requirements.txt
 
+      - name: Purge stale PDF cache
+        # 上一輪可能在 anti-direct-link 期間把 HTML 錯誤頁誤寫進
+        # output/qa_pdfs/ 的 .pdf 檔案內。fetch_qa.py 會以 magic bytes
+        # 自動處理，這步是 belt-and-suspenders：每次 run 從乾淨狀態開始。
+        run: rm -rf output/qa_pdfs/
+
       - name: Run fetch_qa.py
         run: |
           if [ "${{ inputs.skip_pdf_extract }}" = "true" ]; then
@@ -49,7 +55,8 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add output/qa.json output/qa_pdfs/
+          git add output/qa.json
+          git add -A output/qa_pdfs/
           if git diff --staged --quiet; then
             echo "No changes to commit."
             exit 0
