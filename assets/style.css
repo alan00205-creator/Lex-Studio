@@ -59,17 +59,8 @@ header {
 .brand-row {
   display: flex;
   align-items: baseline;
-  justify-content: space-between;
+  justify-content: flex-end;
   margin-bottom: 4px;
-}
-
-.brand {
-  font-family: var(--display);
-  font-size: 13px;
-  letter-spacing: 0.3em;
-  color: var(--gold);
-  text-transform: uppercase;
-  font-weight: 500;
 }
 
 .data-status {
