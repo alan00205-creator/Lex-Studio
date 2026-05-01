@@ -81,6 +81,36 @@ HEADERS = {
     "Accept-Language": "zh-TW,zh;q=0.9,en;q=0.8",
 }
 
+# 全域 Session：所有 fetch_html / download_pdf 共用 cookie 與預設 header。
+# SFB 與其他台灣政府網站常見 anti-direct-link 機制：
+#   - 需要 Referer 為發起頁
+#   - 需要 JSESSIONID（先打入口頁拿 cookie）
+# 兩者缺一就會回 200 OK + HTML 錯誤頁（不是 PDF binary），
+# pdfplumber 拋 "No /Root object! - Is this really a PDF?"
+SESSION = requests.Session()
+SESSION.headers.update(HEADERS)
+
+# PDF 檔案 magic bytes（前 5 bytes）。
+PDF_MAGIC = b"%PDF-"
+
+
+def warm_up_session(timeout: int = 15) -> None:
+    """打入口頁拿 cookie（JSESSIONID 等），失敗不致命。"""
+    try:
+        SESSION.get(INDEX_URL, timeout=timeout, allow_redirects=True)
+    except Exception as e:
+        print(f"  ⚠ warm_up_session 失敗（不致命）：{e}", file=sys.stderr)
+
+
+def _is_pdf_file(path: Path) -> bool:
+    """以 magic bytes 判斷檔案是不是真 PDF。"""
+    try:
+        with open(path, "rb") as f:
+            return f.read(len(PDF_MAGIC)) == PDF_MAGIC
+    except Exception:
+        return False
+
+
 OUT_DIR = Path("output")
 PDF_DIR = OUT_DIR / "qa_pdfs"
 QA_JSON = OUT_DIR / "qa.json"
@@ -94,6 +124,13 @@ class Document:
     local_pdf: Optional[str] = None
     raw_text: str = ""
     page_count: int = 0
+    # 下載 / 抽取失敗時填這裡（前端可顯示「來源暫無法存取，請至 SFB 原站」）。
+    # None 代表成功。常見值：
+    #   "non-PDF response"  下載 200 但內容不是 PDF（多半是 anti-direct-link 擋）
+    #   "HTTP {code}"       下載非 200
+    #   "download error: …" 連線層失敗
+    #   "pdf parse error: …" pdfplumber 抽取失敗
+    error: Optional[str] = None
 
 
 @dataclass
@@ -112,7 +149,7 @@ def fetch_html(url: str, retries: int, delay: float, timeout: int) -> str:
     last_err = None
     for attempt in range(1, retries + 1):
         try:
-            resp = requests.get(url, headers=HEADERS, timeout=timeout, allow_redirects=True)
+            resp = SESSION.get(url, timeout=timeout, allow_redirects=True)
             if resp.status_code == 200:
                 resp.encoding = resp.apparent_encoding or "utf-8"
                 return resp.text
@@ -125,26 +162,72 @@ def fetch_html(url: str, retries: int, delay: float, timeout: int) -> str:
     raise RuntimeError(f"failed to fetch {url}: {last_err}")
 
 
-def download_pdf(url: str, dest: Path, retries: int, delay: float, timeout: int) -> bool:
+def download_pdf(
+    url: str,
+    dest: Path,
+    *,
+    referer: str,
+    retries: int,
+    delay: float,
+    timeout: int,
+) -> tuple[bool, Optional[str]]:
+    """下載 PDF，回傳 (ok, error_msg)。
+
+    - 帶 SESSION 共用的 cookie 與 Referer header（解 anti-direct-link）
+    - 已存在的檔先 magic-byte check：是真 PDF 才當 cache hit；
+      不是 PDF 一律刪掉重抓（避免上一輪寫進去的 HTML 錯誤頁永久卡住）
+    - 下載完一律 magic-byte 驗證；非 PDF 則刪檔 + 回 ("non-PDF response")
+    """
+    # cache check（含 magic bytes 驗證，bad cache 自動清掉）
     if dest.exists() and dest.stat().st_size > 0:
-        return True
+        if _is_pdf_file(dest):
+            return True, None
+        print(f"  ⚠ 既有檔非 PDF，刪除重抓：{dest}", file=sys.stderr)
+        try:
+            dest.unlink()
+        except Exception:
+            pass
+
     dest.parent.mkdir(parents=True, exist_ok=True)
-    last_err = None
+    last_err: Optional[str] = None
     for attempt in range(1, retries + 1):
         try:
-            resp = requests.get(url, headers=HEADERS, timeout=timeout, stream=True, allow_redirects=True)
-            if resp.status_code == 200:
+            resp = SESSION.get(
+                url,
+                headers={"Referer": referer},
+                timeout=timeout,
+                stream=True,
+                allow_redirects=True,
+            )
+            if resp.status_code != 200:
+                last_err = f"HTTP {resp.status_code}"
+                print(f"  ⚠ {last_err} on {url}", file=sys.stderr)
+            else:
                 with open(dest, "wb") as f:
                     for chunk in resp.iter_content(8192):
                         f.write(chunk)
-                return dest.stat().st_size > 0
-            print(f"  ⚠ HTTP {resp.status_code} on {url}", file=sys.stderr)
+                if dest.stat().st_size == 0:
+                    last_err = "empty response"
+                elif not _is_pdf_file(dest):
+                    # 200 OK 但內容不是 PDF（多半是 anti-direct-link 擋下後給 HTML 錯誤頁）。
+                    ctype = resp.headers.get("Content-Type", "?")
+                    last_err = "non-PDF response"
+                    print(
+                        f"  ⚠ {last_err}（Content-Type={ctype}）：{url}",
+                        file=sys.stderr,
+                    )
+                    try:
+                        dest.unlink()
+                    except Exception:
+                        pass
+                else:
+                    return True, None
         except Exception as e:
-            last_err = e
+            last_err = f"download error: {e}"
         if attempt < retries:
             time.sleep(delay * attempt)
-    print(f"  ✗ failed to download {url}: {last_err}", file=sys.stderr)
-    return False
+    print(f"  ✗ 放棄下載 {url}：{last_err}", file=sys.stderr)
+    return False, last_err
 
 
 # ============================================
@@ -323,13 +406,26 @@ def fetch_subcategory(cat: Category, args) -> None:
             # 直接 .pdf 連結
             local = PDF_DIR / str(cat.id) / Path(urlparse(doc.source_url).path).name
 
-        if download_pdf(doc.source_url, local, args.retries, args.delay, args.timeout):
+        ok, err = download_pdf(
+            doc.source_url, local,
+            referer=cat.url,
+            retries=args.retries, delay=args.delay, timeout=args.timeout,
+        )
+        if ok:
             doc.local_pdf = str(local.relative_to(OUT_DIR))
             if not args.skip_pdf_extract:
-                doc.raw_text, doc.page_count = extract_pdf_text(local)
-                print(f"    · {doc.title[:30]} ({doc.page_count} 頁)")
+                text, pages = extract_pdf_text(local)
+                doc.raw_text, doc.page_count = text, pages
+                if pages == 0 and not text:
+                    doc.error = "pdf parse error"
+                    print(f"    · {doc.title[:30]} (抽取失敗)")
+                else:
+                    print(f"    · {doc.title[:30]} ({pages} 頁)")
             else:
                 print(f"    · {doc.title[:30]} (PDF only)")
+        else:
+            doc.error = err or "download failed"
+            print(f"    · {doc.title[:30]} (下載失敗: {doc.error})")
         time.sleep(args.delay)
 
     cat.documents = docs
@@ -344,17 +440,28 @@ def fetch_tib_faq(args) -> Optional[Category]:
         return cat
 
     local = PDF_DIR / "tib" / "tib_qa.pdf"
-    if download_pdf(TIB_FAQ_URL, local, args.retries, args.delay, args.timeout):
-        doc = Document(
-            title="創新板常見問答",
-            publish_date=datetime.utcnow().strftime("%Y-%m-%d"),  # 該 PDF 通常無日期，記抓取日
-            source_url=TIB_FAQ_URL,
-            local_pdf=str(local.relative_to(OUT_DIR)),
-        )
+    ok, err = download_pdf(
+        TIB_FAQ_URL, local,
+        referer="https://www.twse.com.tw/",
+        retries=args.retries, delay=args.delay, timeout=args.timeout,
+    )
+    doc = Document(
+        title="創新板常見問答",
+        publish_date=datetime.utcnow().strftime("%Y-%m-%d"),  # 該 PDF 通常無日期，記抓取日
+        source_url=TIB_FAQ_URL,
+    )
+    if ok:
+        doc.local_pdf = str(local.relative_to(OUT_DIR))
         if not args.skip_pdf_extract:
-            doc.raw_text, doc.page_count = extract_pdf_text(local)
+            text, pages = extract_pdf_text(local)
+            doc.raw_text, doc.page_count = text, pages
+            if pages == 0 and not text:
+                doc.error = "pdf parse error"
             print(f"    · {doc.page_count} 頁")
-        cat.documents = [doc]
+    else:
+        doc.error = err or "download failed"
+        print(f"    · 下載失敗: {doc.error}")
+    cat.documents = [doc]
     return cat
 
 
@@ -382,6 +489,10 @@ def main() -> int:
         return 2
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
+
+    # 先 warm up session：打入口頁拿 cookie，後續 fetch_html / download_pdf 共用。
+    print("warm up session…")
+    warm_up_session(timeout=args.timeout)
 
     print(f"抓入口頁：{INDEX_URL}")
     try:

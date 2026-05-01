@@ -219,3 +219,204 @@ class TestParseHomeJspId(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+# ============================================
+# A+B+D 修正：SESSION + Referer + magic-byte
+# ============================================
+
+import io
+import tempfile
+from unittest.mock import MagicMock, patch
+
+
+def _fake_response(status: int = 200, body: bytes = b"%PDF-1.4\nfoo\n", content_type: str = "application/pdf"):
+    """模擬 requests Response 物件，支援 stream=True 的 iter_content。"""
+    r = MagicMock()
+    r.status_code = status
+    r.headers = {"Content-Type": content_type}
+    r.iter_content = lambda chunk_size=8192: iter([body[i:i + chunk_size] for i in range(0, len(body), chunk_size)])
+    return r
+
+
+class TestDownloadPdfReferer(unittest.TestCase):
+    """A+B 主測試：每次 PDF 下載都該帶 Referer 並走共用 SESSION。"""
+
+    def test_passes_referer_header_via_session(self):
+        with tempfile.TemporaryDirectory() as td:
+            dest = Path(td) / "out.pdf"
+            with patch.object(fetch_qa.SESSION, "get") as mock_get:
+                mock_get.return_value = _fake_response()
+                ok, err = fetch_qa.download_pdf(
+                    "https://www.sfb.gov.tw/ch/uploaddowndoc?file=chdownload/x.pdf",
+                    dest,
+                    referer="https://www.sfb.gov.tw/ch/home.jsp?id=863&parentpath=0,6,858",
+                    retries=2, delay=0, timeout=10,
+                )
+            self.assertTrue(ok, f"應下載成功；err={err}")
+            self.assertIsNone(err)
+            self.assertTrue(dest.exists() and dest.stat().st_size > 0)
+            # 驗證 SESSION.get 被呼叫且 headers 帶 Referer
+            mock_get.assert_called_once()
+            kwargs = mock_get.call_args.kwargs
+            self.assertEqual(
+                kwargs.get("headers", {}).get("Referer"),
+                "https://www.sfb.gov.tw/ch/home.jsp?id=863&parentpath=0,6,858",
+            )
+
+
+class TestDownloadPdfMagicByteValidation(unittest.TestCase):
+    """D 主測試：magic-byte 驗證；非 PDF 內容須刪檔 + 回 error。"""
+
+    def test_non_pdf_response_is_rejected_and_file_deleted(self):
+        with tempfile.TemporaryDirectory() as td:
+            dest = Path(td) / "out.pdf"
+            html_body = b"<html><body>Forbidden</body></html>"
+            with patch.object(fetch_qa.SESSION, "get") as mock_get:
+                mock_get.return_value = _fake_response(body=html_body, content_type="text/html")
+                ok, err = fetch_qa.download_pdf(
+                    "https://www.sfb.gov.tw/ch/uploaddowndoc?file=x",
+                    dest,
+                    referer="https://www.sfb.gov.tw/ch/home.jsp?id=863",
+                    retries=1, delay=0, timeout=10,
+                )
+            self.assertFalse(ok, "非 PDF 內容應回 ok=False")
+            self.assertEqual(err, "non-PDF response")
+            self.assertFalse(dest.exists(), "破檔應該被刪掉")
+
+    def test_valid_pdf_saved_and_returns_true(self):
+        with tempfile.TemporaryDirectory() as td:
+            dest = Path(td) / "out.pdf"
+            pdf_body = b"%PDF-1.7\n%%EOF\n"
+            with patch.object(fetch_qa.SESSION, "get") as mock_get:
+                mock_get.return_value = _fake_response(body=pdf_body)
+                ok, err = fetch_qa.download_pdf(
+                    "https://www.sfb.gov.tw/ch/uploaddowndoc?file=x",
+                    dest,
+                    referer="https://www.sfb.gov.tw/ch/home.jsp?id=863",
+                    retries=1, delay=0, timeout=10,
+                )
+            self.assertTrue(ok)
+            self.assertIsNone(err)
+            self.assertEqual(dest.read_bytes(), pdf_body)
+
+    def test_http_error_status_returns_error_message(self):
+        with tempfile.TemporaryDirectory() as td:
+            dest = Path(td) / "out.pdf"
+            with patch.object(fetch_qa.SESSION, "get") as mock_get:
+                mock_get.return_value = _fake_response(status=404, body=b"Not Found")
+                ok, err = fetch_qa.download_pdf(
+                    "https://www.sfb.gov.tw/ch/uploaddowndoc?file=x",
+                    dest,
+                    referer="https://www.sfb.gov.tw/ch/home.jsp?id=863",
+                    retries=1, delay=0, timeout=10,
+                )
+            self.assertFalse(ok)
+            self.assertEqual(err, "HTTP 404")
+            self.assertFalse(dest.exists())
+
+
+class TestDownloadPdfCacheBehaviour(unittest.TestCase):
+    """cache：合法 PDF 跳過下載；破檔自動清除重抓。"""
+
+    def test_existing_valid_pdf_is_cache_hit_no_network(self):
+        with tempfile.TemporaryDirectory() as td:
+            dest = Path(td) / "out.pdf"
+            dest.write_bytes(b"%PDF-1.4\n cached \n")
+            with patch.object(fetch_qa.SESSION, "get") as mock_get:
+                ok, err = fetch_qa.download_pdf(
+                    "https://www.sfb.gov.tw/ch/uploaddowndoc?file=x",
+                    dest,
+                    referer="https://www.sfb.gov.tw/ch/home.jsp?id=863",
+                    retries=1, delay=0, timeout=10,
+                )
+            self.assertTrue(ok)
+            self.assertIsNone(err)
+            mock_get.assert_not_called()  # cache hit，網路不該被打
+
+    def test_existing_non_pdf_is_purged_and_refetched(self):
+        with tempfile.TemporaryDirectory() as td:
+            dest = Path(td) / "out.pdf"
+            # 上一輪寫進去的 HTML 錯誤頁，extension 偽裝成 .pdf
+            dest.write_bytes(b"<html>oops</html>")
+            with patch.object(fetch_qa.SESSION, "get") as mock_get:
+                mock_get.return_value = _fake_response(body=b"%PDF-1.4\n new \n")
+                ok, err = fetch_qa.download_pdf(
+                    "https://www.sfb.gov.tw/ch/uploaddowndoc?file=x",
+                    dest,
+                    referer="https://www.sfb.gov.tw/ch/home.jsp?id=863",
+                    retries=1, delay=0, timeout=10,
+                )
+            self.assertTrue(ok, f"破 cache 應該被清掉並重抓；err={err}")
+            self.assertEqual(dest.read_bytes(), b"%PDF-1.4\n new \n")
+            mock_get.assert_called_once()
+
+    def test_retries_until_success(self):
+        """第一次 200 但內容是 HTML，第二次 200 + PDF — 應重試成功。"""
+        with tempfile.TemporaryDirectory() as td:
+            dest = Path(td) / "out.pdf"
+            with patch.object(fetch_qa.SESSION, "get") as mock_get:
+                mock_get.side_effect = [
+                    _fake_response(body=b"<html>err</html>", content_type="text/html"),
+                    _fake_response(body=b"%PDF-1.4\n ok \n"),
+                ]
+                ok, err = fetch_qa.download_pdf(
+                    "https://www.sfb.gov.tw/ch/uploaddowndoc?file=x",
+                    dest,
+                    referer="https://www.sfb.gov.tw/ch/home.jsp?id=863",
+                    retries=2, delay=0, timeout=10,
+                )
+            self.assertTrue(ok)
+            self.assertIsNone(err)
+            self.assertEqual(mock_get.call_count, 2)
+
+
+class TestWarmUpSession(unittest.TestCase):
+    def test_calls_index_url(self):
+        with patch.object(fetch_qa.SESSION, "get") as mock_get:
+            fetch_qa.warm_up_session(timeout=5)
+        mock_get.assert_called_once()
+        args, kwargs = mock_get.call_args
+        self.assertEqual(args[0], fetch_qa.INDEX_URL)
+
+    def test_swallows_exception(self):
+        # 入口頁掛掉時 warm_up 仍應 silent return（不 raise）
+        with patch.object(fetch_qa.SESSION, "get", side_effect=Exception("boom")):
+            try:
+                fetch_qa.warm_up_session(timeout=5)
+            except Exception as e:
+                self.fail(f"warm_up_session 應該吞掉例外，但 raise: {e}")
+
+
+class TestIsPdfFile(unittest.TestCase):
+    def test_pdf_magic_recognized(self):
+        with tempfile.TemporaryDirectory() as td:
+            p = Path(td) / "x.pdf"
+            p.write_bytes(b"%PDF-1.4\nrest")
+            self.assertTrue(fetch_qa._is_pdf_file(p))
+
+    def test_html_rejected(self):
+        with tempfile.TemporaryDirectory() as td:
+            p = Path(td) / "x.pdf"
+            p.write_bytes(b"<html><body>err</body></html>")
+            self.assertFalse(fetch_qa._is_pdf_file(p))
+
+    def test_empty_rejected(self):
+        with tempfile.TemporaryDirectory() as td:
+            p = Path(td) / "x.pdf"
+            p.write_bytes(b"")
+            self.assertFalse(fetch_qa._is_pdf_file(p))
+
+    def test_missing_file_rejected(self):
+        self.assertFalse(fetch_qa._is_pdf_file(Path("/nonexistent/x.pdf")))
+
+
+class TestDocumentSchema(unittest.TestCase):
+    def test_error_field_default_none(self):
+        d = fetch_qa.Document(title="t", publish_date=None, source_url="u")
+        self.assertIsNone(d.error)
+
+    def test_error_field_serializable(self):
+        from dataclasses import asdict
+        d = fetch_qa.Document(title="t", publish_date=None, source_url="u", error="non-PDF response")
+        self.assertEqual(asdict(d)["error"], "non-PDF response")
