@@ -1515,7 +1515,7 @@ loadData();
 initHome();   // 預先載入題庫，讓首頁的今日挑戰可立即顯示
 
 // ============================================
-// 考古題（證券商高級業務員歷屆試題）
+// 高業考古題（證券商高級業務員歷屆試題）
 // PRD: data/exam_archive/index.json + 各卷 JSON
 // ============================================
 
@@ -1527,7 +1527,7 @@ let examLoaded = false;
 let examLoadStarted = false;
 let examPapersCache = {};   // json_path → loaded paper
 
-// State machine for 考古題
+// State machine for 高業考古題
 const examState = {
   view: 'home',           // 'home' | 'paper-select' | 'browse' | 'play' | 'result'
   filter: { year: 'all', subject: 'all', count: 20 },
@@ -1772,7 +1772,7 @@ function renderExamPaperSelect() {
   const list = examFilteredPapers();
   if (list.length === 0) {
     return `
-      <button class="back-link" data-exam-action="back-home">← 回考古題首頁</button>
+      <button class="back-link" data-exam-action="back-home">← 回高業考古題首頁</button>
       <div class="empty"><div class="empty-mark">∅</div><div class="empty-text">無符合條件試卷<br>請放寬年度或主題</div></div>`;
   }
   // 按年降冪 → 季 → 主題排序
@@ -1798,7 +1798,7 @@ function renderExamPaperSelect() {
   }).join('');
 
   return `
-    <button class="back-link" data-exam-action="back-home">← 回考古題首頁</button>
+    <button class="back-link" data-exam-action="back-home">← 回高業考古題首頁</button>
     <div class="quiz-section-label">選一份試卷（${list.length}）</div>
     <div class="exam-paper-list">${cards}</div>
   `;
@@ -1939,7 +1939,7 @@ function renderExamResult() {
         <ul class="result-wrong-list">${wrongList}</ul>
       ` : `<div class="quiz-section-label" style="color: var(--jade);">完美！全部答對</div>`}
       <div class="result-actions">
-        <button class="btn-primary" data-exam-action="back-home">回考古題首頁</button>
+        <button class="btn-primary" data-exam-action="back-home">回高業考古題首頁</button>
       </div>
     </div>
   `;
@@ -1950,11 +1950,11 @@ function renderExam() {
   const area = document.getElementById('examArea');
 
   if (!examLoaded) {
-    area.innerHTML = `<div class="loading"><div class="spinner"></div><div>載入考古題中⋯</div></div>`;
+    area.innerHTML = `<div class="loading"><div class="spinner"></div><div>載入高業考古題中⋯</div></div>`;
     return;
   }
   if (!examIndex) {
-    area.innerHTML = `<div class="empty"><div class="empty-mark">!</div><div class="empty-text">考古題索引尚未產生<br><small style="color: var(--ink-dim);">請執行 scripts/extract_exam_archive.py</small></div></div>`;
+    area.innerHTML = `<div class="empty"><div class="empty-mark">!</div><div class="empty-text">高業考古題索引尚未產生<br><small style="color: var(--ink-dim);">資料準備中</small></div></div>`;
     return;
   }
 
