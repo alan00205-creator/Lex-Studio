@@ -1368,7 +1368,7 @@ function renderDailyChallenge() {
   el.innerHTML = `
     <div class="daily-card">
       <div class="daily-label">⌖ 今日挑戰 · ${escapeHTML(todayStrZh())}</div>
-      <div class="daily-headline">每日 ${total} 題 · 跨裝置同步</div>
+      <div class="daily-headline">每日 ${total} 題 · 每天更新</div>
       <div class="daily-progress-line">
         <span class="daily-progress-text">${answered} / ${total}</span>
         <span class="quiz-progress-dots">${dots}</span>
