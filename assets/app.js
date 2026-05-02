@@ -694,7 +694,12 @@ function yesterdayStr() {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
-function recordAnswer(question, correct) {
+// 記錄一次答題到 underwriter_lex_quiz_progress。
+// opts.trackWrong:
+//   true  (預設) 一般練習：答錯加進 wrong_questions、答對若已在錯題本則移除
+//   false        daily 模式：完全不動 wrong_questions（避免錯題本被 daily 餵食）
+// stats / streak / category_progress 一律更新（讓 daily 也計入累計與連續學習天數）
+function recordAnswer(question, correct, { trackWrong = true } = {}) {
   const p = loadProgress();
   p.stats.total_answered += 1;
   if (correct) p.stats.total_correct += 1;
@@ -707,11 +712,13 @@ function recordAnswer(question, correct) {
     p.stats.last_practice_date = today;
   }
 
-  const wrongIdx = p.wrong_questions.indexOf(question.id);
-  if (correct) {
-    if (wrongIdx >= 0) p.wrong_questions.splice(wrongIdx, 1);
-  } else if (wrongIdx < 0) {
-    p.wrong_questions.push(question.id);
+  if (trackWrong) {
+    const wrongIdx = p.wrong_questions.indexOf(question.id);
+    if (correct) {
+      if (wrongIdx >= 0) p.wrong_questions.splice(wrongIdx, 1);
+    } else if (wrongIdx < 0) {
+      p.wrong_questions.push(question.id);
+    }
   }
 
   const cat = question.category || '其他';
@@ -1017,10 +1024,12 @@ function selectAnswer(mode, idx) {
   sess.selectedIdx = idx;
   sess.state = 'feedback';
   if (mode === 'daily') {
-    // daily 不寫進一般進度（避免錯題本被強迫餵食）；只記在 daily key
+    // daily key（resume 用）
     const dp = loadDailyProgress();
     dp.answered.push({ id: q.id, selectedIdx: idx, correct });
     saveDailyProgress(dp);
+    // 同時計入累計 / 連續學習天數 / 分類進度，但不污染錯題本
+    recordAnswer(q, correct, { trackWrong: false });
   } else {
     recordAnswer(q, correct);
   }
