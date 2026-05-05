@@ -1,10 +1,21 @@
 # PRD：承銷研修所 / Lex Studio
 
-> 文件版本：**v2.1**  
+> 文件版本：**v2.2**  
 > 最後更新：2026-04-29  
 > 對象：開發執行者（Claude Code）  
 > 預期狀態:本文件用於指導 AI agent 從零建置整個系統
 
+> **v2.2 變更紀錄（黏著度設計）**  
+> - §9 大幅擴充：每日挑戰加入「每週題型輪播」（週一 IPO、週二 SPO⋯週日資深挑戰）  
+> - 新增 §9.5「個人儀表板」模組——含三大核心區塊：  
+>   - **連續精進天數**（streak）+ 補卡機制（每月最多 3 次補卡）  
+>   - **熟練度雷達圖**（六軸 SVG，含「最近修法日」標註）  
+>   - **成就徽章**（MVP 階段先做 6 個，金色描邊 + 月桂葉視覺）  
+> - 設計原則：**對遊戲化敏感者有甜頭，對遊戲化反感者也不會覺得幼稚**——不用 emoji、不用「連勝」「Combo」等字眼  
+> - localStorage progress schema 升級到 v2（§9.5.4）  
+> - Phase 5 任務分解擴充至 20 項，工程量提升至 5–6 週  
+> - **排行榜**功能暫不納入第一階段（待使用者規模 30+ 再以 Google Sheet 方案實作）
+>
 > **v2.1 變更紀錄**  
 > - 工具正式命名定案：中文「承銷研修所」、英文「Lex Studio」  
 > - 視覺色系從深色（金色 + 暗黑）改為**現代金融專業白**：米白底 + 純白卡片 + 深靛藍主色 + 點綴金  
@@ -550,21 +561,277 @@ X03 證券商承銷或再行銷售有價證券處理辦法（→ twsa.org.tw/D01
 
 首頁顯示一題「今日挑戰」，鼓勵使用者每天打開工具。
 
-### 9.2 邏輯
+### 9.2 每週題型輪播（v2.2 新增）
+
+每天的「今日挑戰」依星期幾出固定主題的題目，讓使用者建立期待感：
+
+| 週幾 | 題型 | 用意 |
+|---|---|---|
+| 週一 | IPO 案件情境 | 一週開始，用最核心業務暖身 |
+| 週二 | SPO（現增、CB）情境 | 第二常見業務 |
+| 週三 | 公司治理／董監事 | 內控相關 |
+| 週四 | 內線交易／重大消息 | 高風險區 |
+| 週五 | 主管機關最新函釋題 | 配合「本月焦點」 |
+| 週六 | 自由複習（從錯題本出） | 週末輕鬆 |
+| 週日 | 「資深考題」（高難度判斷） | 給資深者的挑戰 |
+
+實作邏輯：
 
 ```javascript
 function getDailyQuestion() {
-  const today = new Date().toISOString().slice(0, 10);
-  const seed = hashString(today);
-  const allQuestions = loadQuiz().filter(q => q.type === "scenario");
-  const idx = seed % allQuestions.length;
-  return allQuestions[idx];
+  const today = new Date();
+  const dayOfWeek = today.getDay(); // 0=Sun, 1=Mon, ... 6=Sat
+  const dateSeed = hashString(today.toISOString().slice(0, 10));
+
+  const themes = {
+    1: { tag: "IPO", title: "週一・IPO 情境" },
+    2: { tag: "SPO", title: "週二・現增與 CB" },
+    3: { tag: "governance", title: "週三・公司治理" },
+    4: { tag: "insider", title: "週四・內線交易" },
+    5: { tag: "regulation_update", title: "週五・本月焦點" },
+    6: { tag: "wrong_review", title: "週六・錯題複習" },
+    0: { tag: "advanced", title: "週日・資深挑戰" }
+  };
+
+  const theme = themes[dayOfWeek];
+
+  // 週六特殊處理：從使用者錯題本出題
+  if (theme.tag === "wrong_review") {
+    return getWrongQuestion() || getRandomQuestion(theme.tag, dateSeed);
+  }
+
+  return getQuestionByTag(theme.tag, dateSeed);
 }
 ```
 
-### 9.3 連續天數
+### 9.3 題庫 schema 對應調整
 
-完成今日挑戰即 streak +1。連續中斷後 streak 歸零。顯示「累計完成 X 天」。
+`data/quiz.json` 中的每題需新增 `tags` 陣列欄位（題目可有多個標籤），讓輪播系統能依星期幾過濾出題：
+
+```json
+{
+  "id": "Q001",
+  "type": "scenario",
+  "tags": ["IPO", "governance"],
+  "difficulty": "advanced",
+  "question": "...",
+  ...
+}
+```
+
+### 9.4 完成挑戰後的回饋
+
+完成今日挑戰後，顯示一張「今日總結卡」：
+
+- 今日題目主題（如「週一・IPO 情境」）
+- 答對 / 答錯
+- 連續精進天數（streak）變化（如「+1 → 8 日」）
+- 「明天主題：週二・現增與 CB」（製造期待）
+- 雷達圖更新提示（如「你的『IPO 案件處理』熟練度 +2%」）
+
+---
+
+## 9.5 模組規格：個人儀表板（v2.2 新增）
+
+### 9.5.1 功能描述
+
+「個人儀表板」是工具的**核心黏著度設計**，集中呈現使用者的學習狀態，給予非遊戲化但有效的精進誘因。設計原則：**對遊戲化敏感者有甜頭，對遊戲化反感者也不會覺得幼稚**。
+
+放置位置：底部導航列新增第 5 個分頁，名稱為「個人」（icon 用拉丁字母 P）。
+
+### 9.5.2 三大區塊
+
+#### 區塊一：連續精進天數（Streak）
+
+- 視覺：大型襯線數字「**7** 日」+ 副標「連續精進」
+- 不使用「🔥」「連勝」「Combo」等遊戲化字眼，保持研修所的莊重感
+- 下方副資訊：本月學習天數 / 累計學習天數
+- 視覺參考：類似律所文件中的「執業年數」呈現方式
+
+#### 補卡機制（重要）
+
+承銷工作會出差、有突發狀況，太嚴格會讓使用者乾脆放棄整個工具。設計：
+
+- 錯過一天 → 隔天可用「補答兩題」恢復連續天數
+- 顯示提醒：「昨日中斷｜今日完成 2 題即可延續」
+- 每月最多補卡 3 次（避免濫用）
+- 補卡狀態以 localStorage 記錄
+
+實作 schema：
+
+```javascript
+{
+  "streak": {
+    "current_days": 7,
+    "longest_days": 23,
+    "this_month_days": 14,
+    "lifetime_days": 142,
+    "last_active_date": "2026-04-29",
+    "compensation_used_this_month": 1,
+    "compensation_remaining": 2
+  }
+}
+```
+
+#### 區塊二：熟練度雷達圖（核心差異化設計）
+
+依答題正確率動態計算各維度熟練度，繪製成雷達圖。
+
+**維度定義（六軸雷達）**：
+
+1. 募集發行（Issuance）
+2. 公司治理（Governance）
+3. 財務揭露（Disclosure）
+4. 公開收購（Tender Offer）
+5. 內線交易（Insider Trading）
+6. 取得處分資產（Asset Acquisition）
+
+**熟練度計算邏輯**：
+
+```javascript
+function calculateMastery(category) {
+  const records = getCategoryRecords(category);
+  if (records.total === 0) return 0;
+
+  // 公式：正確率 × log(總題數+1) / 加權上限
+  // 確保「答對 5/5」< 「答對 50/55」< 「答對 100/110」
+  const accuracy = records.correct / records.total;
+  const volumeWeight = Math.min(Math.log10(records.total + 1) / 2, 1);
+  return Math.round(accuracy * volumeWeight * 100);
+}
+```
+
+**視覺呈現**：
+
+- 用 SVG 繪製六軸雷達圖（不需引入 D3 等套件）
+- 雷達填充色：`rgba(30, 58, 95, 0.15)` 半透明深靛藍
+- 雷達邊線：`var(--primary)` 深靛藍
+- 軸標籤旁顯示分數（如「公司治理 78%」）
+- 點擊任一軸 → 跳轉到該分類的題庫練習
+
+**重要互動設計**：在每個軸的數字旁，標註該分類「**最近相關修法日**」（從 law_index.json 抓最新 modified_date）。例如「公開收購 62%｜2025-03-15 修正」——這會自然提示使用者「這塊我不熟，又最近修法了，該補一下」。
+
+#### 區塊三：成就徽章（v2.2 新增，前 6 個 MVP）
+
+第一階段先做 6 個徽章（不要 15 個一次做完，太多會稀釋），後續可加：
+
+| 徽章 ID | 中文名 | 拉丁副標 | 解鎖條件 |
+|---|---|---|---|
+| `init` | 初心 | Initium | 連續學習 7 日 |
+| `diligent` | 勤學 | Diligentia | 連續學習 30 日 |
+| `centum` | 百日精進 | Centum Dies | 累計學習 100 日 |
+| `issuance_master` | 募集精通 | Magister Emissionis | 募集發行熟練度 ≥ 80% |
+| `governance_master` | 治理精通 | Magister Gubernationis | 公司治理熟練度 ≥ 80% |
+| `centuria` | 百題達人 | Centuria | 累計答題 100 題 |
+
+**視覺設計原則**：
+
+- 使用 SVG 繪製徽章，**絕不用 emoji 或卡通圖**
+- 設計風格：圓形徽章邊框 + 內襯月桂葉飾線 + 中央拉丁文／中文名
+- 顏色：金色描邊 `var(--gold)` + 米白底 `var(--bg-soft)`
+- 質感參考：律師事務所牆上的執業證書 / 學位證書
+- 未解鎖：灰階版本，淺淺顯示
+- 解鎖：金色描邊浮現，**不彈窗**，僅以小通知條提示「獲得徽章：百日精進」
+
+實作 schema：
+
+```javascript
+{
+  "badges": {
+    "earned": [
+      { "id": "init", "earned_at": "2026-04-15" },
+      { "id": "centuria", "earned_at": "2026-04-22" }
+    ],
+    "progress": {
+      "diligent": { "current": 23, "target": 30 },
+      "issuance_master": { "current": 65, "target": 80 }
+    }
+  }
+}
+```
+
+### 9.5.3 個人儀表板 UI 結構
+
+```
+┌─────────────────────────────────────┐
+│  個人 · Personal Profile            │
+├─────────────────────────────────────┤
+│                                     │
+│       7 日                          │
+│   連續精進                          │
+│                                     │
+│   本月 14 日｜累計 142 日           │
+│                                     │
+├─────────────────────────────────────┤
+│  熟練度分析                         │
+│                                     │
+│      [SVG 六軸雷達圖]               │
+│                                     │
+│  募集發行 78%｜2025.06.18 修正       │
+│  公司治理 65%｜2024.11.20 修正       │
+│  ...                                │
+│                                     │
+├─────────────────────────────────────┤
+│  徽章 · Insignia                    │
+│                                     │
+│  [已獲得徽章金色顯示]               │
+│  [未獲得徽章灰階顯示，附進度條]      │
+│                                     │
+└─────────────────────────────────────┘
+```
+
+### 9.5.4 progress data schema 完整版
+
+完整的 localStorage 結構（取代原本 §7.4 的簡化版）：
+
+```javascript
+// localStorage key: 'lex_studio_progress'
+{
+  "version": 2,
+  "user_nickname": "承銷學徒",  // 選填，首次使用時可請使用者輸入
+
+  "streak": {
+    "current_days": 7,
+    "longest_days": 23,
+    "this_month_days": 14,
+    "lifetime_days": 142,
+    "last_active_date": "2026-04-29",
+    "compensation_used_this_month": 1,
+    "compensation_remaining": 2
+  },
+
+  "stats": {
+    "total_answered": 142,
+    "total_correct": 110,
+    "questions_answered_today": 1
+  },
+
+  "category_mastery": {
+    "issuance":      { "answered": 32, "correct": 25, "mastery": 78 },
+    "governance":    { "answered": 28, "correct": 18, "mastery": 65 },
+    "disclosure":    { "answered": 22, "correct": 17, "mastery": 72 },
+    "tender_offer":  { "answered": 8,  "correct": 5,  "mastery": 45 },
+    "insider":       { "answered": 14, "correct": 11, "mastery": 70 },
+    "asset_acq":     { "answered": 12, "correct": 8,  "mastery": 58 }
+  },
+
+  "wrong_questions": ["Q003", "Q017", "Q042"],
+
+  "daily_records": {
+    "2026-04-29": { "completed": true, "theme": "IPO", "correct": true },
+    "2026-04-28": { "completed": true, "theme": "advanced", "correct": false }
+  },
+
+  "badges": {
+    "earned": [
+      { "id": "init", "earned_at": "2026-04-15" }
+    ],
+    "progress": {
+      "diligent": { "current": 23, "target": 30 }
+    }
+  }
+}
+```
 
 ---
 
@@ -692,17 +959,38 @@ function getDailyQuestion() {
 - [ ] **T4.7** 錯題本：獨立分頁
 - [ ] **T4.8** 簡易間隔重複
 
-### Phase 5：每日挑戰、優化與發佈（第五週）
+### Phase 5：每日挑戰、個人儀表板、優化與發佈（第五至六週）
+
+#### 5A. 每日挑戰與題型輪播
 
 - [ ] **T5.1** 首頁加入「今日挑戰」卡片
-- [ ] **T5.2** 連續天數計算
-- [ ] **T5.3** 學習進度頁
-- [ ] **T5.4** 手機與桌面實機測試
-- [ ] **T5.5** 加入 manifest.json（PWA）
-- [ ] **T5.6** （選用）自訂網域設定
-- [ ] **T5.7** 寫使用說明（首次使用者引導）
-- [ ] **T5.8** 加入 Cloudflare Web Analytics 用量監控（詳見 §16）
-- [ ] **T5.9** 部門內部宣傳
+- [ ] **T5.2** 實作每週題型輪播邏輯（§9.2），包含週六的錯題本特殊處理
+- [ ] **T5.3** 完成挑戰後的「今日總結卡」，含明日主題預告
+
+#### 5B. 個人儀表板（核心黏著度設計）
+
+- [ ] **T5.4** 新增「個人」分頁，加入底部導航（icon: P）
+- [ ] **T5.5** 連續精進天數區塊：襯線數字大字 + 補卡機制（§9.5.2 區塊一）
+- [ ] **T5.6** 補卡邏輯實作：每月最多 3 次、補答兩題恢復連續天數
+- [ ] **T5.7** 熟練度雷達圖：用 SVG 繪製六軸雷達（不引入 D3）
+- [ ] **T5.8** 雷達各軸顯示「最近修法日期」（從 law_index.json 抓取）
+- [ ] **T5.9** 熟練度計算引擎：依 §9.5.2 公式動態計算
+- [ ] **T5.10** 點擊雷達軸可跳轉到該分類題庫練習
+- [ ] **T5.11** 設計 6 個 MVP 徽章的 SVG 圖樣（金色描邊 + 月桂葉飾）
+- [ ] **T5.12** 徽章解鎖邏輯與進度追蹤
+- [ ] **T5.13** 徽章解鎖通知條（不彈窗，僅頂部小條訊息）
+- [ ] **T5.14** progress 資料 schema 升級到 v2（§9.5.4），加入 migration 邏輯處理舊資料
+
+#### 5C. 優化與發佈
+
+- [ ] **T5.15** 手機與桌面實機測試
+- [ ] **T5.16** 加入 manifest.json（PWA：可加到主畫面）
+- [ ] **T5.17** （選用）自訂網域設定
+- [ ] **T5.18** 寫使用說明（首次使用者引導）
+- [ ] **T5.19** 加入 Cloudflare Web Analytics 用量監控（詳見 §16）
+- [ ] **T5.20** 部門內部宣傳
+
+> 註：因加入個人儀表板，Phase 5 工程量提升，建議實際執行為**第五至六週**完成。
 
 ---
 
@@ -724,6 +1012,11 @@ function getDailyQuestion() {
 - ✅ 每月自動同步問答集運作正常
 - ✅ 首頁載入時間 < 3 秒（4G 網路）
 - ✅ Lighthouse 行動版分數：Performance > 80，Accessibility > 90
+- ✅ 個人儀表板的雷達圖能正確反映各分類熟練度
+- ✅ 連續精進天數能正確累計，補卡機制運作正常
+- ✅ 至少 6 個 MVP 徽章可正常解鎖
+- ✅ 每週題型輪播：週一到週日各對應正確題型
+- ✅ 個人儀表板的視覺風格符合「研修所」定位（無 emoji、無遊戲化字眼）
 
 ### 12.3 品質紅線（任一不過則 fail）
 
@@ -732,6 +1025,8 @@ function getDailyQuestion() {
 - ❌ 任何條文／問答／題目必須能追溯回原始來源 URL
 - ❌ 不能在 PDF 解析過程「改寫」問答內容
 - ❌ 不能洩漏使用者答題資料到任何外部服務
+- ❌ **個人儀表板不得使用 emoji、🔥、Combo、連勝等遊戲化字眼**（違反研修所定位）
+- ❌ 徽章視覺不得使用卡通風格，必須是金色描邊 + 拉丁文 + 中文襯線體
 
 ---
 
