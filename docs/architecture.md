@@ -52,7 +52,12 @@
 
 ### 決策
 
-學習進度（答題統計、錯題本、連續天數、每日挑戰完成紀錄）全部存在使用者瀏覽器的 `localStorage`，鍵值為 `underwriter_lex_progress`。
+學習進度（答題統計、錯題本、連續天數、六軸熟練度、徽章、每日挑戰完成紀錄）全部存在使用者瀏覽器的 `localStorage`：
+
+- `underwriter_lex_quiz_progress`：主進度檔（**v2 schema**，PRD §9.5.4）
+- `underwriter_lex_daily_challenge`：當日 daily challenge 暫存（換日自動 reset）
+- `underwriter_lex_exam_progress`：高業考古題進度
+- `underwriter_lex_quiz_unified_v1` / `underwriter_lex_scenario_purged_v1`：一次性 migration 旗標
 
 ### 為什麼
 
@@ -60,10 +65,46 @@
 2. **PRD §13.3** 要求不蒐集個資、不用 GA / FB Pixel
 3. **手機優先**：localStorage 在 iOS Safari / Android Chrome 都穩定可用
 
+### Progress schema v2（PRD §9.5.4）
+
+```js
+{
+  version: 2,
+  user_nickname: "",
+  streak: {
+    current_days, longest_days, this_month_days, lifetime_days,
+    last_active_date, last_compensation_month,
+    compensation_used_this_month, compensation_remaining,
+    compensation_pending: { previous_streak, questions_done, target, started_date }
+  },
+  stats: {
+    total_answered, total_correct, questions_answered_today, questions_today_date,
+    streak_days, last_practice_date           // legacy mirror，由 streak.* 同步
+  },
+  category_mastery: {                         // 六軸（PRD §9.5.2）
+    issuance, governance, disclosure, tender_offer, insider, asset_acq
+    // 每個都是 { answered, correct, mastery }
+  },
+  category_progress: { ... },                 // legacy 中文鍵分類（首頁進度區仍用）
+  wrong_questions: [],
+  daily_records: { "YYYY-MM-DD": { completed, theme, correct } },
+  daily_completed: { ... },                   // legacy
+  badges: { earned: [{id, earned_at}], progress: {id: {current, target}}, notified: [] }
+}
+```
+
+### v1 → v2 migration
+
+`migrateProgressV1ToV2(p)` in `assets/app.js` 自動執行（loadProgress 內判斷 version）。
+- `stats.streak_days` → `streak.current_days`
+- `stats.last_practice_date` → `streak.last_active_date`
+- 既有 `category_progress`（中文鍵）保留；新增 `category_mastery`（英文六軸鍵）並依 `CATEGORY_TO_AXIS` 映射累計
+- 為避免破壞首頁 `renderProgress()`，`stats.streak_days` / `stats.last_practice_date` 在 `recordAnswer()` 內持續鏡像同步
+
 ### 取捨
 
-- 跨裝置不同步：使用者換手機進度會消失
-- Schema 演進需小心：`loadProgress()` 補齊預設欄位來相容舊版
+- 跨裝置不同步：使用者換手機進度會消失（PRD 接受）
+- Schema 演進需小心：`loadProgress()` 既支援 v1（自動 migrate）也補齊 v2 後續新增欄位
 
 ---
 
@@ -201,3 +242,62 @@
 - ❌ 不用 Google Analytics / Facebook Pixel
 - ❌ 不對問答集原文做 AI 改寫
 - ❌ 不在 GitHub Pages 提供 PDF 下載（一律連回主管機關）
+
+---
+
+## 10. 黏著度設計：每週題型輪播 + 個人儀表板（v2.2）
+
+### 決策
+
+新增「個人」分頁（PRD §9.5），含三大區塊：
+1. **連續精進天數** + 補卡機制（每月最多 3 次，補答 2 題即可延續）
+2. **熟練度六軸雷達圖**（SVG 自繪，不引入 D3）
+3. **6 個 MVP 徽章**（金色描邊 + 月桂葉 SVG，律所執業證書質感）
+
+每日挑戰加入**每週題型輪播**（PRD §9.2）：週一 IPO ／ 週二 SPO ／ 週三 治理 ／ 週四 內線 ／ 週五 本月焦點 ／ 週六 錯題本 ／ 週日 資深挑戰。
+
+### 設計紅線（PRD §12.3）
+
+- ❌ 個人儀表板不得使用 emoji（🔥／🌅 等）
+- ❌ 不得使用「Combo」「連勝」「連敗」等遊戲化字眼
+- ❌ 徽章視覺不得卡通化，必須金色描邊 + 拉丁文 + 中文襯線體
+
+### 六軸 → 中文 category 映射
+
+`CATEGORY_TO_AXIS` 常數（`assets/app.js`）：
+
+| 六軸 key | label | 對應中文 category |
+|---|---|---|
+| issuance | 募集發行 | IPO募集發行、證交法核心、上市櫃規範 |
+| governance | 公司治理 | 公司治理、內部控制、公司法 |
+| disclosure | 財務揭露 | 財報與IFRS、其他 |
+| tender_offer | 公開收購 | 公開收購與庫藏股 |
+| insider | 內線交易 | 重大訊息與操縱 |
+| asset_acq | 取得處分 | 證券商管理 |
+
+熟練度公式：`accuracy × min(log10(total+1)/2, 1) × 100`（PRD §9.5.2）。
+低題量者熟練度被壓低，避免「答對 3/3 = 100%」的偽精通。
+
+### 每週題型 tag 推導
+
+`quiz_extended.json` 既有 200 題尚無 explicit `tags`（PRD §9.3 v2.2 schema）。
+過渡方案：`deriveQuestionTags(q)` 由 category + difficulty + 內容關鍵字自動推導。
+未來題目 JSON 可顯式給 `tags: [...]`，會直接覆蓋自動推導。
+
+對應 tag：`IPO`、`SPO`、`governance`、`insider`、`advanced`。
+週五 `regulation_update` 與週六 `wrong_review` 為特殊 tag：
+- 週五：尚無此 tag，fallback 全題庫並依 `_added_at` 倒序
+- 週六：從 `progress.wrong_questions` 取題；錯題不足時 fallback advanced
+
+### 補卡機制（streak compensation）
+
+實作於 `tickStreakOnActivity(p)`：
+1. 若 gapDays === 1 → 正常 +1
+2. 若 gapDays >= 2 且 `compensation_remaining > 0` → 進入 `compensation_pending`，`current_days` 暫設 1，紀錄斷掉前 streak
+3. 同日續答到 `target=2` 題時，還原 `current_days = previous_streak + 1`，扣一次補卡額度
+4. 跨月自動 reset `compensation_remaining = 3`
+
+### 修法日（雷達軸標註）
+
+`AXIS_AMENDMENT_DATES` 常數內目前以維護人手動標註的代表性日期填入。
+TODO（之後迭代）：在 `data/law_index.json` 加入 `last_amendment_date` 欄位後改為動態抓取。

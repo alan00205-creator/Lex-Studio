@@ -23,7 +23,7 @@
 
 ```
 lex-studio/
-├── index.html               主頁面（單檔 SPA，5 個分頁）
+├── index.html               主頁面（單檔 SPA，6 個分頁：首頁／題庫／法規／考古題／問答／個人）
 ├── manifest.json            PWA 設定
 ├── assets/
 │   ├── style.css            設計變數 + 元件樣式（按區塊註記）
@@ -31,8 +31,10 @@ lex-studio/
 │   │                        • 法規導航（loadData / renderLawCard / parseSmartQuery）
 │   │                        • 問答集（ensureQaLoaded / qaSearchAll）
 │   │                        • 題庫（startSession / selectAnswer / renderQuiz*）
-│   │                        • 進度（loadProgress / recordAnswer）
-│   │                        • 首頁（getDailyQuestion / renderProgress）
+│   │                        • 進度（loadProgress / recordAnswer / migrateProgressV1ToV2）
+│   │                        • 首頁（getDailyQuestionsForToday / renderDailyChallenge / renderProgress）
+│   │                        • 每週題型輪播（WEEKLY_THEMES / poolByTheme / deriveQuestionTags）
+│   │                        • 個人儀表板（renderStreakBlock / renderRadarChart / renderBadgeSvg / processBadgeNotifications）
 │   └── icon.svg             PWA icon（純 SVG，純 brand 文字無依賴）
 ├── data/                    人工維護的資料
 │   ├── law_index.json       43 部法規導航索引（schema 見 PRD §4.4.1）
@@ -100,6 +102,40 @@ python3 scripts/explore_sfb.py
 替換 `assets/icon.svg`。manifest 已用 `"sizes": "any"` 接受任何 SVG 尺寸。
 若要 PNG，新增 192×192 + 512×512 兩張，再修 `manifest.json`。
 
+### 3.6 調整每週題型輪播
+
+`assets/app.js` 的 `WEEKLY_THEMES` 常數對應週日(0)~週六(6) → tag。
+要換主題或標題只動這個常數，不要動 `poolByTheme` 與 `deriveQuestionTags`（除非新增 tag）。
+
+新增 tag 時：
+1. `WEEKLY_THEMES[X].tag = '新tag'`
+2. `deriveQuestionTags()` 加判斷把哪些題目歸為新 tag
+3. （選用）替既有 quiz_extended.json 顯式加上 `q.tags = [...]` 覆蓋自動推導
+
+### 3.7 新增 / 修改個人儀表板徽章
+
+`assets/app.js` 的 `BADGE_DEFS` 陣列定義所有徽章；新增 6 個之外的徽章：
+1. 在 `BADGE_DEFS` 補一筆 `{ id, name, latin, desc, target }`
+2. 在 `evaluateBadges(p)` 加對應的進度計算
+3. 視覺自動套用（共用 `renderBadgeSvg`）
+
+紅線：徽章中文名 + 拉丁副標、絕不用 emoji 或卡通圖（PRD §12.3）。
+
+### 3.8 新增 / 修改熟練度雷達軸
+
+`MASTERY_AXES` 為六軸定義，`AXIS_TO_QUIZ_CATEGORY` 為點擊軸跳轉題庫的 category 映射。
+若要把六軸擴成八軸，需同步更新 SVG 角度計算（`axisPoint(i, ratio)` 已是通用 N-gon），無需重寫 SVG。
+
+`AXIS_AMENDMENT_DATES` 是雷達軸標註的「最近修法日」。目前手動維護，未來可從 `data/law_index.json` 加 `last_amendment_date` 欄位後動態抓取。
+
+### 3.9 升級 progress schema（從 v2 到 v3）
+
+未來若要再升級 schema：
+1. `defaultProgress()` 內 `version: 3`
+2. 新增 `migrateProgressV2ToV3(p)` 函式
+3. `loadProgress()` 內加 `if (p.version === 2) return migrateProgressV2ToV3(p);`
+4. **保留** v1 → v2 migration（使用者可能直接從 v1 跳兩級）
+
 ---
 
 ## 4. 不要做的事（紅線）
@@ -110,6 +146,8 @@ python3 scripts/explore_sfb.py
 - ❌ **不要加入帳號系統 / Google Analytics / Facebook Pixel**：個資紅線
 - ❌ **不要引入 React / Vue / Tailwind 等框架**：違反「無 build step」原則
 - ❌ **不要手動 commit `output/qa.json`**：應由工作流產生
+- ❌ **不要在個人儀表板加入 emoji（🔥／🌅 等）或「Combo」「連勝」等遊戲化字眼**：違反 PRD §12.3 研修所定位
+- ❌ **不要把徽章視覺改成卡通風格**：必須維持金色描邊 + 月桂葉 + 拉丁文襯線體質感
 
 ---
 

@@ -643,19 +643,105 @@ function migrateToUnifiedQuizKey() {
 }
 migrateToUnifiedQuizKey();
 
+// ---- progress schema v2（PRD §9.5.4）----
+// 設計原則：
+//   - key 沿用 'underwriter_lex_quiz_progress'，避免使用者進度遺失
+//   - 同時保留 stats.streak_days / stats.last_practice_date（讓現有首頁進度區仍能直接讀）
+//     這兩個欄位由 streak.* 鏡像維護，不再是真相來源
+//   - 同時保留 category_progress（中文鍵，現有首頁分類進度區用）
+//     新增 category_mastery（六軸英文鍵，PRD §9.5.2 給雷達圖用）
+//   - 舊版 v1 → v2 自動 migrate（loadProgress 中處理）
 function defaultProgress() {
   return {
-    version: 1,
+    version: 2,
+    user_nickname: '',
+
+    streak: {
+      current_days: 0,
+      longest_days: 0,
+      this_month_days: 0,
+      lifetime_days: 0,
+      last_active_date: null,
+      last_compensation_month: null,        // "YYYY-MM"，跨月時 reset compensation_used
+      compensation_used_this_month: 0,
+      compensation_remaining: 3,            // 每月最多 3 次補卡
+    },
+
     stats: {
       total_answered: 0,
       total_correct: 0,
+      questions_answered_today: 0,
+      questions_today_date: null,           // "YYYY-MM-DD"，跨日時 reset questions_answered_today
+      // legacy mirrors（給現有 renderProgress 直接讀；由 streak 同步）
       streak_days: 0,
       last_practice_date: null,
     },
-    wrong_questions: [],
+
+    // 六軸熟練度（PRD §9.5.2）
+    category_mastery: {
+      issuance:     { answered: 0, correct: 0, mastery: 0 },
+      governance:   { answered: 0, correct: 0, mastery: 0 },
+      disclosure:   { answered: 0, correct: 0, mastery: 0 },
+      tender_offer: { answered: 0, correct: 0, mastery: 0 },
+      insider:      { answered: 0, correct: 0, mastery: 0 },
+      asset_acq:    { answered: 0, correct: 0, mastery: 0 },
+    },
+
+    // legacy：中文鍵分類進度（首頁進度區仍用）
     category_progress: {},
-    daily_completed: {},   // { "YYYY-MM-DD": "Q003" }
+
+    wrong_questions: [],
+
+    // 每日紀錄：{ "YYYY-MM-DD": { completed, theme, correct } }
+    daily_records: {},
+
+    // legacy 旗標（與 daily_records 並存，避免破壞舊邏輯）
+    daily_completed: {},
+
+    // 徽章
+    badges: {
+      earned: [],                           // [{ id, earned_at }]
+      progress: {},                         // { id: { current, target } }
+      // 上次彈出通知條的徽章 id（避免重覆通知）
+      notified: [],
+    },
   };
+}
+
+// v1 → v2 in-place migration
+function migrateProgressV1ToV2(p) {
+  const def = defaultProgress();
+  const out = { ...def, ...p };
+  out.version = 2;
+
+  // streak 從 stats.streak_days / stats.last_practice_date 拉出
+  out.streak = { ...def.streak, ...(p.streak || {}) };
+  if (p.stats) {
+    if (typeof p.stats.streak_days === 'number') {
+      out.streak.current_days = p.stats.streak_days;
+      out.streak.longest_days = Math.max(out.streak.longest_days, p.stats.streak_days);
+    }
+    if (p.stats.last_practice_date) {
+      out.streak.last_active_date = p.stats.last_practice_date;
+    }
+  }
+
+  out.stats = { ...def.stats, ...(p.stats || {}) };
+  // legacy mirror 對齊
+  out.stats.streak_days = out.streak.current_days;
+  out.stats.last_practice_date = out.streak.last_active_date;
+
+  out.category_mastery = { ...def.category_mastery, ...(p.category_mastery || {}) };
+  out.category_progress = p.category_progress || {};
+  out.wrong_questions = p.wrong_questions || [];
+  out.daily_records = p.daily_records || {};
+  out.daily_completed = p.daily_completed || {};
+  out.badges = { ...def.badges, ...(p.badges || {}) };
+  out.badges.earned = out.badges.earned || [];
+  out.badges.progress = out.badges.progress || {};
+  out.badges.notified = out.badges.notified || [];
+  out.user_nickname = p.user_nickname || '';
+  return out;
 }
 
 function loadProgress() {
@@ -663,14 +749,26 @@ function loadProgress() {
     const raw = localStorage.getItem(PROGRESS_KEY);
     if (!raw) return defaultProgress();
     const p = JSON.parse(raw);
-    if (!p || p.version !== 1) return defaultProgress();
-    // 補齊新欄位（schema 演進時相容）
-    const def = defaultProgress();
-    p.stats = { ...def.stats, ...(p.stats || {}) };
-    p.wrong_questions = p.wrong_questions || [];
-    p.category_progress = p.category_progress || {};
-    p.daily_completed = p.daily_completed || {};
-    return p;
+    if (!p || typeof p !== 'object') return defaultProgress();
+    if (p.version === 2) {
+      // 補齊任何後續新增欄位
+      const def = defaultProgress();
+      const out = { ...def, ...p };
+      out.streak = { ...def.streak, ...(p.streak || {}) };
+      out.stats = { ...def.stats, ...(p.stats || {}) };
+      out.category_mastery = { ...def.category_mastery, ...(p.category_mastery || {}) };
+      out.badges = { ...def.badges, ...(p.badges || {}) };
+      out.badges.earned = out.badges.earned || [];
+      out.badges.progress = out.badges.progress || {};
+      out.badges.notified = out.badges.notified || [];
+      out.wrong_questions = p.wrong_questions || [];
+      out.category_progress = p.category_progress || {};
+      out.daily_records = p.daily_records || {};
+      out.daily_completed = p.daily_completed || {};
+      return out;
+    }
+    if (p.version === 1) return migrateProgressV1ToV2(p);
+    return defaultProgress();
   } catch (e) {
     return defaultProgress();
   }
@@ -699,17 +797,127 @@ function yesterdayStr() {
 //   true  (預設) 一般練習：答錯加進 wrong_questions、答對若已在錯題本則移除
 //   false        daily 模式：完全不動 wrong_questions（避免錯題本被 daily 餵食）
 // stats / streak / category_progress 一律更新（讓 daily 也計入累計與連續學習天數）
+// ---- 中文 category → 六軸熟練度英文鍵的映射（PRD §9.5.2）----
+// 政策：寬鬆映射，讓現有 200 題能合理填入六軸；無對應者落到最相近的軸或 disclosure（揭露為最廣的）
+const CATEGORY_TO_AXIS = {
+  'IPO募集發行':       'issuance',
+  '證交法核心':        'issuance',          // 多為募集發行條文
+  '上市櫃規範':        'issuance',
+  '公司法':            'governance',
+  '公司治理':          'governance',
+  '內部控制':          'governance',
+  '財報與IFRS':        'disclosure',
+  '重大訊息與操縱':    'insider',
+  '公開收購與庫藏股':  'tender_offer',
+  '證券商管理':        'asset_acq',         // 證券商承銷處理 / 取得處分相關
+  '其他':              'disclosure',
+};
+
+function categoryToAxis(cat) {
+  return CATEGORY_TO_AXIS[cat] || 'disclosure';
+}
+
+// ---- streak / 補卡邏輯 ----
+function monthKey(dateStr) {
+  return dateStr ? dateStr.slice(0, 7) : null;   // "YYYY-MM"
+}
+
+// 根據 last_active_date 與今日活動，更新 streak（含補卡邏輯）。
+//   gapDays === 0   今日已活躍過 → 若今日處於補卡 pending，每答 1 題遞增進度，達標時延續 streak
+//   gapDays === 1   昨日活躍，今日是連續 → current_days += 1
+//   gapDays >= 2    斷了 → 若還有補卡額度，進入 compensation_pending（current_days 暫設 1）
+//                            否則 current_days reset 為 1
+// 注意：本函式由 recordAnswer 在 questions_answered_today 自加之後呼叫。
+function tickStreakOnActivity(p) {
+  const today = todayStr();
+  const last = p.streak.last_active_date;
+
+  // 跨月：reset compensation 與 this_month_days
+  const curMonth = today.slice(0, 7);
+  if (p.streak.last_compensation_month !== curMonth) {
+    p.streak.last_compensation_month = curMonth;
+    p.streak.compensation_used_this_month = 0;
+    p.streak.compensation_remaining = 3;
+    p.streak.this_month_days = 0;
+  }
+
+  if (last === today) {
+    // 同日續答：若處於補卡 pending，遞增進度
+    if (p.streak.compensation_pending) {
+      const cp = p.streak.compensation_pending;
+      cp.questions_done = (cp.questions_done || 0) + 1;
+      if (cp.questions_done >= (cp.target || 2)) {
+        // 補卡達成：把 streak 還原為「斷掉前的 streak + 1」
+        p.streak.current_days = (cp.previous_streak || 0) + 1;
+        if (p.streak.current_days > (p.streak.longest_days || 0)) {
+          p.streak.longest_days = p.streak.current_days;
+        }
+        p.streak.compensation_used_this_month = (p.streak.compensation_used_this_month || 0) + 1;
+        p.streak.compensation_remaining = Math.max(0, (p.streak.compensation_remaining || 0) - 1);
+        delete p.streak.compensation_pending;
+      }
+    }
+    return { gapDays: 0, became_active_today: false };
+  }
+
+  // 跨日（包含首次活躍 last === null）：計算 gap
+  let gapDays = 999;
+  if (last) {
+    const a = new Date(last + 'T00:00:00');
+    const b = new Date(today + 'T00:00:00');
+    gapDays = Math.round((b - a) / 86400000);
+  }
+
+  if (gapDays === 1) {
+    p.streak.current_days = (p.streak.current_days || 0) + 1;
+  } else if (gapDays >= 2 && (p.streak.compensation_remaining || 0) > 0 && (p.streak.current_days || 0) > 0) {
+    // 啟動補卡 pending：暫設 current_days = 1，紀錄之前 streak，等今日答滿 2 題時還原
+    p.streak.compensation_pending = {
+      previous_streak: p.streak.current_days || 0,
+      questions_done: 1,             // 本次答題已算 1
+      target: 2,
+      started_date: today,
+    };
+    p.streak.current_days = 1;
+  } else {
+    // 真正斷了
+    p.streak.current_days = 1;
+    delete p.streak.compensation_pending;
+  }
+
+  p.streak.last_active_date = today;
+  p.streak.this_month_days = (p.streak.this_month_days || 0) + 1;
+  p.streak.lifetime_days = (p.streak.lifetime_days || 0) + 1;
+  if (p.streak.current_days > (p.streak.longest_days || 0)) {
+    p.streak.longest_days = p.streak.current_days;
+  }
+  return { gapDays, became_active_today: true };
+}
+
 function recordAnswer(question, correct, { trackWrong = true } = {}) {
   const p = loadProgress();
   p.stats.total_answered += 1;
   if (correct) p.stats.total_correct += 1;
 
   const today = todayStr();
-  if (p.stats.last_practice_date !== today) {
-    p.stats.streak_days = (p.stats.last_practice_date === yesterdayStr())
-      ? (p.stats.streak_days || 0) + 1
-      : 1;
-    p.stats.last_practice_date = today;
+
+  // 跨日 reset 今日答題數
+  if (p.stats.questions_today_date !== today) {
+    p.stats.questions_today_date = today;
+    p.stats.questions_answered_today = 0;
+  }
+  p.stats.questions_answered_today += 1;
+
+  // streak（含 this_month / lifetime / longest）
+  tickStreakOnActivity(p);
+
+  // legacy mirror（首頁進度區仍讀 stats.streak_days / last_practice_date）
+  p.stats.streak_days = p.streak.current_days;
+  p.stats.last_practice_date = p.streak.last_active_date;
+
+  // daily_records
+  if (!p.daily_records[today]) {
+    p.daily_records[today] = { completed: false, theme: null, correct: false };
   }
 
   if (trackWrong) {
@@ -721,12 +929,31 @@ function recordAnswer(question, correct, { trackWrong = true } = {}) {
     }
   }
 
+  // legacy 中文鍵分類進度
   const cat = question.category || '其他';
   if (!p.category_progress[cat]) p.category_progress[cat] = { answered: 0, correct: 0 };
   p.category_progress[cat].answered += 1;
   if (correct) p.category_progress[cat].correct += 1;
 
+  // v2 六軸熟練度
+  const axis = categoryToAxis(cat);
+  if (!p.category_mastery[axis]) p.category_mastery[axis] = { answered: 0, correct: 0, mastery: 0 };
+  p.category_mastery[axis].answered += 1;
+  if (correct) p.category_mastery[axis].correct += 1;
+  p.category_mastery[axis].mastery = calculateMasteryFromRecord(p.category_mastery[axis]);
+
+  // 徽章同步（靜默；通知條由 initHome / initProfile 觸發）
+  if (typeof syncBadges === 'function') syncBadges(p);
+
   saveProgress(p);
+}
+
+// PRD §9.5.2 公式：accuracy × log10(total+1)/2 (cap at 1) × 100
+function calculateMasteryFromRecord(rec) {
+  if (!rec || !rec.answered) return 0;
+  const accuracy = rec.correct / rec.answered;
+  const volumeWeight = Math.min(Math.log10(rec.answered + 1) / 2, 1);
+  return Math.round(accuracy * volumeWeight * 100);
 }
 
 function clearWrongQuestions() {
@@ -765,11 +992,92 @@ function seededShuffle(arr, seed) {
   return a;
 }
 
-// 給定 pool 與日期字串，回傳當日固定 10 題（pool 不足時取全部）
-function pickDailyQuestions(pool, dateStr, n = DAILY_TARGET_COUNT) {
-  if (!pool || pool.length === 0) return [];
-  const seed = hashString(dateStr);
-  return seededShuffle(pool, seed).slice(0, Math.min(n, pool.length));
+// ============================================
+// 每週題型輪播（PRD §9.2）
+// 週一 IPO ／ 週二 SPO ／ 週三 公司治理 ／ 週四 內線交易
+// 週五 主管機關最新函釋（fallback 全題庫，因尚無 regulation_update tag）
+// 週六 錯題本 ／ 週日 資深考題（hard）
+// ============================================
+
+const WEEKLY_THEMES = {
+  0: { tag: 'advanced',          title: '週日・資深挑戰',  short: '資深挑戰' },
+  1: { tag: 'IPO',               title: '週一・IPO 情境',  short: 'IPO 情境' },
+  2: { tag: 'SPO',               title: '週二・現增與 CB', short: '現增 / CB' },
+  3: { tag: 'governance',        title: '週三・公司治理',  short: '公司治理' },
+  4: { tag: 'insider',           title: '週四・內線交易',  short: '內線 / 重大訊息' },
+  5: { tag: 'regulation_update', title: '週五・本月焦點',  short: '本月焦點' },
+  6: { tag: 'wrong_review',      title: '週六・錯題複習',  short: '錯題複習' },
+};
+
+function themeOfDate(date) {
+  const d = (date instanceof Date) ? date : new Date(date + 'T00:00:00');
+  return WEEKLY_THEMES[d.getDay()] || WEEKLY_THEMES[1];
+}
+
+function todayTheme() {
+  return themeOfDate(new Date());
+}
+
+function tomorrowTheme() {
+  const t = new Date();
+  t.setDate(t.getDate() + 1);
+  return themeOfDate(t);
+}
+
+// 依題目 category / difficulty / 文字內容推導 tags（PRD §9.3 規定 tags 為 v2.2 schema；
+// 既有 200 題 quiz_extended.json 尚未標註 → 自動推導，未來可被 q.tags 顯式覆蓋）
+function deriveQuestionTags(q) {
+  if (Array.isArray(q.tags) && q.tags.length > 0) return q.tags;
+  const tags = new Set();
+  const cat = q.category || '';
+  const diff = q.difficulty || 'medium';
+  const stem = q.question || '';
+
+  if (cat === 'IPO募集發行' || cat === '上市櫃規範') tags.add('IPO');
+  if (cat === 'IPO募集發行') tags.add('SPO');
+  if (cat === '公司治理' || cat === '內部控制') tags.add('governance');
+  if (cat === '公司法') tags.add('governance');
+  if (cat === '重大訊息與操縱') tags.add('insider');
+  if (cat === '公開收購與庫藏股') tags.add('SPO');
+  if (cat === '財報與IFRS') tags.add('governance');
+
+  // 內容關鍵字補強
+  if (/募集|公開發行|公開說明書|上市|興櫃|初次申請/.test(stem)) tags.add('IPO');
+  if (/現金增資|私募|認股權|可轉換|公司債|庫藏股/.test(stem)) tags.add('SPO');
+  if (/內線|重大消息|內部人持股/.test(stem)) tags.add('insider');
+  if (/董事|監察人|獨立董事|薪酬委員會|審計委員會|公司治理/.test(stem)) tags.add('governance');
+
+  if (diff === 'hard' || diff === 'advanced') tags.add('advanced');
+
+  return Array.from(tags);
+}
+
+// 依 today's theme 過濾 pool，回傳排序後的候選
+function poolByTheme(allPool, progress) {
+  const theme = todayTheme();
+  const tag = theme.tag;
+
+  if (tag === 'wrong_review') {
+    const wrongIds = new Set(progress.wrong_questions || []);
+    const wrongOnes = allPool.filter(q => wrongIds.has(q.id));
+    if (wrongOnes.length === 0) {
+      // 沒錯題 → fallback advanced（用 set 推 hard 題）
+      return { pool: allPool.filter(q => deriveQuestionTags(q).includes('advanced')), theme, fallback: true };
+    }
+    // 有錯題：直接給錯題池（少於 10 也照給，提供精準複習）
+    return { pool: wrongOnes, theme, fallback: false };
+  }
+
+  if (tag === 'regulation_update') {
+    // 尚無 regulation_update 標註 → fallback 全題庫（每月用 _added_at 較新者優先）
+    const sorted = allPool.slice().sort((a, b) => (b._added_at || '').localeCompare(a._added_at || ''));
+    return { pool: sorted, theme, fallback: true };
+  }
+
+  const filtered = allPool.filter(q => deriveQuestionTags(q).includes(tag));
+  if (filtered.length >= 5) return { pool: filtered, theme, fallback: false };
+  // 不足 5 題 → 退到全題庫
+  return { pool: allPool, theme, fallback: true };
 }
 
 // daily progress: { date, answered: [{id, selectedIdx, correct}], completed, score }
@@ -832,6 +1140,8 @@ function normalizeExtendedQuestion(q) {
       url: '',
       law_id: q.law_id || '',
     },
+    // PRD §9.3 v2.2：每題可帶 tags 陣列；若 JSON 未顯式給定，由 deriveQuestionTags() lazy 推導
+    tags: Array.isArray(q.tags) ? q.tags : [],
     _pending_review: q._pending_review === true,
     _added_at: q._added_at || '',
   };
@@ -921,11 +1231,22 @@ function createSession(mode) {
 // 回傳 true 表示成功；false 表示題庫尚未載入或為空
 function setupDailySession() {
   if (!quizData) return false;
-  const pool = quizData.questions || [];
-  if (pool.length === 0) return false;
+  const allPool = quizData.questions || [];
+  if (allPool.length === 0) return false;
+
+  // 依今日 theme 過濾候選池（PRD §9.2 每週題型輪播）
+  const progress = loadProgress();
+  const { pool: themedPool, theme } = poolByTheme(allPool, progress);
+  const sourcePool = themedPool && themedPool.length > 0 ? themedPool : allPool;
 
   const dp = loadDailyProgress();
-  const dailyQuestions = pickDailyQuestions(pool, dp.date, DAILY_TARGET_COUNT);
+  // seed 加入 theme.tag，讓不同主題即使同日也能取到不同題序
+  const seedKey = dp.date + ':' + (theme.tag || 'all');
+  const dailyQuestions = (function() {
+    if (sourcePool.length === 0) return [];
+    const seed = hashString(seedKey);
+    return seededShuffle(sourcePool, seed).slice(0, Math.min(DAILY_TARGET_COUNT, sourcePool.length));
+  })();
   if (dailyQuestions.length === 0) return false;
 
   const sess = quizSessions.daily;
@@ -1240,8 +1561,8 @@ function renderQuizResult(mode) {
     : '';
   const actions = isDaily
     ? `
-      <button class="btn-primary" data-action="back-home">回首頁</button>
-      <div class="result-tomorrow">🌅 明日再見</div>
+      <button class="btn-primary" data-action="back-home">回首頁查看總結</button>
+      <div class="result-tomorrow">明日主題　${escapeHTML(tomorrowTheme().title)}</div>
     `
     : `
       <button class="btn-primary" data-action="restart">重新開始</button>
@@ -1312,13 +1633,24 @@ function hashString(s) {
   return Math.abs(h);
 }
 
+// 取得當日 daily questions pool（套用每週題型輪播 + theme seed）
+function getDailyQuestionsForToday() {
+  if (!quizData) return { questions: [], theme: todayTheme() };
+  const allPool = quizData.questions || [];
+  if (allPool.length === 0) return { questions: [], theme: todayTheme() };
+  const progress = loadProgress();
+  const { pool: themedPool, theme } = poolByTheme(allPool, progress);
+  const sourcePool = themedPool && themedPool.length > 0 ? themedPool : allPool;
+  const today = todayStr();
+  const seed = hashString(today + ':' + theme.tag);
+  const picks = seededShuffle(sourcePool, seed).slice(0, Math.min(DAILY_TARGET_COUNT, sourcePool.length));
+  return { questions: picks, theme };
+}
+
 // 今日挑戰首題（給首頁卡片預覽用）：回傳當日 10 題的第 1 題
 function getDailyQuestion() {
-  if (!quizData) return null;
-  const pool = quizData.questions || [];
-  if (pool.length === 0) return null;
-  const picks = pickDailyQuestions(pool, todayStr(), DAILY_TARGET_COUNT);
-  return picks[0] || null;
+  const { questions } = getDailyQuestionsForToday();
+  return questions[0] || null;
 }
 
 function renderDailyChallenge() {
@@ -1331,9 +1663,8 @@ function renderDailyChallenge() {
     el.innerHTML = renderQaEmpty('!', '題庫尚未載入');
     return;
   }
-  const pool = quizData.questions || [];
   const today = todayStr();
-  const dailyQuestions = pickDailyQuestions(pool, today, DAILY_TARGET_COUNT);
+  const { questions: dailyQuestions, theme } = getDailyQuestionsForToday();
   if (dailyQuestions.length === 0) {
     el.innerHTML = renderQaEmpty('⌖', '今日無題目可挑戰');
     return;
@@ -1352,20 +1683,7 @@ function renderDailyChallenge() {
   }).join('');
 
   if (completed) {
-    const score = typeof dp.score === 'number' && dp.score > 0 ? dp.score
-                : dp.answered.filter(a => a.correct).length;
-    const pct = Math.round(score * 100 / total);
-    el.innerHTML = `
-      <div class="daily-card daily-card-done">
-        <div class="daily-label">⌖ 今日挑戰 · ${escapeHTML(todayStrZh())} · <span class="daily-done-mark">已完成 ✓</span></div>
-        <div class="daily-done-score">
-          <span class="daily-done-pct">${pct}%</span>
-          <span class="daily-done-frac">${score} / ${total}</span>
-        </div>
-        <div class="quiz-progress-dots">${dots}</div>
-        <div class="daily-tomorrow">🌅 明日再見</div>
-      </div>
-    `;
+    el.innerHTML = renderDailySummaryCard(dp, total, theme);
     return;
   }
 
@@ -1376,8 +1694,11 @@ function renderDailyChallenge() {
 
   el.innerHTML = `
     <div class="daily-card">
-      <div class="daily-label">⌖ 今日挑戰 · ${escapeHTML(todayStrZh())}</div>
-      <div class="daily-headline">每日 ${total} 題 · 每天更新</div>
+      <div class="daily-label">
+        ⌖ 今日挑戰 · ${escapeHTML(todayStrZh())}
+        <span class="daily-theme-badge">${escapeHTML(theme.short)}</span>
+      </div>
+      <div class="daily-headline">${escapeHTML(theme.title)}</div>
       <div class="daily-progress-line">
         <span class="daily-progress-text">${answered} / ${total}</span>
         <span class="quiz-progress-dots">${dots}</span>
@@ -1392,6 +1713,69 @@ function renderDailyChallenge() {
   `;
 
   bindDailyDelegates(el);
+}
+
+// 完成今日挑戰後的「今日總結卡」（PRD §9.4）
+//   - 今日題目主題
+//   - 答對 / 答錯
+//   - 連續精進天數變化
+//   - 明日主題預告
+//   - 雷達圖更新提示（最高熟練度軸 + 變化）
+function renderDailySummaryCard(dp, total, theme) {
+  const score = typeof dp.score === 'number' && dp.score > 0 ? dp.score
+              : dp.answered.filter(a => a.correct).length;
+  const pct = Math.round(score * 100 / total);
+  const wrong = total - score;
+  const tomorrow = tomorrowTheme();
+  const p = loadProgress();
+  const streak = p.streak.current_days || 0;
+
+  // 雷達圖最近熱點：找出今日各 axis 進步最大者
+  // 簡化：計算今日這 10 題的各 axis 分布，提示最常觸及的 axis
+  const axisCount = {};
+  dp.answered.forEach(a => {
+    const q = questionById(a.id);
+    if (!q) return;
+    const ax = categoryToAxis(q.category);
+    axisCount[ax] = (axisCount[ax] || 0) + 1;
+  });
+  const topAxisKey = Object.entries(axisCount).sort((a, b) => b[1] - a[1])[0];
+  const topAxisLabel = topAxisKey ? (MASTERY_AXES.find(x => x.key === topAxisKey[0]) || {}).label : '';
+  const topAxisMastery = topAxisKey ? ((p.category_mastery[topAxisKey[0]] || {}).mastery || 0) : 0;
+
+  return `
+    <div class="daily-summary">
+      <div class="daily-summary-head">⌖ 今日挑戰 · ${escapeHTML(todayStrZh())} 完成</div>
+      <div class="daily-summary-theme">${escapeHTML(theme.title)}</div>
+      <div class="daily-summary-grid">
+        <div class="daily-summary-cell">
+          <div class="daily-summary-cell-num">${pct}%</div>
+          <div class="daily-summary-cell-label">正確率</div>
+        </div>
+        <div class="daily-summary-cell">
+          <div class="daily-summary-cell-num">${score} / ${total}</div>
+          <div class="daily-summary-cell-label">答對 / 總題</div>
+        </div>
+        <div class="daily-summary-cell">
+          <div class="daily-summary-cell-num">${streak}</div>
+          <div class="daily-summary-cell-label">連續精進</div>
+        </div>
+        <div class="daily-summary-cell">
+          <div class="daily-summary-cell-num">${wrong}</div>
+          <div class="daily-summary-cell-label">答錯題數</div>
+        </div>
+      </div>
+      ${topAxisLabel ? `
+        <div class="daily-summary-mastery">
+          熟練度更新：<strong>${escapeHTML(topAxisLabel)}</strong> 目前 ${topAxisMastery}%
+        </div>
+      ` : ''}
+      <div class="daily-summary-tomorrow">
+        <span class="daily-summary-tomorrow-label">明日主題</span>
+        <span class="daily-summary-tomorrow-theme">${escapeHTML(tomorrow.title)}</span>
+      </div>
+    </div>
+  `;
 }
 
 function bindDailyDelegates(el) {
@@ -1452,8 +1836,383 @@ function renderProgress() {
 
 async function initHome() {
   await ensureQuizLoaded();
+  if (typeof processBadgeNotifications === 'function') processBadgeNotifications();
   renderDailyChallenge();
   renderProgress();
+}
+
+// ============================================
+// 個人儀表板（PRD §9.5）
+// 三大區塊：連續精進天數 / 熟練度雷達 / 徽章
+// 視覺紅線：不得使用 emoji、🔥、Combo、連勝等遊戲化字眼（PRD §12.3）
+// ============================================
+
+// 六軸定義（順序即雷達順時針排列；起點正上方）
+const MASTERY_AXES = [
+  { key: 'issuance',     label: '募集發行',   subtitle: 'Issuance',           law_id: 'A04' },
+  { key: 'governance',   label: '公司治理',   subtitle: 'Governance',         law_id: 'A11' },
+  { key: 'disclosure',   label: '財務揭露',   subtitle: 'Disclosure',         law_id: 'A22' },
+  { key: 'tender_offer', label: '公開收購',   subtitle: 'Tender Offer',       law_id: 'A24' },
+  { key: 'insider',      label: '內線交易',   subtitle: 'Insider',            law_id: 'A29' },
+  { key: 'asset_acq',    label: '取得處分',   subtitle: 'Asset Acquisition',  law_id: 'A13' },
+];
+
+// 軸 → 該軸對應分類在 quiz 池裡的最佳跳轉 category（中文）
+// 用於點擊雷達軸時自動跳到題庫並套用 category filter
+const AXIS_TO_QUIZ_CATEGORY = {
+  issuance:     'IPO募集發行',
+  governance:   '公司治理',
+  disclosure:   '財報與IFRS',
+  tender_offer: '公開收購與庫藏股',
+  insider:      '重大訊息與操縱',
+  asset_acq:    '證券商管理',
+};
+
+// 各軸最近相關修法日（PRD §9.5.2 "公開收購 62%｜2025-03-15 修正"）
+// TODO: law_index.json 加入 last_amendment_date 欄位後改為動態抓取
+// 目前先以維護人手動標註的代表性日期填入；空字串表示未標註
+const AXIS_AMENDMENT_DATES = {
+  issuance:     '2025-06-18',
+  governance:   '2024-11-20',
+  disclosure:   '2025-03-12',
+  tender_offer: '2025-03-15',
+  insider:      '2025-09-01',
+  asset_acq:    '2024-08-30',
+};
+
+// 徽章定義（PRD §9.5.2 區塊三：MVP 6 個）
+const BADGE_DEFS = [
+  { id: 'init',              name: '初心',     latin: 'Initium',                  desc: '連續學習 7 日',          target: 7 },
+  { id: 'diligent',          name: '勤學',     latin: 'Diligentia',               desc: '連續學習 30 日',         target: 30 },
+  { id: 'centum',            name: '百日精進', latin: 'Centum Dies',              desc: '累計學習 100 日',        target: 100 },
+  { id: 'issuance_master',   name: '募集精通', latin: 'Magister Emissionis',      desc: '募集發行熟練度 ≥ 80%',   target: 80 },
+  { id: 'governance_master', name: '治理精通', latin: 'Magister Gubernationis',   desc: '公司治理熟練度 ≥ 80%',   target: 80 },
+  { id: 'centuria',          name: '百題達人', latin: 'Centuria',                 desc: '累計答題 100 題',        target: 100 },
+];
+
+// 計算每個徽章當前進度與是否達成
+function evaluateBadges(p) {
+  const out = {};
+  out.init             = { current: p.streak.current_days || 0,  target: 7 };
+  out.diligent         = { current: p.streak.current_days || 0,  target: 30 };
+  out.centum           = { current: p.streak.lifetime_days || 0, target: 100 };
+  out.issuance_master  = { current: (p.category_mastery.issuance   || {}).mastery || 0, target: 80 };
+  out.governance_master= { current: (p.category_mastery.governance || {}).mastery || 0, target: 80 };
+  out.centuria         = { current: p.stats.total_answered || 0,  target: 100 };
+  return out;
+}
+
+// 同步 badges：earned/progress；新解鎖者寫進 notified queue 等待頁面顯示通知
+function syncBadges(p) {
+  const eval_ = evaluateBadges(p);
+  const earnedIds = new Set((p.badges.earned || []).map(b => b.id));
+  const today = todayStr();
+  const newlyEarned = [];
+  for (const def of BADGE_DEFS) {
+    const e = eval_[def.id];
+    if (!e) continue;
+    p.badges.progress[def.id] = { current: e.current, target: e.target };
+    if (!earnedIds.has(def.id) && e.current >= e.target) {
+      p.badges.earned.push({ id: def.id, earned_at: today });
+      newlyEarned.push(def.id);
+    }
+  }
+  return newlyEarned;
+}
+
+// ---- Streak 區塊 ----
+function renderStreakBlock() {
+  const el = document.getElementById('streakBlock');
+  if (!el) return;
+  const p = loadProgress();
+  // 進入頁面時 reset 月度補卡額度（如跨月）
+  const today = todayStr();
+  const curMonth = today.slice(0, 7);
+  if (p.streak.last_compensation_month !== curMonth) {
+    p.streak.last_compensation_month = curMonth;
+    p.streak.compensation_used_this_month = 0;
+    p.streak.compensation_remaining = 3;
+    saveProgress(p);
+  }
+
+  const last = p.streak.last_active_date;
+  const gapDays = last
+    ? Math.round((new Date(today + 'T00:00:00') - new Date(last + 'T00:00:00')) / 86400000)
+    : null;
+
+  // 補卡面板的三個狀態：
+  //   1. 進行中（compensation_pending 存在且未達標）
+  //   2. 剛完成（compensation_pending 已被刪、且本日 streak 是補回來的）→ 由 daily_records 推斷不易，僅在「進行中」狀態顯示
+  //   3. 機會視窗：使用者尚未答題、但離上次活躍剛好 2 天且還有額度
+  let compensationPanel = '';
+  const cp = p.streak.compensation_pending;
+  if (cp && cp.started_date === today) {
+    const todoLeft = Math.max(0, (cp.target || 2) - (cp.questions_done || 0));
+    compensationPanel = `
+      <div class="streak-compensation">
+        <div class="streak-compensation-head">昨日中斷</div>
+        <div class="streak-compensation-body">再完成 <strong>${todoLeft}</strong> 題即可延續連續精進天數。</div>
+        <div class="streak-compensation-meta">本月剩餘補卡 ${p.streak.compensation_remaining} 次</div>
+      </div>
+    `;
+  } else if (gapDays === 2 && p.streak.compensation_remaining > 0 && p.stats.questions_answered_today === 0) {
+    // 機會視窗：今日尚未答題，但若答 2 題即可補卡
+    compensationPanel = `
+      <div class="streak-compensation">
+        <div class="streak-compensation-head">昨日中斷</div>
+        <div class="streak-compensation-body">今日完成 <strong>2</strong> 題即可延續連續精進天數。</div>
+        <div class="streak-compensation-meta">本月剩餘補卡 ${p.streak.compensation_remaining} 次</div>
+      </div>
+    `;
+  }
+
+  el.innerHTML = `
+    <div class="streak-hero">
+      <div class="streak-num">${p.streak.current_days || 0}</div>
+      <div class="streak-unit">日</div>
+    </div>
+    <div class="streak-caption">連續精進</div>
+    <div class="streak-meta">
+      <span>本月 ${p.streak.this_month_days || 0} 日</span>
+      <span class="streak-meta-sep">·</span>
+      <span>累計 ${p.streak.lifetime_days || 0} 日</span>
+      <span class="streak-meta-sep">·</span>
+      <span>最長 ${p.streak.longest_days || 0} 日</span>
+    </div>
+    ${compensationPanel}
+  `;
+}
+
+// ---- 雷達圖（六軸 SVG，無外部相依）----
+function renderRadarChart(masteryByAxis) {
+  const SIZE = 280;
+  const CX = SIZE / 2;
+  const CY = SIZE / 2 + 8;       // 為頂部標籤留空間
+  const R_MAX = 90;
+  const N = MASTERY_AXES.length;
+
+  // 軸座標（從正上方順時針）
+  const axisPoint = (i, ratio) => {
+    const angle = -Math.PI / 2 + i * (2 * Math.PI / N);
+    return [CX + R_MAX * ratio * Math.cos(angle), CY + R_MAX * ratio * Math.sin(angle)];
+  };
+
+  // 同心五邊（20% / 40% / 60% / 80% / 100%）
+  const grid = [0.2, 0.4, 0.6, 0.8, 1.0].map(r => {
+    const pts = [];
+    for (let i = 0; i < N; i++) pts.push(axisPoint(i, r));
+    return `<polygon points="${pts.map(p => p.join(',')).join(' ')}" fill="none" stroke="var(--line)" stroke-width="1" />`;
+  }).join('');
+
+  // 軸線
+  const axes = MASTERY_AXES.map((_, i) => {
+    const [x, y] = axisPoint(i, 1);
+    return `<line x1="${CX}" y1="${CY}" x2="${x}" y2="${y}" stroke="var(--line-strong)" stroke-width="0.5" />`;
+  }).join('');
+
+  // 資料多邊
+  const dataPoints = MASTERY_AXES.map((axis, i) => {
+    const m = (masteryByAxis[axis.key] || 0) / 100;
+    return axisPoint(i, m);
+  });
+  const polygon = `<polygon points="${dataPoints.map(p => p.join(',')).join(' ')}" fill="rgba(30, 58, 95, 0.15)" stroke="var(--primary)" stroke-width="1.5" stroke-linejoin="round" />`;
+  const dots = dataPoints.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="2.5" fill="var(--primary)" />`).join('');
+
+  // 軸標籤（含分數）
+  const labels = MASTERY_AXES.map((axis, i) => {
+    const [x, y] = axisPoint(i, 1.18);
+    const m = masteryByAxis[axis.key] || 0;
+    const angle = -Math.PI / 2 + i * (2 * Math.PI / N);
+    let anchor = 'middle';
+    if (Math.cos(angle) > 0.3) anchor = 'start';
+    else if (Math.cos(angle) < -0.3) anchor = 'end';
+    return `
+      <g class="radar-label" data-axis="${axis.key}">
+        <text x="${x}" y="${y - 4}" text-anchor="${anchor}" class="radar-label-name">${axis.label}</text>
+        <text x="${x}" y="${y + 10}" text-anchor="${anchor}" class="radar-label-score">${m}%</text>
+      </g>
+    `;
+  }).join('');
+
+  return `
+    <svg class="radar-svg" viewBox="0 0 ${SIZE} ${SIZE + 32}" preserveAspectRatio="xMidYMid meet" aria-label="熟練度六軸雷達圖">
+      ${grid}
+      ${axes}
+      ${polygon}
+      ${dots}
+      ${labels}
+    </svg>
+  `;
+}
+
+function renderMasteryBlock() {
+  const el = document.getElementById('masteryArea');
+  if (!el) return;
+  const p = loadProgress();
+  // 確保 mastery 數值是最新（保險：歷史紀錄如果沒 .mastery 也補上）
+  const masteryByAxis = {};
+  for (const axis of MASTERY_AXES) {
+    const rec = p.category_mastery[axis.key] || { answered: 0, correct: 0, mastery: 0 };
+    masteryByAxis[axis.key] = rec.mastery || calculateMasteryFromRecord(rec);
+  }
+  const totalAnswered = MASTERY_AXES.reduce((sum, ax) => {
+    return sum + ((p.category_mastery[ax.key] || {}).answered || 0);
+  }, 0);
+
+  const rows = MASTERY_AXES.map(axis => {
+    const rec = p.category_mastery[axis.key] || { answered: 0, correct: 0, mastery: 0 };
+    const m = masteryByAxis[axis.key];
+    const amend = AXIS_AMENDMENT_DATES[axis.key] || '';
+    const amendStr = amend ? `${amend.replace(/-/g, '.')} 修正` : '尚未標註';
+    return `
+      <li class="mastery-row" data-axis="${axis.key}">
+        <span class="mastery-row-label">${axis.label}</span>
+        <span class="mastery-row-score">${m}%</span>
+        <span class="mastery-row-meta">${escapeHTML(amendStr)}｜${rec.answered} 題</span>
+      </li>
+    `;
+  }).join('');
+
+  if (totalAnswered === 0) {
+    el.innerHTML = `
+      <div class="mastery-empty">
+        ${renderRadarChart(masteryByAxis)}
+        <div class="mastery-empty-hint">尚無答題資料。完成題庫或今日挑戰後，雷達圖將顯示各分類熟練度。</div>
+      </div>
+    `;
+    return;
+  }
+
+  el.innerHTML = `
+    ${renderRadarChart(masteryByAxis)}
+    <ul class="mastery-list">${rows}</ul>
+    <div class="mastery-hint">點擊任一分類可跳至題庫對應練習</div>
+  `;
+
+  // 點擊軸 / 分類列 → 跳到題庫，套用 category filter
+  el.querySelectorAll('[data-axis]').forEach(node => {
+    node.addEventListener('click', () => {
+      const axis = node.getAttribute('data-axis');
+      const cat = AXIS_TO_QUIZ_CATEGORY[axis];
+      if (cat && quizSessions && quizSessions.quiz) {
+        quizSessions.quiz.filter.category = cat;
+        quizSessions.quiz.state = 'start';
+      }
+      goPage('quiz');
+    });
+  });
+}
+
+// ---- 徽章 SVG（圓框 + 月桂葉 + 中央拉丁／中文名）----
+function renderBadgeSvg(def, earned) {
+  const W = 96;
+  const goldOuter = earned ? 'var(--gold)' : 'var(--line-strong)';
+  const goldInner = earned ? 'var(--gold-soft)' : 'var(--line)';
+  const ink       = earned ? 'var(--ink)' : 'var(--ink-dim)';
+  const fillBg    = earned ? 'var(--bg-soft)' : '#f7f6f1';
+  const opacity   = earned ? '1' : '0.55';
+  // 月桂葉：兩側對稱，由若干小橢圓組成（手繪感）
+  const laurelLeaf = (cx, cy, rotate, mirror) => {
+    const transform = `rotate(${rotate} ${cx} ${cy})${mirror ? ` scale(-1 1) translate(${-2*cx} 0)` : ''}`;
+    return `<ellipse cx="${cx}" cy="${cy}" rx="3.2" ry="1.4" fill="none" stroke="${goldOuter}" stroke-width="0.8" transform="${transform}"/>`;
+  };
+  const laurelL = [];
+  const laurelR = [];
+  for (let i = 0; i < 5; i++) {
+    const yOffset = -16 + i * 8;
+    laurelL.push(laurelLeaf(W/2 - 32, W/2 + yOffset, -30, false));
+    laurelR.push(laurelLeaf(W/2 + 32, W/2 + yOffset, 30, true));
+  }
+  // 拉丁文若超過 12 字元，採兩行顯示
+  const latinFontSize = def.latin.length > 12 ? 8 : 10;
+  return `
+    <svg class="badge-svg" viewBox="0 0 ${W} ${W}" width="${W}" height="${W}" aria-label="${escapeHTML(def.name)}" style="opacity:${opacity}">
+      <circle cx="${W/2}" cy="${W/2}" r="42" fill="${fillBg}" stroke="${goldOuter}" stroke-width="2"/>
+      <circle cx="${W/2}" cy="${W/2}" r="36" fill="none"      stroke="${goldInner}" stroke-width="0.8" stroke-dasharray="2 1.5"/>
+      ${laurelL.join('')}
+      ${laurelR.join('')}
+      <text x="${W/2}" y="${W/2 + 4}" text-anchor="middle" font-family="var(--display)" font-style="italic" font-weight="500" font-size="${latinFontSize}" fill="${ink}" letter-spacing="0.04em">${escapeHTML(def.latin)}</text>
+    </svg>
+  `;
+}
+
+function renderBadgesBlock() {
+  const el = document.getElementById('badgesArea');
+  if (!el) return;
+  const p = loadProgress();
+  const earnedIds = new Set((p.badges.earned || []).map(b => b.id));
+  const earnedAtMap = Object.fromEntries((p.badges.earned || []).map(b => [b.id, b.earned_at]));
+
+  const cards = BADGE_DEFS.map(def => {
+    const earned = earnedIds.has(def.id);
+    const prog = p.badges.progress[def.id] || { current: 0, target: def.target };
+    const pct = Math.min(100, Math.round((prog.current / prog.target) * 100));
+    const earnedAt = earnedAtMap[def.id];
+    return `
+      <li class="badge-card ${earned ? 'earned' : 'locked'}">
+        ${renderBadgeSvg(def, earned)}
+        <div class="badge-card-body">
+          <div class="badge-card-name">${escapeHTML(def.name)}</div>
+          <div class="badge-card-latin">${escapeHTML(def.latin)}</div>
+          <div class="badge-card-desc">${escapeHTML(def.desc)}</div>
+          ${earned
+            ? `<div class="badge-card-earned">${escapeHTML(earnedAt || '')} 獲得</div>`
+            : `<div class="badge-card-progress">
+                 <div class="badge-progress-bar"><div class="badge-progress-fill" style="width:${pct}%"></div></div>
+                 <div class="badge-progress-text">${prog.current} / ${prog.target}</div>
+               </div>`
+          }
+        </div>
+      </li>
+    `;
+  }).join('');
+
+  el.innerHTML = `<ul class="badges-list">${cards}</ul>`;
+}
+
+// ---- 徽章解鎖通知條（PRD §9.5.2 區塊三：不彈窗）----
+function showBadgeToast(badgeId) {
+  const def = BADGE_DEFS.find(d => d.id === badgeId);
+  if (!def) return;
+  const el = document.getElementById('badgeToast');
+  if (!el) return;
+  el.innerHTML = `
+    <span class="badge-toast-mark">⌖</span>
+    <span class="badge-toast-text">獲得徽章：${escapeHTML(def.name)}</span>
+    <span class="badge-toast-latin">${escapeHTML(def.latin)}</span>
+  `;
+  el.hidden = false;
+  el.classList.add('show');
+  clearTimeout(showBadgeToast._t);
+  showBadgeToast._t = setTimeout(() => {
+    el.classList.remove('show');
+    setTimeout(() => { el.hidden = true; }, 400);
+  }, 4200);
+}
+
+// 處理新解鎖徽章：寫到 notified 並逐一通知（多個解鎖排隊播放）
+function processBadgeNotifications() {
+  const p = loadProgress();
+  const newly = syncBadges(p);
+  saveProgress(p);
+  // 過濾出未通知過的
+  const toNotify = newly.filter(id => !p.badges.notified.includes(id));
+  if (toNotify.length === 0) return;
+  // 依序播放（每個 4.6 秒間隔）
+  toNotify.forEach((id, idx) => {
+    setTimeout(() => showBadgeToast(id), idx * 4600);
+  });
+  p.badges.notified = (p.badges.notified || []).concat(toNotify);
+  saveProgress(p);
+}
+
+async function initProfile() {
+  await ensureQuizLoaded();
+  // 進入個人頁面時：同步徽章狀態 + 觸發新解鎖通知
+  processBadgeNotifications();
+  renderStreakBlock();
+  renderMasteryBlock();
+  renderBadgesBlock();
 }
 
 // ============================================
@@ -1471,6 +2230,7 @@ function goPage(name) {
   if (name === 'exam') ensureExamLoaded();
   if (name === 'quiz') ensureQuizLoaded().then(() => renderQuizPage('quiz'));
   if (name === 'home') initHome();
+  if (name === 'profile') initProfile();
 }
 
 // ============================================
