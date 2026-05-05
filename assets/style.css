@@ -535,7 +535,7 @@ nav.tabs::-webkit-scrollbar { display: none; }
   border-top: 1px solid var(--line);
   box-shadow: 0 -2px 12px rgba(30, 58, 95, 0.05);
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   z-index: 100;
   padding-bottom: env(safe-area-inset-bottom);
 }
@@ -544,10 +544,10 @@ nav.tabs::-webkit-scrollbar { display: none; }
   background: none;
   border: none;
   color: var(--ink-dim);
-  padding: 12px 4px 14px;
+  padding: 12px 2px 14px;
   cursor: pointer;
   font-family: var(--serif);
-  font-size: 11px;
+  font-size: 10.5px;
   transition: color 0.2s;
   display: flex;
   flex-direction: column;
@@ -1762,5 +1762,499 @@ mark {
   font-size: 14px;
   color: var(--ink-soft);
   letter-spacing: 0.1em;
+}
+
+/* ============================================
+   個人儀表板（PRD §9.5）
+   設計紅線：無 emoji、無遊戲化字眼
+   風格：律所 / 學位證書氣質，金色描邊 + 襯線體
+   ============================================ */
+
+.profile-eyebrow {
+  font-family: var(--display);
+  font-style: italic;
+  color: var(--gold);
+  letter-spacing: 0.18em;
+  font-size: 12px;
+  text-transform: uppercase;
+  margin-top: -4px;
+  margin-bottom: 18px;
+  text-align: center;
+}
+
+.profile-block {
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  box-shadow: var(--shadow-sm);
+  padding: 22px 20px;
+  margin-bottom: 18px;
+}
+
+.profile-block-title {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--ink);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.profile-block-sub {
+  font-family: var(--display);
+  font-style: italic;
+  color: var(--gold);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  font-weight: 500;
+}
+
+/* ---- Streak 區塊 ---- */
+.streak-block {
+  text-align: center;
+  padding: 28px 20px 22px;
+}
+
+.streak-hero {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 6px;
+  font-family: var(--display);
+  color: var(--primary);
+}
+
+.streak-num {
+  font-size: 84px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.streak-unit {
+  font-family: var(--serif);
+  font-size: 22px;
+  color: var(--ink-soft);
+  font-weight: 500;
+}
+
+.streak-caption {
+  font-family: var(--serif);
+  font-size: 14px;
+  color: var(--ink-soft);
+  letter-spacing: 0.4em;
+  margin-top: 4px;
+  padding-left: 0.4em;
+}
+
+.streak-meta {
+  margin-top: 18px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-dim);
+  letter-spacing: 0.05em;
+}
+
+.streak-meta-sep {
+  margin: 0 6px;
+  color: var(--line-strong);
+}
+
+.streak-compensation {
+  margin-top: 20px;
+  padding: 14px 14px;
+  border: 1px dashed var(--gold-soft);
+  border-radius: 4px;
+  background: rgba(160, 125, 58, 0.05);
+  text-align: center;
+}
+
+.streak-compensation-head {
+  font-family: var(--serif);
+  font-size: 13px;
+  color: var(--gold);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  margin-bottom: 6px;
+}
+
+.streak-compensation-body {
+  font-size: 14px;
+  color: var(--ink);
+  line-height: 1.6;
+}
+
+.streak-compensation-body strong {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.streak-compensation-meta {
+  margin-top: 8px;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--ink-dim);
+  letter-spacing: 0.05em;
+}
+
+.streak-compensation-done {
+  border-style: solid;
+  border-color: var(--jade);
+  background: rgba(45, 122, 79, 0.05);
+}
+
+.streak-compensation-done .streak-compensation-head {
+  color: var(--jade);
+}
+
+/* ---- 雷達圖 ---- */
+.radar-svg {
+  display: block;
+  margin: 4px auto 14px;
+  max-width: 320px;
+}
+
+.radar-label {
+  cursor: pointer;
+}
+
+.radar-label:hover .radar-label-name,
+.radar-label:hover .radar-label-score {
+  fill: var(--gold);
+}
+
+.radar-label-name {
+  font-family: var(--serif);
+  font-size: 11px;
+  font-weight: 700;
+  fill: var(--ink);
+}
+
+.radar-label-score {
+  font-family: var(--mono);
+  font-size: 10px;
+  fill: var(--primary);
+  letter-spacing: 0.04em;
+}
+
+.mastery-list {
+  list-style: none;
+  margin-top: 14px;
+  border-top: 1px solid var(--line);
+}
+
+.mastery-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: baseline;
+  gap: 10px;
+  padding: 10px 4px;
+  border-bottom: 1px solid var(--line);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.mastery-row:hover {
+  background: var(--bg-soft);
+}
+
+.mastery-row-label {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.mastery-row-score {
+  font-family: var(--display);
+  font-size: 16px;
+  color: var(--primary);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.mastery-row-meta {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--ink-dim);
+  letter-spacing: 0.05em;
+}
+
+.mastery-hint {
+  margin-top: 12px;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--ink-dim);
+  letter-spacing: 0.1em;
+}
+
+.mastery-empty {
+  text-align: center;
+}
+
+.mastery-empty-hint {
+  margin: 8px 12px 0;
+  font-family: var(--serif);
+  font-size: 13px;
+  color: var(--ink-soft);
+  line-height: 1.7;
+}
+
+/* ---- 徽章 ---- */
+.badges-list {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 14px;
+}
+
+.badge-card {
+  background: var(--bg-card);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 14px 10px;
+  text-align: center;
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.badge-card.earned {
+  border-color: var(--gold-soft);
+  box-shadow: 0 1px 4px rgba(160, 125, 58, 0.12);
+  background: linear-gradient(180deg, var(--bg-card), rgba(160, 125, 58, 0.03));
+}
+
+.badge-card.locked {
+  background: var(--bg-soft);
+}
+
+.badge-svg {
+  margin: 0 auto 8px;
+  display: block;
+}
+
+.badge-card-body {
+  font-family: var(--serif);
+}
+
+.badge-card-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.badge-card.locked .badge-card-name {
+  color: var(--ink-soft);
+}
+
+.badge-card-latin {
+  font-family: var(--display);
+  font-style: italic;
+  font-size: 11px;
+  color: var(--gold);
+  letter-spacing: 0.08em;
+  margin-top: 2px;
+}
+
+.badge-card.locked .badge-card-latin {
+  color: var(--ink-dim);
+}
+
+.badge-card-desc {
+  font-size: 11px;
+  color: var(--ink-soft);
+  line-height: 1.5;
+  margin-top: 6px;
+}
+
+.badge-card-earned {
+  margin-top: 8px;
+  font-family: var(--mono);
+  font-size: 9.5px;
+  color: var(--gold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.badge-card-progress {
+  margin-top: 8px;
+}
+
+.badge-progress-bar {
+  height: 3px;
+  background: var(--line);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.badge-progress-fill {
+  height: 100%;
+  background: var(--primary-soft);
+  transition: width 0.4s;
+}
+
+.badge-progress-text {
+  margin-top: 4px;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--ink-dim);
+  letter-spacing: 0.04em;
+}
+
+/* ---- 徽章解鎖通知條（不彈窗，從頂部滑入） ---- */
+.badge-toast {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-200%);
+  background: var(--bg-card);
+  border: 1px solid var(--gold-soft);
+  border-radius: 4px;
+  box-shadow: 0 4px 14px rgba(160, 125, 58, 0.18);
+  padding: 12px 20px;
+  z-index: 1000;
+  font-family: var(--serif);
+  font-size: 13px;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: calc(100% - 32px);
+  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.4s;
+  opacity: 0;
+}
+
+.badge-toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+.badge-toast-mark {
+  font-family: var(--display);
+  color: var(--gold);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.badge-toast-text {
+  font-weight: 700;
+}
+
+.badge-toast-latin {
+  font-family: var(--display);
+  font-style: italic;
+  color: var(--gold);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+
+/* ---- 今日總結卡 / 明日主題預告 ---- */
+.daily-summary {
+  background: var(--bg-card);
+  border: 1px solid var(--gold-soft);
+  border-radius: 6px;
+  box-shadow: var(--shadow-md);
+  padding: 22px 20px;
+  margin-bottom: 18px;
+}
+
+.daily-summary-head {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--gold);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.daily-summary-theme {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 18px;
+  color: var(--ink);
+  margin-bottom: 14px;
+}
+
+.daily-summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 12px 0;
+}
+
+.daily-summary-cell {
+  text-align: center;
+}
+
+.daily-summary-cell-num {
+  font-family: var(--display);
+  font-size: 26px;
+  color: var(--primary);
+  font-weight: 500;
+  line-height: 1;
+}
+
+.daily-summary-cell-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--ink-dim);
+  letter-spacing: 0.1em;
+  margin-top: 4px;
+}
+
+.daily-summary-mastery {
+  margin-top: 14px;
+  font-family: var(--serif);
+  font-size: 13px;
+  color: var(--ink-soft);
+  text-align: center;
+  line-height: 1.7;
+}
+
+.daily-summary-mastery strong {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.daily-summary-tomorrow {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--line);
+  text-align: center;
+  font-family: var(--serif);
+  font-size: 13px;
+  color: var(--ink-soft);
+}
+
+.daily-summary-tomorrow-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--ink-dim);
+  letter-spacing: 0.15em;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.daily-summary-tomorrow-theme {
+  font-weight: 700;
+  color: var(--ink);
+}
+
+/* ---- Daily 卡片：主題標籤（每週輪播） ---- */
+.daily-theme-badge {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--gold);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-left: 8px;
+  padding: 1px 6px;
+  border: 1px solid var(--gold-soft);
+  border-radius: 2px;
 }
 

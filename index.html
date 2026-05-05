@@ -30,6 +30,7 @@
     <button class="tab" data-page="laws">法規導航</button>
     <button class="tab" data-page="exam">高業考古題</button>
     <button class="tab" data-page="qa">問答集</button>
+    <button class="tab" data-page="profile">個人</button>
   </nav>
 
   <!-- ===== Home（今日挑戰 + 進度 + 入口）===== -->
@@ -140,6 +141,31 @@
     </div>
   </main>
 
+  <!-- ===== 個人儀表板（PRD §9.5）===== -->
+  <main class="page" id="page-profile">
+    <div class="section-head">
+      <span class="section-num">P</span>
+      <span class="section-title">個人</span>
+      <span class="section-line"></span>
+    </div>
+    <div class="profile-eyebrow">Personal Profile</div>
+
+    <!-- 區塊一：連續精進天數 -->
+    <section class="profile-block streak-block" id="streakBlock"></section>
+
+    <!-- 區塊二：熟練度雷達圖 -->
+    <section class="profile-block mastery-block">
+      <div class="profile-block-title">熟練度分析 <span class="profile-block-sub">Proficiency</span></div>
+      <div id="masteryArea"></div>
+    </section>
+
+    <!-- 區塊三：成就徽章 -->
+    <section class="profile-block badges-block">
+      <div class="profile-block-title">徽章 <span class="profile-block-sub">Insignia</span></div>
+      <div id="badgesArea"></div>
+    </section>
+  </main>
+
   <footer class="site-footer">
     <button class="footer-link" id="openDisclaimer" type="button">免責聲明</button>
     <span class="footer-sep">·</span>
@@ -162,7 +188,13 @@
     <button class="nav-btn" data-page="qa">
       <span class="nav-icon">問</span><span>問答</span>
     </button>
+    <button class="nav-btn" data-page="profile">
+      <span class="nav-icon">P</span><span>個人</span>
+    </button>
   </nav>
+
+  <!-- 徽章解鎖通知條（PRD §9.5.2 區塊三：不彈窗，僅小通知） -->
+  <div class="badge-toast" id="badgeToast" aria-live="polite" hidden></div>
 
   <!-- ===== 免責聲明 modal ===== -->
   <div class="modal" id="disclaimerModal" aria-hidden="true">
